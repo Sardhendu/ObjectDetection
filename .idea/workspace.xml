@@ -1,7 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="0fb3f822-3e88-486f-b205-d71003adecdd" name="Default" comment="" />
+    <list default="true" id="0fb3f822-3e88-486f-b205-d71003adecdd" name="Default" comment="">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/vcs.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/MaskRCNN/building_blocks/main.py" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/MaskRCNN/building_blocks/rpn.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/MaskRCNN/Notes.md" afterPath="$PROJECT_DIR$/MaskRCNN/Notes.md" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/MaskRCNN/building_blocks/fpn.py" afterPath="$PROJECT_DIR$/MaskRCNN/building_blocks/fpn.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/MaskRCNN/building_blocks/logfile.log" afterPath="$PROJECT_DIR$/MaskRCNN/building_blocks/logfile.log" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/MaskRCNN/config.py" afterPath="$PROJECT_DIR$/MaskRCNN/config.py" />
+    </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -17,11 +26,20 @@
       <file leaf-file-name="preprocessing.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/YOLO/preprocessing.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="260">
-              <caret line="15" column="19" lean-forward="false" selection-start-line="15" selection-start-column="19" selection-end-line="15" selection-end-column="19" />
+            <state relative-caret-position="280">
+              <caret line="14" column="19" lean-forward="true" selection-start-line="14" selection-start-column="19" selection-end-line="14" selection-end-column="19" />
               <folding>
                 <element signature="e#1#10#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="logfile.log" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/MaskRCNN/building_blocks/logfile.log">
+          <provider selected="true" editor-type-id="LogFileEditorProvider">
+            <state relative-caret-position="1540">
+              <caret line="77" column="43" lean-forward="true" selection-start-line="77" selection-start-column="43" selection-end-line="77" selection-end-column="43" />
             </state>
           </provider>
         </entry>
@@ -30,11 +48,35 @@
         <entry file="file://$PROJECT_DIR$/MaskRCNN/Notes.md">
           <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
             <state split_layout="SPLIT">
-              <first_editor relative-caret-position="840">
-                <caret line="42" column="0" lean-forward="false" selection-start-line="42" selection-start-column="0" selection-end-line="42" selection-end-column="0" />
+              <first_editor relative-caret-position="586">
+                <caret line="36" column="95" lean-forward="false" selection-start-line="36" selection-start-column="95" selection-end-line="36" selection-end-column="95" />
                 <folding />
               </first_editor>
               <second_editor />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="rpn.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/MaskRCNN/building_blocks/rpn.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-1148">
+              <caret line="0" column="3" lean-forward="true" selection-start-line="0" selection-start-column="3" selection-end-line="0" selection-end-column="3" />
+              <folding>
+                <element signature="e#300#314#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="main.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/MaskRCNN/building_blocks/main.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="320">
+              <caret line="16" column="32" lean-forward="false" selection-start-line="16" selection-start-column="32" selection-end-line="16" selection-end-column="32" />
+              <folding>
+                <element signature="e#2#16#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -42,33 +84,11 @@
       <file leaf-file-name="fpn.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/MaskRCNN/building_blocks/fpn.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="20">
-              <caret line="8" column="0" lean-forward="false" selection-start-line="8" selection-start-column="0" selection-end-line="8" selection-end-column="0" />
+            <state relative-caret-position="-3114">
+              <caret line="43" column="50" lean-forward="false" selection-start-line="43" selection-start-column="23" selection-end-line="43" selection-end-column="50" />
               <folding>
-                <element signature="e#255#273#0" expanded="true" />
+                <element signature="e#322#340#0" expanded="true" />
               </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="README.md" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/README.md">
-          <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
-            <state split_layout="SPLIT">
-              <first_editor relative-caret-position="0">
-                <caret line="0" column="18" lean-forward="true" selection-start-line="0" selection-start-column="18" selection-end-line="0" selection-end-column="18" />
-                <folding />
-              </first_editor>
-              <second_editor />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="logfile.log" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/MaskRCNN/building_blocks/logfile.log">
-          <provider selected="true" editor-type-id="LogFileEditorProvider">
-            <state relative-caret-position="1340">
-              <caret line="67" column="52" lean-forward="false" selection-start-line="67" selection-start-column="52" selection-end-line="67" selection-end-column="52" />
             </state>
           </provider>
         </entry>
@@ -76,8 +96,8 @@
       <file leaf-file-name="ops.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/MaskRCNN/building_blocks/ops.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="800">
-              <caret line="41" column="97" lean-forward="false" selection-start-line="41" selection-start-column="97" selection-end-line="41" selection-end-column="97" />
+            <state relative-caret-position="58">
+              <caret line="19" column="0" lean-forward="false" selection-start-line="19" selection-start-column="0" selection-end-line="19" selection-end-column="0" />
               <folding>
                 <element signature="e#0#23#0" expanded="true" />
               </folding>
@@ -88,8 +108,8 @@
       <file leaf-file-name="config.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/MaskRCNN/config.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="200">
-              <caret line="10" column="0" lean-forward="false" selection-start-line="10" selection-start-column="0" selection-end-line="10" selection-end-column="0" />
+            <state relative-caret-position="220">
+              <caret line="11" column="24" lean-forward="true" selection-start-line="11" selection-start-column="24" selection-end-line="11" selection-end-column="24" />
               <folding />
             </state>
           </provider>
@@ -116,16 +136,22 @@
       <replace>add_smry=False</replace>
     </replaceStrings>
   </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/YOLO/preprocessing.py" />
         <option value="$PROJECT_DIR$/MaskRCNN/building_blocks/logfile.log" />
         <option value="$PROJECT_DIR$/MaskRCNN/building_blocks/ops.py" />
-        <option value="$PROJECT_DIR$/MaskRCNN/config.py" />
         <option value="$PROJECT_DIR$/MaskRCNN/building_blocks/resnet_graph.py" />
-        <option value="$PROJECT_DIR$/MaskRCNN/Notes.md" />
         <option value="$PROJECT_DIR$/README.md" />
+        <option value="$PROJECT_DIR$/MaskRCNN/Notes.md" />
+        <option value="$PROJECT_DIR$/MaskRCNN/config.py" />
+        <option value="$PROJECT_DIR$/MaskRCNN/building_blocks/fpn.py" />
+        <option value="$PROJECT_DIR$/MaskRCNN/building_blocks/main.py" />
+        <option value="$PROJECT_DIR$/MaskRCNN/building_blocks/rpn.py" />
       </list>
     </option>
   </component>
@@ -149,6 +175,7 @@
       </profile-state>
     </entry>
   </component>
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectView">
     <navigator currentView="ProjectPane" proportions="" version="1">
       <flattenPackages />
@@ -164,6 +191,8 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scratches" />
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -191,8 +220,6 @@
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
-      <pane id="Scratches" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -217,7 +244,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.resnet_graph">
+  <component name="RunManager" selected="Python.main">
     <configuration name="config" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -231,6 +258,23 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <module name="ObjectDetection" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/MaskRCNN/config.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+    </configuration>
+    <configuration name="main" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/MaskRCNN/building_blocks" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="ObjectDetection" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/MaskRCNN/building_blocks/main.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -269,16 +313,18 @@
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
     </configuration>
-    <list size="3">
+    <list size="4">
       <item index="0" class="java.lang.String" itemvalue="Python.preprocessing" />
       <item index="1" class="java.lang.String" itemvalue="Python.config" />
       <item index="2" class="java.lang.String" itemvalue="Python.resnet_graph" />
+      <item index="3" class="java.lang.String" itemvalue="Python.main" />
     </list>
     <recent_temporary>
-      <list size="3">
-        <item index="0" class="java.lang.String" itemvalue="Python.resnet_graph" />
-        <item index="1" class="java.lang.String" itemvalue="Python.config" />
-        <item index="2" class="java.lang.String" itemvalue="Python.preprocessing" />
+      <list size="4">
+        <item index="0" class="java.lang.String" itemvalue="Python.main" />
+        <item index="1" class="java.lang.String" itemvalue="Python.resnet_graph" />
+        <item index="2" class="java.lang.String" itemvalue="Python.config" />
+        <item index="3" class="java.lang.String" itemvalue="Python.preprocessing" />
       </list>
     </recent_temporary>
   </component>
@@ -308,24 +354,24 @@
     <frame x="0" y="0" width="1440" height="900" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.13304721" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="TODO" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.13447782" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="TODO" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="true" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Python Console" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Python Console" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3297568" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.27682403" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
-      <window_info id="Data View" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Data View" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.27682403" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
   <component name="VcsContentAnnotationSettings">
@@ -336,6 +382,73 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/YOLO/preprocessing.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="300">
+          <caret line="15" column="19" lean-forward="false" selection-start-line="15" selection-start-column="19" selection-end-line="15" selection-end-column="19" />
+          <folding>
+            <element signature="e#1#10#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/MaskRCNN/building_blocks/fpn.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="160">
+          <caret line="8" column="0" lean-forward="false" selection-start-line="8" selection-start-column="0" selection-end-line="8" selection-end-column="0" />
+          <folding>
+            <element signature="e#322#340#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/MaskRCNN/Notes.md">
+      <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
+        <state split_layout="SPLIT">
+          <first_editor relative-caret-position="840">
+            <caret line="42" column="0" lean-forward="false" selection-start-line="42" selection-start-column="0" selection-end-line="42" selection-end-column="0" />
+            <folding />
+          </first_editor>
+          <second_editor />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/MaskRCNN/building_blocks/ops.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="820">
+          <caret line="41" column="97" lean-forward="false" selection-start-line="41" selection-start-column="97" selection-end-line="41" selection-end-column="97" />
+          <folding>
+            <element signature="e#0#23#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/MaskRCNN/building_blocks/logfile.log">
+      <provider selected="true" editor-type-id="LogFileEditorProvider">
+        <state relative-caret-position="1340">
+          <caret line="67" column="52" lean-forward="false" selection-start-line="67" selection-start-column="52" selection-end-line="67" selection-end-column="52" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/MaskRCNN/config.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="200">
+          <caret line="10" column="0" lean-forward="false" selection-start-line="10" selection-start-column="0" selection-end-line="10" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/README.md">
+      <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
+        <state split_layout="SPLIT">
+          <first_editor relative-caret-position="0">
+            <caret line="0" column="18" lean-forward="true" selection-start-line="0" selection-start-column="18" selection-end-line="0" selection-end-column="18" />
+            <folding />
+          </first_editor>
+          <second_editor />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/YOLO/preprocessing.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="260">
@@ -387,7 +500,7 @@
         <state relative-caret-position="160">
           <caret line="8" column="0" lean-forward="false" selection-start-line="8" selection-start-column="0" selection-end-line="8" selection-end-column="0" />
           <folding>
-            <element signature="e#255#273#0" expanded="true" />
+            <element signature="e#322#340#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -418,7 +531,7 @@
         <state relative-caret-position="3260">
           <caret line="167" column="8" lean-forward="false" selection-start-line="167" selection-start-column="8" selection-end-line="167" selection-end-column="8" />
           <folding>
-            <element signature="e#255#273#0" expanded="true" />
+            <element signature="e#322#340#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -468,70 +581,98 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/YOLO/preprocessing.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="260">
-          <caret line="15" column="19" lean-forward="false" selection-start-line="15" selection-start-column="19" selection-end-line="15" selection-end-column="19" />
-          <folding>
-            <element signature="e#1#10#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/MaskRCNN/building_blocks/ops.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="800">
-          <caret line="41" column="97" lean-forward="false" selection-start-line="41" selection-start-column="97" selection-end-line="41" selection-end-column="97" />
-          <folding>
-            <element signature="e#0#23#0" expanded="true" />
-          </folding>
+    <entry file="file://$PROJECT_DIR$/README.md">
+      <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
+        <state split_layout="SPLIT">
+          <first_editor relative-caret-position="0">
+            <caret line="0" column="18" lean-forward="false" selection-start-line="0" selection-start-column="18" selection-end-line="0" selection-end-column="18" />
+            <folding />
+          </first_editor>
+          <second_editor />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/MaskRCNN/config.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="200">
-          <caret line="10" column="0" lean-forward="false" selection-start-line="10" selection-start-column="0" selection-end-line="10" selection-end-column="0" />
+        <state relative-caret-position="220">
+          <caret line="11" column="24" lean-forward="true" selection-start-line="11" selection-start-column="24" selection-end-line="11" selection-end-column="24" />
           <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/MaskRCNN/building_blocks/logfile.log">
-      <provider selected="true" editor-type-id="LogFileEditorProvider">
-        <state relative-caret-position="1340">
-          <caret line="67" column="52" lean-forward="false" selection-start-line="67" selection-start-column="52" selection-end-line="67" selection-end-column="52" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/MaskRCNN/Notes.md">
       <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
         <state split_layout="SPLIT">
-          <first_editor relative-caret-position="840">
-            <caret line="42" column="0" lean-forward="false" selection-start-line="42" selection-start-column="0" selection-end-line="42" selection-end-column="0" />
+          <first_editor relative-caret-position="586">
+            <caret line="36" column="95" lean-forward="false" selection-start-line="36" selection-start-column="95" selection-end-line="36" selection-end-column="95" />
             <folding />
           </first_editor>
           <second_editor />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/App-Setup/anaconda/envs/anaconda35/lib/python3.5/site-packages/tensorflow/python/ops/variable_scope.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-10811">
+          <caret line="1202" column="0" lean-forward="false" selection-start-line="1202" selection-start-column="0" selection-end-line="1202" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/MaskRCNN/building_blocks/ops.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="58">
+          <caret line="19" column="0" lean-forward="false" selection-start-line="19" selection-start-column="0" selection-end-line="19" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#23#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/MaskRCNN/building_blocks/logfile.log">
+      <provider selected="true" editor-type-id="LogFileEditorProvider">
+        <state relative-caret-position="1540">
+          <caret line="77" column="43" lean-forward="true" selection-start-line="77" selection-start-column="43" selection-end-line="77" selection-end-column="43" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/YOLO/preprocessing.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="280">
+          <caret line="14" column="19" lean-forward="true" selection-start-line="14" selection-start-column="19" selection-end-line="14" selection-end-column="19" />
+          <folding>
+            <element signature="e#1#10#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/MaskRCNN/building_blocks/main.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="320">
+          <caret line="16" column="32" lean-forward="false" selection-start-line="16" selection-start-column="32" selection-end-line="16" selection-end-column="32" />
+          <folding>
+            <element signature="e#2#16#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/MaskRCNN/building_blocks/fpn.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="20">
-          <caret line="8" column="0" lean-forward="false" selection-start-line="8" selection-start-column="0" selection-end-line="8" selection-end-column="0" />
+        <state relative-caret-position="-3114">
+          <caret line="43" column="50" lean-forward="false" selection-start-line="43" selection-start-column="23" selection-end-line="43" selection-end-column="50" />
           <folding>
-            <element signature="e#255#273#0" expanded="true" />
+            <element signature="e#322#340#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/README.md">
-      <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
-        <state split_layout="SPLIT">
-          <first_editor relative-caret-position="0">
-            <caret line="0" column="18" lean-forward="true" selection-start-line="0" selection-start-column="18" selection-end-line="0" selection-end-column="18" />
-            <folding />
-          </first_editor>
-          <second_editor />
+    <entry file="file://$PROJECT_DIR$/MaskRCNN/building_blocks/rpn.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-1148">
+          <caret line="0" column="3" lean-forward="true" selection-start-line="0" selection-start-column="3" selection-end-line="0" selection-end-column="3" />
+          <folding>
+            <element signature="e#300#314#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

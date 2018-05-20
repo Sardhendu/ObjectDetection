@@ -34,7 +34,7 @@ Source: https://medium.com/@smallfishbigsea/faster-r-cnn-explained-864d4fb7e3f8
         
     * Receptive field:
         
-3. Output 2: (Regressor to refine the bounding box): In a regressor we would like to predict 32 (9x4) dimensional depth vector where 9 is the number of anchors and 4 is the bounding box representation. From the Output 1, we already have the anchors that are foreground and background. In a regressor we don't use the background anchors because we dont have ground truth boxes for them.
+3. Output 2: (Regressor to refine the bounding box): In a regressor we would like to predict 36 (9x4) dimensional depth vector where 9 is the number of anchors and 4 is the bounding box representation. From the Output 1, we already have the anchors that are foreground and background. In a regressor we don't use the background anchors because we dont have ground truth boxes for them.
     
     * Here we use a smooth L1 loss on the position (x,y) of top left of the box and logarithm of the heights and width.
     

@@ -4,6 +4,8 @@
 ARTICLE ON FPN (FEATURE PYRAMID NETWORK): https://medium.com/@jonathan_hui/understanding-feature-pyramid-networks-for-object-detection-fpn-45b227b9106c
 
 MODEL RESNET-50: https://github.com/fchollet/deep-learning-models/blob/master/resnet50.py
+
+FPN: Feature Pyramid Net: This is a way to generate feature maps.
 '''
 
 
@@ -14,8 +16,7 @@ import logging
 from MaskRCNN.building_blocks import ops
 from MaskRCNN.config import config as conf
 
-logging.basicConfig(level=logging.DEBUG, filename="logfile.log", filemode="w",
-                    format="%(asctime)-15s %(levelname)-8s %(message)s")
+
 
 
 
@@ -119,7 +120,7 @@ def conv_block(x_in, filters, strides, stage, block):
     return x
     
     
-def feature_pyramid_net_bottom_up(input_image, stage_5=True):
+def fpn_bottom_up_graph(input_image, stage_5=True):
     '''
     Here we implement a Resnet50 model, and make sure that at every stage we capture the feature map to be used by
     the top-down FPN network. This is required in assistance to predict the feature map.
@@ -187,7 +188,7 @@ def feature_pyramid_net_bottom_up(input_image, stage_5=True):
 
     return [C2,C3,C4,C5]
     
-def feature_pyramid_net_top_down(C2, C3, C4, C5):
+def fpn_top_down_graph(C2, C3, C4, C5):
     '''
     Feature Pyramid Networks: Detecting objects at different scale is difficult, especially time consuming and memory intensive . Here C1,C2,C3,C4,C5 can be thought as feature maps for each stage. They are useful to build the Feature Pyramid Network, each C's are down-sampled at every stage.
     P1, P2, P3, P4, P5 are the feature map layer for prediction
@@ -234,14 +235,4 @@ def feature_pyramid_net_top_down(C2, C3, C4, C5):
                  str(P4.get_shape().as_list()), str(P5.get_shape().as_list()))
     
     return P2, P3, P4, P5
-    
-def main():
-    xIN = tf.placeholder(dtype=tf.float32,
-                         shape=[None] + conf.IMAGE_SHAPE,
-                         name = 'input_image')
-
-    C2, C3, C4, C5 = feature_pyramid_net_bottom_up(xIN)
-    P2, P3, P4, P5 = feature_pyramid_net_top_down(C2, C3, C4, C5)
-    
-    
-main()
+  
