@@ -32,6 +32,7 @@ def get_pixel_fb_classification(x, anchor_stride, anchor_per_location):
 
     # Do a softmax classificaion to get output probabilities
     rpn_probs = tf.nn.softmax(rpn_class_logits, name='anchor_per_pixel_prob')
+    logging.info('rpn_probs: %s', rpn_probs.get_shape().as_list())
     
     return rpn_class_logits, rpn_probs
 
@@ -54,8 +55,9 @@ def get_bounding_box(x, anchor_stride, anchor_per_location):
                        scope_name='rpn_bbox_conv')
     logging.info('RPN - Conv Bbox: %s', str(x.get_shape().as_list()))
 
+    # The shape of rpn_bbox = [None, None, 4] =  Which says for each image for each pixel position of a feature map the output of box is 4 -> center_x, center_y, width and height. Since we do it in pixel basis, we would end up having many many bounding boxes overlapping and hence we use non-max suppression to overcome this situation.
     rpn_bbox = tf.reshape(x, [tf.shape(x)[0], -1, 4])
-    logging.info('rpn_class_logits: %s', rpn_bbox.get_shape().as_list())
+    logging.info('rpn_bbox: %s', rpn_bbox.get_shape().as_list())
     
     return rpn_bbox
     
@@ -73,11 +75,11 @@ def rpn_graph(depth):
 
     ## Classification Output: Binary classification, # Get the pixel wise Classification
     rpn_class_logits, rpn_probs = get_pixel_fb_classification(
-            shared, conf.RPN_ANCHOR_STRIDES,  2 * len(conf.RPN_ANCHOR_RATIOS))
+            shared, conf.RPN_ANCHOR_STRIDES,  len(conf.RPN_ANCHOR_RATIOS))
     
     ## Bounding Box Output: Get the coordinates , height and width of bounding box
     rpn_bbox = get_bounding_box(
-            shared, conf.RPN_ANCHOR_STRIDES, 4 * len(conf.RPN_ANCHOR_RATIOS))
+            shared, conf.RPN_ANCHOR_STRIDES, len(conf.RPN_ANCHOR_RATIOS))
     
     return dict(
             xrpn=xrpn,
