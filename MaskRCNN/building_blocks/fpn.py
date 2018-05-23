@@ -62,7 +62,7 @@ def identity_block(x_in, filters, stage, block):
     ## Add
     x = x + x_in
     x = ops.activation(x, 'relu', relu_name + '_out')
-    logging.info('%s: %s', str(conv_name + '_out'), str(x.get_shape().as_list()))
+    logging.info('%s: %s', str(relu_name + '_out'), str(x.get_shape().as_list()))
 
     return x
     
@@ -116,11 +116,11 @@ def conv_block(x_in, filters, strides, stage, block):
     ## Add
     x = x + shortcut
     x = ops.activation(x, 'relu', relu_name + '_out')
-    logging.info('%s: %s', str(conv_name + '_out'), str(x.get_shape().as_list()))
+    logging.info('%s: %s', str(relu_name + '_out'), str(x.get_shape().as_list()))
     return x
     
     
-def fpn_bottom_up_graph(input_image, stage_5=True):
+def fpn_bottom_up_graph(input_image, resnet_model, stage_5=True):
     '''
     Here we implement a Resnet50 model, and make sure that at every stage we capture the feature map to be used by
     the top-down FPN network. This is required in assistance to predict the feature map.
@@ -129,6 +129,8 @@ def fpn_bottom_up_graph(input_image, stage_5=True):
     :param stage_5:
     :return:
     '''
+    assert resnet_model in ["resnet50", "resnet101"]
+    
     h, w = conf.IMAGE_SHAPE[:2]
     logging.info('Image height = %s, width = %s ................', str(h), str(w))
     if h / 2 ** 6 != int(h / 2 ** 6) or w / 2 ** 6 != int(w / 2 ** 6):
@@ -169,11 +171,9 @@ def fpn_bottom_up_graph(input_image, stage_5=True):
     # STAGE 4
     logging.info('STAGE 4 ...........................')
     x = conv_block(x, filters=[256, 256, 1024], strides=2, stage=4, block='a')
-    x = identity_block(x, filters=[256, 256, 1024], stage=4, block='b')
-    x = identity_block(x, filters=[256, 256, 1024], stage=4, block='c')
-    x = identity_block(x, filters=[256, 256, 1024], stage=4, block='d')
-    x = identity_block(x, filters=[256, 256, 1024], stage=4, block='e')
-    x = identity_block(x, filters=[256, 256, 1024], stage=4, block='f')
+    block_count = {"resnet50": 5, "resnet101": 22}[resnet_model]
+    for i in range(block_count):
+        x = identity_block(x, filters=[256, 256, 1024], stage=4, block=chr(98 + i))
     C4 = x
     
     # STAGE 5
@@ -203,24 +203,24 @@ def fpn_top_down_graph(C2, C3, C4, C5):
     logging.info('Initiating FPN TOP-DOWN .................................')
     
     # Feature Map 1
-    M5 = ops.conv_layer(C5, [1, 1, C5.get_shape().as_list()[-1], 256], stride=1, padding='SAME', scope_name='fpn_c5m5')  # to reduce the channel depth
+    M5 = ops.conv_layer(C5, [1, 1, C5.get_shape().as_list()[-1], 256], stride=1, padding='SAME', scope_name='fpn_c5p5')  # to reduce the channel depth
     logging.info('FPN - M5: %s', str(M5.get_shape().as_list()))
 
     # Feature Map 2
-    m4_c = ops.conv_layer(C4, [1,1,C4.get_shape().as_list()[-1], 256], stride=1, padding='SAME', scope_name='fpn_c4m4')
-    m4_up = KL.UpSampling2D(size=(2, 2), name="fpn_m5up")(M5)
+    m4_c = ops.conv_layer(C4, [1,1,C4.get_shape().as_list()[-1], 256], stride=1, padding='SAME', scope_name='fpn_c4p4')
+    m4_up = KL.UpSampling2D(size=(2, 2), name="fpn_p5upsampled")(M5)
     M4 = KL.Add(name="fpn_p4add")([m4_up, m4_c])
     logging.info('FPN - M4: %s', str(M4.get_shape().as_list()))
 
     # Feature Map 3
-    m3_c = ops.conv_layer(C3, [1, 1, C3.get_shape().as_list()[-1], 256], stride=1, padding='SAME', scope_name='fpn_c3m3')
-    m3_up = KL.UpSampling2D(size=(2, 2), name="fpn_m4up")(M4)
+    m3_c = ops.conv_layer(C3, [1, 1, C3.get_shape().as_list()[-1], 256], stride=1, padding='SAME', scope_name='fpn_c3p3')
+    m3_up = KL.UpSampling2D(size=(2, 2), name="fpn_p4upsampled")(M4)
     M3 = KL.Add(name="fpn_p3add")([m3_up, m3_c])
     logging.info('FPN - M3: %s', str(M3.get_shape().as_list()))
 
     # Feature Map 4
-    m2_c = ops.conv_layer(C2, [1, 1, C2.get_shape().as_list()[-1], 256], stride=1, padding='SAME', scope_name='fpn_c2m2')
-    m2_up = KL.UpSampling2D(size=(2, 2), name="fpn_m3up")(M3)
+    m2_c = ops.conv_layer(C2, [1, 1, C2.get_shape().as_list()[-1], 256], stride=1, padding='SAME', scope_name='fpn_c2p2')
+    m2_up = KL.UpSampling2D(size=(2, 2), name="fpn_p3upsampled")(M3)
     M2 = KL.Add(name="fpn_p2add")([m2_up, m2_c])
     logging.info('FPN - M2: %s', str(M2.get_shape().as_list()))
     

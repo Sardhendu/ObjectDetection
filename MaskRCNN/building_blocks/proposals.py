@@ -67,4 +67,4 @@ def debugg():
     proposals(conf, inputs=[rpn_probs, rpn_box, input_anchors])
 
 
-debugg()
+# debugg()

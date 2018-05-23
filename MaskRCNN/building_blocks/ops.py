@@ -120,14 +120,14 @@ def batch_norm(X, axis=[0, 1, 2], scope_name=None):
                 dtype='float32',
                 shape=[numOUT],
                 initializer=tf.constant_initializer(0.0),
-                name="b",  # offset (bias)
+                name="beta",  # offset (bias)
                 trainable=True
         )
         gamma = tf.get_variable(
                 dtype='float32',
                 shape=[numOUT],
                 initializer=tf.constant_initializer(1.0),
-                name="w",  # scale(weight)
+                name="gamma",  # scale(weight)
                 trainable=True)
         
         expBatchMean_avg = tf.get_variable(
