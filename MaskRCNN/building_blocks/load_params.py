@@ -1,5 +1,5 @@
 
-
+import logging
 import numpy as np
 import tensorflow as tf
 import h5py
@@ -56,7 +56,6 @@ def set_pretrained_weights(sess, weights_path):
         raise ImportError('load_weights requires h5py.')
     
     for var in tf.get_collection(tf.GraphKeys.VARIABLES):
-        print('............... ', var.name)
         scope_name, graph_var_name = var.name.split('/')
         try:
             if scope_name.split('_')[0] == 'rpn':
@@ -66,30 +65,30 @@ def set_pretrained_weights(sess, weights_path):
 
             if graph_var_name == 'w:0':
                 val = pretrained_var_name['kernel:0']
-                print('w:0', scope_name, val.value.shape, var.shape)
+                logging.info('w:0, scope_name = %s, pre-trained.shape = %s, variable.shape = %s', str(scope_name), str(val.value.shape), str(var.shape))
 
             elif graph_var_name == 'b:0':
                 val = pretrained_var_name['bias:0']
-                print('b:0', scope_name, val.value.shape, var.shape)
+                logging.info('b:0, scope_name = %s, pre-trained.shape = %s, variable.shape = %s', str(scope_name), str(val.value.shape), str(var.shape))
 
             elif graph_var_name == 'm:0':
                 val = pretrained_var_name['moving_mean:0']
-                print('m:0', scope_name, val.value.shape, var.shape)
+                logging.info('m:0, scope_name = %s, pre-trained.shape = %s, variable.shape = %s', str(scope_name), str(val.value.shape), str(var.shape))
 
             elif graph_var_name == 'v:0':
                 val = pretrained_var_name['moving_variance:0']
-                print('m:0', scope_name, val.value.shape, var.shape)
+                logging.info('v:0, scope_name = %s, pre-trained.shape = %s, variable.shape = %s', str(scope_name), str(val.value.shape), str(var.shape))
 
             elif graph_var_name == 'beta:0':
                 val = pretrained_var_name['beta:0']
-                print('m:0', scope_name, val.value.shape, var.shape)
+                logging.info('beta:0, scope_name = %s, pre-trained.shape = %s, variable.shape = %s', str(scope_name), str(val.value.shape), str(var.shape))
 
             elif graph_var_name == 'gamma:0':
                 val = pretrained_var_name['gamma:0']
-                print('m:0', scope_name, val.value.shape, var.shape)
+                logging.info('gamma:0, scope_name = %s, pre-trained.shape = %s, variable.shape = %s', str(scope_name), str(val.value.shape), str(var.shape))
 
             else:
-                print ('############### ', graph_var_name)
+                logging.info ('############### %s', graph_var_name)
                 val = None
                 var = None
                 
@@ -108,5 +107,5 @@ def set_pretrained_weights(sess, weights_path):
             # for keyy, vv in pretrained_weights[scope_name].items():
             #     print (keyy, vv)
         except KeyError:
-            print('OOPS not found for ', scope_name)
+            print('OOPS variable %s not found in pretrained variable list '%(str(scope_name)))
 
