@@ -1,8 +1,55 @@
+
+
+import numpy as np
 import tensorflow as tf
 import h5py
 
 
-def check_params_consistency(weights_path):
+def _convert_string_dtype(dtype):
+    if dtype == 'float16':
+        return tf.float16
+    if dtype == 'float32':
+        return tf.float32
+    elif dtype == 'float64':
+        return tf.float64
+    elif dtype == 'int16':
+        return tf.int16
+    elif dtype == 'int32':
+        return tf.int32
+    elif dtype == 'int64':
+        return tf.int64
+    elif dtype == 'uint8':
+        return tf.int8
+    elif dtype == 'uint16':
+        return tf.uint16
+    else:
+        raise ValueError('Unsupported dtype:', dtype)
+
+def set_value(sess, tensor_variable, value):
+    
+    """
+    Refer: https://stackoverflow.com/questions/43016565/tensorflow-re-initializing-weights-and-reshaping-tensor-of
+    -pretrained-model
+    Sets the value of a variable, from a Numpy array.
+    # Arguments
+        x: Tensor to set to a new value.
+        value: Value to set the tensor to, as a Numpy array
+            (of the same shape).
+    """
+    value = np.asarray(value)
+    tf_dtype = _convert_string_dtype(tensor_variable.dtype.name.split('_')[0])
+    if hasattr(tensor_variable, '_assign_placeholder'):
+        assign_placeholder = tensor_variable._assign_placeholder
+        assign_op = tensor_variable._assign_op
+    else:
+        assign_placeholder = tf.placeholder(tf_dtype, shape=value.shape)
+        assign_op = tensor_variable.assign(assign_placeholder)
+        tensor_variable._assign_placeholder = assign_placeholder
+        tensor_variable._assign_op = assign_op
+    return sess.run(assign_op, feed_dict={assign_placeholder: value})
+
+
+def set_pretrained_weights(sess, weights_path):
     pretrained_weights = h5py.File(weights_path, mode='r')
     
     if h5py is None:
@@ -48,76 +95,18 @@ def check_params_consistency(weights_path):
                 
             if val.value.shape != var.shape:
                 raise ValueError('Mismatch is shape of pretrained weights and network defined weights')
-            
-
+            #
+            # if graph_var_name == 'b:0':
+            #     print (val.value)
+            #     print ('.........................')
+            #     print (sess.run(var))
+            #     print ('loading pretrained weights for variable')
+            set_value(sess=sess, tensor_variable=var, value=val)
+                    # print ('Loaded')
+                    # print(sess.run(var))
                 
             # for keyy, vv in pretrained_weights[scope_name].items():
             #     print (keyy, vv)
         except KeyError:
             print('OOPS not found for ', scope_name)
 
-
-def load_weights(filepath, by_name=False, exclude=None):
-    """
-
-    """
-    import h5py
-    from keras.engine import topology
-    
-    if exclude:
-        by_name = True
-    
-    if h5py is None:
-        raise ImportError('load_weights requires h5py.')
-    
-    f = h5py.File(filepath, mode='r')
-    # isFile = isinstance(f, h5py.File)
-    # isGroup = isinstance(f, h5py.Group)
-    # isDataset = isinstance(f, h5py.Dataset)
-    
-    # print ([i for i in f.attrs])
-    # print(isFile, isGroup, isDataset)
-    # if 'layer_names' not in f.attrs and 'model_weights' in f:
-    #     f = f['model_weights']
-    for key, value in f.items():
-        isFile = isinstance(value, h5py.File)
-        isGroup = isinstance(value, h5py.Group)
-        isDataset = isinstance(value, h5py.Dataset)
-        # print (isFile, isGroup, isDataset)
-        # print ('sadasdasdasdasd')
-        if isGroup:
-            for key2, value2 in value.items():
-                isFile = isinstance(value2, h5py.File)
-                isGroup = isinstance(value2, h5py.Group)
-                isDataset = isinstance(value2, h5py.Dataset)
-                for key3, value3 in value2.items():
-                    if key != key2:
-                        print('PROBLEM PROBLEM PROBLEM')
-                    print(key, key2, key3, value3.shape)
-        elif isDataset:
-            print('Dataset ...........')
-        elif isFile:
-            print('File ...........')
-            # break
-            
-            # keras_model = self.keras_model
-            # layers = keras_model.inner_model.layers if hasattr(keras_model, "inner_model") \
-            #     else keras_model.layers
-            #
-            # # Exclude some layers
-            # if exclude:
-            #     layers = filter(lambda l: l.name not in exclude, layers)
-            #
-            # if by_name:
-            #     topology.load_weights_from_hdf5_group_by_name(f, layers)
-            # else:
-            #     topology.load_weights_from_hdf5_group(f, layers)
-            # if hasattr(f, 'close'):
-            #     f.close()
-            #
-            # # Update the log directory
-            # self.set_log_dir(filepath)
-
-
-# filepath = '/Users/sam/All-Program/App-DataSet/ObjectDetection/MaskRCNN/mask_rcnn_coco.h5'
-# load_weights(filepath, by_name=False, exclude=None)
