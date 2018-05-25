@@ -234,5 +234,5 @@ def fpn_top_down_graph(C2, C3, C4, C5):
                  str(P2.get_shape().as_list()), str(P3.get_shape().as_list()),
                  str(P4.get_shape().as_list()), str(P5.get_shape().as_list()))
     
-    return P2, P3, P4, P5
+    return dict(fpn_c2=C2, fpn_c3=C3, fpn_c4=C4, fpn_c5=C5, fpn_p2=P2, fpn_p3=P3, fpn_p4=P4, fpn_p5=P5)
   
