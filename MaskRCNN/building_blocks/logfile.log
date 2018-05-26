@@ -1,0 +1,8 @@
+2018-05-26 13:33:26,513 INFO     Foreground_probs shape: [None, None]
+2018-05-26 13:33:26,515 INFO     box_delta shape: [None, None, 4]
+2018-05-26 13:33:26,516 INFO     anchors shape: [None, None, 4]
+2018-05-26 13:33:26,526 INFO     max_anc_before_nms shape: Tensor("Minimum:0", shape=(), dtype=int32)
+2018-05-26 13:33:26,528 INFO     ix shape: [None, None]
+2018-05-26 13:33:26,570 INFO     foreground_probs shape = (?, ?)
+2018-05-26 13:33:26,572 INFO     Box delta shape = (?, ?, 4)
+2018-05-26 13:33:26,573 INFO     anchors shape = (?, ?, 4)
