@@ -6,6 +6,7 @@ from MaskRCNN.config import config as conf
 from MaskRCNN.building_blocks import load_params
 from MaskRCNN.building_blocks.fpn import fpn_bottom_up_graph, fpn_top_down_graph
 from MaskRCNN.building_blocks.rpn import rpn_graph
+from MaskRCNN.building_blocks.proposals import ProposalLayer
 
 logging.basicConfig(level=logging.DEBUG, filename="logfile.log", filemode="w",
                     format="%(asctime)-15s %(levelname)-8s %(message)s")
@@ -16,37 +17,33 @@ def inference():
     xIN = tf.placeholder(dtype=tf.float32,
                          shape=[None] + conf.IMAGE_SHAPE,
                          name='input_image')
-    rpn_probs = tf.placeholder(dtype=tf.float32,
-                               shape=[None, None, 2],
-                               name="rpn_prob")
-
-    rpn_box = tf.placeholder(dtype=tf.float32,
-                             shape=[None, None, 4],
-                             name="rpn_box")
     
-    input_anchors = tf.placeholder(dtype=tf.float32,
-                                   shape=[None, None, 4],
-                                   name="input_anchors")
     
-    input_comp_graph = dict(xIN=xIN, rpn_probs=rpn_probs, rpn_box=rpn_box, input_anchors=input_anchors)
+    input_comp_graph = dict(xIN=xIN)
     
     C2, C3, C4, C5 = fpn_bottom_up_graph(xIN, 'resnet101') # Basically the Resnet architecture.
     
+    # CREATE THE FPN GRAPH
     fpn_comp_graph = fpn_top_down_graph(C2, C3, C4, C5) # The Fractionally strided convolutions
+    
+    # CREATE THE RPN GRAPH
     rpn_comp_graph = rpn_graph(depth=256)
     
-    
-    
+    # CREATE THE PROPOSAL GRAPH
+    obj_pl = ProposalLayer(conf)
+    proposal_graph = obj_pl.proposals(inference_batch_size=3)
+    # proposal_graph = dict(rpn_probs=rpn_probs, rpn_box=rpn_box, input_anchors=input_anchors, )
+
     # Here run the session for rpn_graph feed it with input P2, P3, P4 P5,
     # Record the outputs in a numpy array and perform the proposals
     
-    return input_comp_graph, fpn_comp_graph, rpn_comp_graph
+    return input_comp_graph, fpn_comp_graph, rpn_comp_graph, proposal_graph
 
 
 
 def main(pretrained_weights_path):
     print('')
-    input_comp_graph, fpn_comp_graph, rpn_comp_graph = inference()
+    input_comp_graph, fpn_comp_graph, rpn_comp_graph, proposal_graph = inference()
     
     feed_dict = {input_comp_graph['xIN']: np.random.random((1, 1024, 1024, 3))}
     init = tf.global_variables_initializer()
@@ -77,10 +74,26 @@ def main(pretrained_weights_path):
             del rpn_logit
             del rpn_prob
             del rpn_bbox
-            
+        
+        
             
         print(len(rpn_logits), len(rpn_probs), len(rpn_bboxes))
+
+        # Concatenate with the second dimension
+        rpn_logits = np.concatenate(rpn_logits, axis=1)
+        rpn_probs = np.concatenate(rpn_probs, axis=1)
+        rpn_bbox = np.concatenate(rpn_probs, axis=1)
         
+        
+        proposals_ = sess.run([proposal_graph['proposals']],
+                              feed_dict={
+                                  proposal_graph['rpn_probs']: rpn_probs,
+                                  proposal_graph['rpn_bbox']: rpn_bbox,
+                                  
+                              })
+
+        # print(rpn_logits.shape)
+
     return p2, p3, p4, p5
 
 
