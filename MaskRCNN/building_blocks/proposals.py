@@ -185,7 +185,7 @@ class ProposalLayer():
         
         # Searching through lots of anchors can be time consuming. So we would select at most top 6000 of them for further
         # processing
-        max_anc_before_nms = tf.minimum(6000, tf.shape(self.anchors)[1])
+        max_anc_before_nms = tf.minimum(self.conf.PRE_NMS_ROIS_INFERENCE, tf.shape(self.anchors)[1])
         logging.info('max_anc_before_nms shape: %s', str(max_anc_before_nms))
         
         # Here we fetch the idx of the top 6000 anchors
@@ -204,7 +204,10 @@ class ProposalLayer():
         #  images here and stack them at the end
         proposals = tf.concat([
                         tf.stack([
-                            self.non_max_suppression(self.scores[num], self.boxes[num], max_boxes=2, iou_threshold=0.1)
+                            self.non_max_suppression(self.scores[num],
+                                                     self.boxes[num],
+                                                     max_boxes=self.conf.POST_NMS_ROIS_INFERENCE,
+                                                     iou_threshold=self.conf.RPN_NMS_THRESHOLD)
                         ], axis=0, name='nms_%s'%str(num)
                     ) for num in range(0,inference_batch_size)], axis=0, name='concat_boxes'
                 )

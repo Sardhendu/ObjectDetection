@@ -32,13 +32,17 @@ class config(object):
     RPN_BBOX_STD_DEV = np.array([0.1, 0.1, 0.2, 0.2])
     BBOX_STD_DEV = np.array([0.1, 0.1, 0.2, 0.2])
 
+    # Max number of anchors before NMS
+    PRE_NMS_ROIS_INFERENCE = 6000
     # ROIs kept after non-maximum supression (training and inference)
     POST_NMS_ROIS_TRAINING = 2000
     POST_NMS_ROIS_INFERENCE = 1000
-
+    
     # Non-max suppression threshold to filter RPN proposals.
     # This can be increase during training to generate more proposals.
     RPN_NMS_THRESHOLD = 0.7
+    
+    
 
     
 
