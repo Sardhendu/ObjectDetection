@@ -163,9 +163,9 @@ class ProposalLayer():
                                    shape=[None, None, 2],
                                    name="rpn_prob")
 
-        rpn_box = tf.placeholder(dtype=tf.float32,
+        rpn_bbox = tf.placeholder(dtype=tf.float32,
                                  shape=[None, None, 4],
-                                 name="rpn_box")
+                                 name="rpn_bbox")
 
         input_anchors = tf.placeholder(dtype=tf.float32,
                                        shape=[None, None, 4],
@@ -176,7 +176,7 @@ class ProposalLayer():
         logging.info('Foreground_probs shape: %s', str(self.scores.get_shape().as_list()))
         
         # Box deltas = [batch, num_rois, 4]
-        self.boxes = rpn_box * np.reshape(self.conf.RPN_BBOX_STD_DEV, [1, 1, 4])
+        self.boxes = rpn_bbox * np.reshape(self.conf.RPN_BBOX_STD_DEV, [1, 1, 4])
         logging.info('boxes shape: %s', str(self.boxes.get_shape().as_list()))
         
         # Get the anchors [None, 2]
@@ -210,23 +210,12 @@ class ProposalLayer():
                 )
         logging.info('bx_nw shape: %s', str(proposals.get_shape().as_list()))
         
-        return dict(rpn_probs=rpn_probs, rpn_box=rpn_box, input_anchors=input_anchors, proposals=proposals)
+        return dict(rpn_probs=rpn_probs, rpn_bbox=rpn_bbox, input_anchors=input_anchors, proposals=proposals)
     
 
 def debugg():
     from MaskRCNN.config import config as conf
 
-    # rpn_probs = tf.placeholder(dtype=tf.float32,
-    #                            shape=[None, None, 2],
-    #                            name="rpn_prob")
-    #
-    # rpn_box = tf.placeholder(dtype=tf.float32,
-    #                          shape=[None, None, 4],
-    #                          name="rpn_box")
-    #
-    # input_anchors = tf.placeholder(dtype=tf.float32,
-    #                                shape=[None, None, 4],
-    #                                name="input_anchors")
     obj_pl = ProposalLayer(conf)
     proposal_graph = obj_pl.proposals(inference_batch_size=3)
     # scores, boxes, anchors, max_anc_before_nms, ix, ixs, mesh, before_xy, after_xy, clipped, nms_idx, bx_nw = outs
@@ -237,11 +226,11 @@ def debugg():
         a= np.random.random((3, 5, 2))
         b= np.random.random((3, 5, 4))
         c= np.random.random((3, 5, 4))
-        feed_dict={proposal_graph['rpn_probs']: a, proposal_graph['rpn_box']: b, proposal_graph['input_anchors']: c}
+        feed_dict={proposal_graph['rpn_probs']: a, proposal_graph['rpn_bbox']: b, proposal_graph['input_anchors']: c}
 
         print('rpn_probs ', a)
         print('')
-        print('rpn_box ', b)
+        print('rpn_bbox ', b)
         print('')
         print('anchors ', c)
         proposals_ = sess.run(proposal_graph['proposals'], feed_dict=feed_dict)

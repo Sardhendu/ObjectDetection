@@ -68,18 +68,18 @@ def rpn_graph(depth):
     xrpn = tf.placeholder(dtype=tf.float32, shape=[None, None, None, depth],
                           name='rpn_feature_map_inp')
 
-    shared = ops.conv_layer(xrpn, k_shape=[3, 3, xrpn.get_shape().as_list()[-1], 512], stride=conf.RPN_ANCHOR_STRIDES,
+    shared = ops.conv_layer(xrpn, k_shape=[3, 3, xrpn.get_shape().as_list()[-1], 512], stride=conf.RPN_ANCHOR_STRIDE,
                             padding='SAME', scope_name='rpn_conv_shared')
     shared = ops.activation(shared, 'relu', scope_name='rpn_relu_shared')
     logging.info('RPN - Shared_conv: %s', str(shared.get_shape().as_list()))
 
     ## Classification Output: Binary classification, # Get the pixel wise Classification
     rpn_class_logits, rpn_probs = get_pixel_fb_classification(
-            shared, conf.RPN_ANCHOR_STRIDES,  len(conf.RPN_ANCHOR_RATIOS))
+            shared, conf.RPN_ANCHOR_STRIDE,  len(conf.RPN_ANCHOR_RATIOS))
     
     ## Bounding Box Output: Get the coordinates , height and width of bounding box
     rpn_bbox = get_bounding_box(
-            shared, conf.RPN_ANCHOR_STRIDES, len(conf.RPN_ANCHOR_RATIOS))
+            shared, conf.RPN_ANCHOR_STRIDE, len(conf.RPN_ANCHOR_RATIOS))
     
     return dict(
             xrpn=xrpn,

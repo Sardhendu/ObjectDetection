@@ -3,6 +3,10 @@
 
 import tensorflow as tf
 import numpy as np
+import logging
+
+logging.basicConfig(level=logging.DEBUG, filename="logfile.log", filemode="w",
+                    format="%(asctime)-15s %(levelname)-8s %(message)s")
 
 
 def get_resnet_stage_shapes(conf, image_shape):
@@ -108,6 +112,10 @@ def generate_anchors_for_feature_map(scales, ratios, feature_map_shape, feature_
     # # Enumerate combinations of shifts, widths, and heights
     box_widths, box_centers_x = np.meshgrid(widths, shifts_x)
     box_heights, box_centers_y = np.meshgrid(heights, shifts_y)
+    logging.info('Anchors: Box width shape = %s', str(box_widths.shape))
+    logging.info('Anchors: Box height shape = %s', str(box_heights.shape))
+    logging.info('Anchors: Box center_x shape = %s', str(box_centers_x.shape))
+    logging.info('Anchors: Box center_y shape = %s', str(box_centers_y.shape))
 
     # # Reshape to get a list of (y, x) and a list of (h, w)
     box_centers = np.stack([box_centers_y, box_centers_x], axis=2).reshape([-1, 2])
@@ -118,25 +126,40 @@ def generate_anchors_for_feature_map(scales, ratios, feature_map_shape, feature_
     boxes = np.concatenate([box_centers - 0.5 * box_sizes,
                             box_centers + 0.5 * box_sizes], axis=1)
 
+    logging.info('Anchors: Stacked Box corner coordinates shape = %s', str(boxes.shape))
+
     return boxes
 
 
-def gen_anchor(scales, ratios, feature_shapes, feature_strides, anchor_strides):
+def gen_anchors(batch_size, scales, ratios, feature_shapes, feature_strides, anchor_strides):
+    """
+    Create anchor boxes for each feature_map of pyramid stage and concat them
+    """
+    anchors = []
     for i in range(0,len(scales)):
-        if feature_shapes[i][0] == 64:
-            print ('running for ', scales[i], feature_shapes[i], feature_strides[i])
-            generate_anchors_for_feature_map(scales[i], ratios, feature_shapes[i], feature_strides[i], anchor_strides)
-        # break
+            # print ('running for ', scales[i], feature_shapes[i], feature_strides[i])
+        logging.info('Anchors: running for..... scales=%s, feature_shapes=%s, feature_strides=%s',
+                     str(scales[i]), str(feature_shapes[i]), str(feature_strides[i]))
+        anchors.append(generate_anchors_for_feature_map(scales[i], ratios, feature_shapes[i], feature_strides[i],
+                                                     anchor_strides))
+    anchors = np.concatenate(anchors, axis=0)
+    logging.info('Anchors: concatenated for each stage: shape = %s', str(anchors.shape))
+    anchors = np.broadcast_to(anchors, (batch_size,) + anchors.shape)
+    logging.info('Anchors: Broadcast to num_batches: shape = %s', str(anchors.shape))
+    return anchors
         
+
+
+
 
 def debugg():
     from MaskRCNN.config import config as conf
     resnet_stage_shapes = get_resnet_stage_shapes(conf, image_shape=[1024,1024,3])
     print(resnet_stage_shapes)
 
-    gen_anchor(scales=conf.RPN_ANCHOR_SCALES, ratios=conf.RPN_ANCHOR_RATIOS,
-               feature_shapes=resnet_stage_shapes, feature_strides=conf.RESNET_STRIDES,
-               anchor_strides=conf.RPN_ANCHOR_STRIDE)
+    anchors = gen_anchors(batch_size=2, scales=conf.RPN_ANCHOR_SCALES, ratios=conf.RPN_ANCHOR_RATIOS,
+                           feature_shapes=resnet_stage_shapes, feature_strides=conf.RESNET_STRIDES,
+                           anchor_strides=conf.RPN_ANCHOR_STRIDE)
     
-debugg()
+# debugg()
     
