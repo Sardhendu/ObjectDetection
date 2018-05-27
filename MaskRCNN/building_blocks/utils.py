@@ -84,7 +84,7 @@ def generate_anchors_for_feature_map(scales, ratios, feature_map_shape, feature_
           |                      | (0,0)  |
           |                      |        |
           |                      |        |
-          --              (-45,90)---------
+          --            (-45,-90)----------
           
           Using Step 3 and Step 4 we output a [12288 x 4] dimensional output.
         
