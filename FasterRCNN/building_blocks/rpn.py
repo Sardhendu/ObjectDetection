@@ -31,7 +31,7 @@ class rpn():
            
         self.build()
     
-    def rpn_class_probs(self):
+    def rpn_box_class_prob(self):
         '''
         Basically, we assume to have 9 anchors so,
             1. self.shared = [batch, h, w, 18]  18 = 9*2, 2-> object or not, 9->anchors per location
@@ -50,12 +50,12 @@ class rpn():
         logging.info('rpn_class_scores: %s', rpn_class_scores.get_shape().as_list())
         
         # PERFORM SOFTMAX CLASSIFICATION
-        self.rpn_class_probs = tf.nn.softmax(rpn_class_scores, name='rpn_class_probs')
-        logging.info('rpn_class_probs: %s', self.rpn_class_probs.get_shape().as_list())
+        self.rpn_box_class_prob = tf.nn.softmax(rpn_class_scores, name='rpn_box_class_prob')
+        logging.info('rpn_box_class_prob: %s', self.rpn_box_class_prob.get_shape().as_list())
         
         # CONVERT BACK TO ORIGINAL SHAPE
-        self.rpn_class_probs = tf.reshape(self.rpn_class_probs, (shape[0], shape[1], shape[2], -1))
-        logging.info('rpn_class_probs: %s', self.rpn_class_probs.get_shape().as_list())
+        self.rpn_box_class_prob = tf.reshape(self.rpn_box_class_prob, (shape[0], shape[1], shape[2], -1))
+        logging.info('rpn_box_class_prob: %s', self.rpn_box_class_prob.get_shape().as_list())
     
     
     def rpn_bbox_regression(self):
@@ -80,8 +80,8 @@ class rpn():
             self.shared = tf.nn.conv2d(self.feature_map, self.weights['weight_conv'], strides=[1,1,1,1], padding='SAME', name='rpn_conv')
             self.shared = tf.nn.relu(self.shared)
         
-        with tf.variable_scope('rpn_class_probs'):
-            self.rpn_class_probs()
+        with tf.variable_scope('rpn_box_class_prob'):
+            self.rpn_box_class_prob()
             
         with tf.variable_scope('rpn_bbox'):
             self.rpn_bbox_regression()
@@ -89,8 +89,8 @@ class rpn():
         if self.mode == 'train':
             pass # Here we do other stuffs
             
-    def get_rpn_class_probs(self):
-        return self.rpn_class_probs
+    def get_rpn_box_class_prob(self):
+        return self.rpn_box_class_prob
     
     def get_rpn_bbox(self):
         return self.rpn_bbox
@@ -99,6 +99,22 @@ class rpn():
 
             
 def debugg():
-    rpn(mode='train', feature_map=tf.placeholder(shape=[None, 14, 14, 512], dtype=tf.float32))
+    import numpy as np
+    
+    # OR RUN THE BELOW TO UNDERSTAND THE SHAPE TRANSFORMATION
+    feature_map = tf.placeholder(shape=[5, 14, 14, 512], dtype=tf.float32)
+    obj = rpn(mode='train', feature_map=feature_map)
+    rpn_box_class_prob = obj.get_rpn_box_class_prob()
+    rpn_bbox = obj.get_rpn_bbox()
+    
+    with tf.Session() as sess:
+        sess.run(tf.global_variables_initializer())
+        input = np.random.random((5, 14, 14, 512))
+
+        rpn_box_class_prob_, rpn_bbox_ = sess.run([rpn_box_class_prob, rpn_bbox], feed_dict={feature_map:input})
+        
+    print('rpn_box_class_prob shape: ', rpn_box_class_prob_.shape)
+    print('rpn_bbox shape: ', rpn_bbox_.shape)
+    
 
 # debugg()

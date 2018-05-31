@@ -13,7 +13,7 @@ class vgg16():
         :param mode:
         :param model_path:
         
-        Note: We dont make the use of Fully connected layers, Our aim is just to get the feature map
+        Note: We don't make the use of Fully connected layers, Our aim is just to get the feature map
         on which we could perform Region Proposal (By the Use of RPN)
         '''
         self.mode = mode
@@ -101,7 +101,7 @@ def debugg():
     obj_vgg = vgg16(mode='test', model_path=model_path)
     feature_map = obj_vgg.get_feature_map([224, 224, 3])
     
-debugg()
+# debugg()
 # b = np.load()
 # for k, v in b.items():
 #     print (k, v.shape)#['conv4_3_W'].shape)

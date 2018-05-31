@@ -13,12 +13,12 @@ def main():
     
     # print(feature_map.shape)
     #
-    # obj_rpn = rpn.rpn(mode='train', feature_map=feature_map)
-    # rpn_class_score = obj_rpn.get_rpn_class_sores()
-    # rpn_bbox = obj_rpn.get_rpn_bbox()
+    obj_rpn = rpn.rpn(mode='train', feature_map=feature_map)
+    rpn_box_class_score = obj_rpn.get_rpn_box_class_prob()
+    rpn_bbox = obj_rpn.get_rpn_bbox()
     #
     # print (rpn_class_score.shape, rpn_bbox.shape)
     
     
     
-main()
+# main()
