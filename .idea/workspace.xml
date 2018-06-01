@@ -2,8 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="0fb3f822-3e88-486f-b205-d71003adecdd" name="Default" comment="">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/FasterRCNN/building_blocks/logfile.log" afterPath="$PROJECT_DIR$/FasterRCNN/building_blocks/logfile.log" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/FasterRCNN/building_blocks/main.py" afterPath="$PROJECT_DIR$/FasterRCNN/building_blocks/main.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/FasterRCNN/building_blocks/proposals.py" afterPath="$PROJECT_DIR$/FasterRCNN/building_blocks/proposals.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/MaskRCNN/building_blocks/proposals.py" afterPath="$PROJECT_DIR$/MaskRCNN/building_blocks/proposals.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -33,7 +36,7 @@
       <file leaf-file-name="vgg.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/FasterRCNN/building_blocks/vgg.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="599">
+            <state relative-caret-position="2040">
               <caret line="104" column="6" lean-forward="false" selection-start-line="104" selection-start-column="6" selection-end-line="104" selection-end-column="6" />
               <folding>
                 <element signature="e#1#15#0" expanded="true" />
@@ -45,8 +48,8 @@
       <file leaf-file-name="rpn.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/FasterRCNN/building_blocks/rpn.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-727">
-              <caret line="6" column="72" lean-forward="true" selection-start-line="5" selection-start-column="0" selection-end-line="6" selection-end-column="72" />
+            <state relative-caret-position="80">
+              <caret line="6" column="72" lean-forward="false" selection-start-line="5" selection-start-column="0" selection-end-line="6" selection-end-column="72" />
               <folding>
                 <element signature="e#1#15#0" expanded="true" />
               </folding>
@@ -54,41 +57,27 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="proposals.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="proposals.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/FasterRCNN/building_blocks/proposals.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="282">
-              <caret line="201" column="61" lean-forward="false" selection-start-line="201" selection-start-column="53" selection-end-line="201" selection-end-column="61" />
+            <state relative-caret-position="4232">
+              <caret line="403" column="24" lean-forward="false" selection-start-line="403" selection-start-column="4" selection-end-line="403" selection-end-column="24" />
               <folding>
                 <element signature="e#1684#1698#0" expanded="true" />
                 <element signature="e#3371#4047#1" expanded="false" />
                 <element signature="e#5000#6744#1" expanded="false" />
-                <element signature="e#9282#14057#1" expanded="false" />
+                <element signature="e#8515#8783#1" expanded="false" />
+                <element signature="e#11710#16485#1" expanded="false" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="proposals.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/MaskRCNN/building_blocks/proposals.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="155">
-              <caret line="52" column="24" lean-forward="false" selection-start-line="52" selection-start-column="8" selection-end-line="52" selection-end-column="24" />
-              <folding>
-                <element signature="e#1253#1813#1" expanded="false" />
-                <element signature="e#2395#3065#1" expanded="false" />
-                <element signature="e#3622#5853#1" expanded="false" />
-                <element signature="e#6628#7313#1" expanded="false" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="main.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="main.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/FasterRCNN/building_blocks/main.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="460">
-              <caret line="23" column="7" lean-forward="false" selection-start-line="23" selection-start-column="7" selection-end-line="23" selection-end-column="7" />
+            <state relative-caret-position="500">
+              <caret line="25" column="8" lean-forward="false" selection-start-line="25" selection-start-column="8" selection-end-line="25" selection-end-column="8" />
               <folding>
                 <element signature="e#1#15#0" expanded="true" />
               </folding>
@@ -109,8 +98,8 @@
       <file leaf-file-name="logfile.log" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/FasterRCNN/building_blocks/logfile.log">
           <provider selected="true" editor-type-id="LogFileEditorProvider">
-            <state relative-caret-position="20">
-              <caret line="1" column="0" lean-forward="true" selection-start-line="1" selection-start-column="0" selection-end-line="1" selection-end-column="0" />
+            <state relative-caret-position="0">
+              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
             </state>
           </provider>
         </entry>
@@ -126,7 +115,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>fpn_c5m5</find>
       <find>xIN</find>
       <find>self.weights</find>
       <find>pretrained_weights_path</find>
@@ -156,6 +144,7 @@
       <find>box_deltas</find>
       <find>get_anchors</find>
       <find>clip_boxes_to_01</find>
+      <find>non_max_suppression</find>
     </findStrings>
     <replaceStrings>
       <replace>add_smry=False</replace>
@@ -184,7 +173,6 @@
         <option value="$PROJECT_DIR$/MaskRCNN/building_blocks/proposal_nw.py" />
         <option value="$PROJECT_DIR$/MaskRCNN/building_blocks/utils.py" />
         <option value="$PROJECT_DIR$/MaskRCNN/building_blocks/rpn.py" />
-        <option value="$PROJECT_DIR$/MaskRCNN/building_blocks/proposals.py" />
         <option value="$PROJECT_DIR$/MaskRCNN/config.py" />
         <option value="$PROJECT_DIR$/MaskRCNN/building_blocks/logfile.log" />
         <option value="$PROJECT_DIR$/MaskRCNN/building_blocks/main.py" />
@@ -192,10 +180,11 @@
         <option value="$PROJECT_DIR$/FasterRCNN/notes.py" />
         <option value="$PROJECT_DIR$/FasterRCNN/notes.md" />
         <option value="$PROJECT_DIR$/FasterRCNN/config.py" />
-        <option value="$PROJECT_DIR$/FasterRCNN/building_blocks/main.py" />
         <option value="$PROJECT_DIR$/FasterRCNN/building_blocks/vgg.py" />
         <option value="$PROJECT_DIR$/FasterRCNN/building_blocks/rpn.py" />
+        <option value="$PROJECT_DIR$/MaskRCNN/building_blocks/proposals.py" />
         <option value="$PROJECT_DIR$/FasterRCNN/building_blocks/proposals.py" />
+        <option value="$PROJECT_DIR$/FasterRCNN/building_blocks/main.py" />
       </list>
     </option>
   </component>
@@ -237,7 +226,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -277,6 +265,7 @@
         </subPane>
       </pane>
       <pane id="Scratches" />
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -301,7 +290,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.proposals">
+  <component name="RunManager" selected="Python.main (1)">
     <configuration name="main (1)" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -396,10 +385,10 @@
     </list>
     <recent_temporary>
       <list size="5">
-        <item index="0" class="java.lang.String" itemvalue="Python.proposals" />
-        <item index="1" class="java.lang.String" itemvalue="Python.rpn" />
-        <item index="2" class="java.lang.String" itemvalue="Python.vgg" />
-        <item index="3" class="java.lang.String" itemvalue="Python.main (1)" />
+        <item index="0" class="java.lang.String" itemvalue="Python.main (1)" />
+        <item index="1" class="java.lang.String" itemvalue="Python.proposals" />
+        <item index="2" class="java.lang.String" itemvalue="Python.rpn" />
+        <item index="3" class="java.lang.String" itemvalue="Python.vgg" />
         <item index="4" class="java.lang.String" itemvalue="Python.main" />
       </list>
     </recent_temporary>
@@ -430,7 +419,7 @@
     <frame x="0" y="0" width="1440" height="900" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.12589413" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.12732475" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
@@ -478,7 +467,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="3" lean-forward="true" selection-start-line="0" selection-start-column="3" selection-end-line="0" selection-end-column="3" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -692,11 +680,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1520">
           <caret line="153" column="0" lean-forward="false" selection-start-line="153" selection-start-column="0" selection-end-line="153" selection-end-column="0" />
-          <folding>
-            <element signature="e#3#26#0" expanded="false" />
-            <element signature="e#268#896#1" expanded="false" />
-            <element signature="e#1187#4065#1" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -704,9 +687,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1920">
           <caret line="99" column="38" lean-forward="false" selection-start-line="99" selection-start-column="38" selection-end-line="99" selection-end-column="38" />
-          <folding>
-            <element signature="e#1#15#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -748,9 +728,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="260">
           <caret line="13" column="0" lean-forward="true" selection-start-line="11" selection-start-column="0" selection-end-line="13" selection-end-column="0" />
-          <folding>
-            <element signature="e#1#15#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -763,6 +740,12 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/FasterRCNN/notes.md">
+      <provider editor-type-id="text-editor">
+        <state relative-caret-position="220">
+          <caret line="11" column="14" lean-forward="true" selection-start-line="11" selection-start-column="14" selection-end-line="11" selection-end-column="14" />
+          <folding />
+        </state>
+      </provider>
       <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
         <state split_layout="SPLIT">
           <first_editor relative-caret-position="260">
@@ -772,18 +755,11 @@
           <second_editor />
         </state>
       </provider>
-      <provider editor-type-id="text-editor">
-        <state relative-caret-position="220">
-          <caret line="11" column="14" lean-forward="true" selection-start-line="11" selection-start-column="14" selection-end-line="11" selection-end-column="14" />
-          <folding />
-        </state>
-      </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/MaskRCNN/building_blocks/rpn.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="18">
           <caret line="29" column="61" lean-forward="true" selection-start-line="29" selection-start-column="4" selection-end-line="29" selection-end-column="61" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -797,7 +773,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/FasterRCNN/building_blocks/vgg.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="599">
+        <state relative-caret-position="2040">
           <caret line="104" column="6" lean-forward="false" selection-start-line="104" selection-start-column="6" selection-end-line="104" selection-end-column="6" />
           <folding>
             <element signature="e#1#15#0" expanded="true" />
@@ -815,8 +791,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/FasterRCNN/building_blocks/rpn.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-727">
-          <caret line="6" column="72" lean-forward="true" selection-start-line="5" selection-start-column="0" selection-end-line="6" selection-end-column="72" />
+        <state relative-caret-position="80">
+          <caret line="6" column="72" lean-forward="false" selection-start-line="5" selection-start-column="0" selection-end-line="6" selection-end-column="72" />
           <folding>
             <element signature="e#1#15#0" expanded="true" />
           </folding>
@@ -825,43 +801,44 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/FasterRCNN/building_blocks/logfile.log">
       <provider selected="true" editor-type-id="LogFileEditorProvider">
-        <state relative-caret-position="20">
-          <caret line="1" column="0" lean-forward="true" selection-start-line="1" selection-start-column="0" selection-end-line="1" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/FasterRCNN/building_blocks/main.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="460">
-          <caret line="23" column="7" lean-forward="false" selection-start-line="23" selection-start-column="7" selection-end-line="23" selection-end-column="7" />
-          <folding>
-            <element signature="e#1#15#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/MaskRCNN/building_blocks/proposals.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="155">
-          <caret line="52" column="24" lean-forward="false" selection-start-line="52" selection-start-column="8" selection-end-line="52" selection-end-column="24" />
+        <state relative-caret-position="-1259">
+          <caret line="27" column="8" lean-forward="false" selection-start-line="27" selection-start-column="8" selection-end-line="27" selection-end-column="8" />
           <folding>
-            <element signature="e#1253#1813#1" expanded="false" />
-            <element signature="e#2395#3065#1" expanded="false" />
-            <element signature="e#3622#5853#1" expanded="false" />
-            <element signature="e#6628#7313#1" expanded="false" />
+            <element signature="e#1253#1693#1" expanded="false" />
+            <element signature="e#2275#2945#1" expanded="false" />
+            <element signature="e#3502#5733#1" expanded="false" />
+            <element signature="e#6508#7193#1" expanded="false" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/FasterRCNN/building_blocks/proposals.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="282">
-          <caret line="201" column="61" lean-forward="false" selection-start-line="201" selection-start-column="53" selection-end-line="201" selection-end-column="61" />
+        <state relative-caret-position="4232">
+          <caret line="403" column="24" lean-forward="false" selection-start-line="403" selection-start-column="4" selection-end-line="403" selection-end-column="24" />
           <folding>
             <element signature="e#1684#1698#0" expanded="true" />
             <element signature="e#3371#4047#1" expanded="false" />
             <element signature="e#5000#6744#1" expanded="false" />
-            <element signature="e#9282#14057#1" expanded="false" />
+            <element signature="e#8515#8783#1" expanded="false" />
+            <element signature="e#11710#16485#1" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/FasterRCNN/building_blocks/main.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="500">
+          <caret line="25" column="8" lean-forward="false" selection-start-line="25" selection-start-column="8" selection-end-line="25" selection-end-column="8" />
+          <folding>
+            <element signature="e#1#15#0" expanded="true" />
           </folding>
         </state>
       </provider>

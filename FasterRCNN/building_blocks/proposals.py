@@ -198,27 +198,87 @@ def corner_pixels_to_center_inv(anchor_boxes, pred_box_deltas):
     
     return pred_boxes
 
-def clip_boxes_to_01(boxes, ):
-    boxes[:, 0] = np.maximum(np.minimum(boxes[:, 0], im_shape[0, 1] - 1), 0)
-    boxes[:, 1] = np.maximum(np.minimum(boxes[:, 1], im_shape[0, 0] - 1), 0)
-    boxes[:, 2] = np.maximum(np.minimum(boxes[:, 2], im_shape[0, 1] - 1), 0)
-    boxes[:, 3] = np.maximum(np.minimum(boxes[:, 3], im_shape[0, 0] - 1), 0)
+
+
+class FilterBoxes():
+    def __init__(self, image_shape, min_box_hw, pre_nms_top_n, post_nms_top_n, iou_thresh, boxes, scores):
+        '''
+        OPERATION PERFORMED:
+        
+        1. Clip exceeding box corners to image shape
+        2. Filter in boxes are smaller than 16x16
+        2. Select top n boxes based on scores (rpn_class_prob)
+        3. Filter boxes with non-max-suppression
+        '''
+        self.image_shape = image_shape
+        self.min_box_hw = min_box_hw
+        self.pre_nms_top_n = pre_nms_top_n
+        self.post_nms_top_n = post_nms_top_n
+        self.iou_thresh = iou_thresh
+        
+        self.boxes = boxes
+        self.scores = scores
+        
+    def clip_boxes(self):
+        self.boxes[:, 0] = np.maximum(np.minimum(self.boxes[:, 0], self.image_shape[1] - 1), 0)
+        self.boxes[:, 1] = np.maximum(np.minimum(self.boxes[:, 1], self.image_shape[0] - 1), 0)
+        self.boxes[:, 2] = np.maximum(np.minimum(self.boxes[:, 2], self.image_shape[1] - 1), 0)
+        self.boxes[:, 3] = np.maximum(np.minimum(self.boxes[:, 3], self.image_shape[0] - 1), 0)
+        print('clip_boxes self.boxes ', self.boxes.shape)
+        
+    def filter_min_size(self):
+        self.keep_idx = np.where(
+                (self.boxes[:, 2] - self.boxes[:,0 ] + 1  >= self.min_box_hw) &
+                (self.boxes[:, 3] - self.boxes[:, 1] + 1 >= self.min_box_hw)
+        )[0]
+
+        self.boxes = self.boxes[self.keep_idx, :]
+        self.scores = self.scores[self.keep_idx, :]
+        print('filter_min_size self.boxes ', self.boxes.shape)
+    
+    def non_max_suppression(self):
+        ordered_idx_desc = self.scores.argsort()[::-1]
+        if self.pre_nms_top_n < len(ordered_idx_desc):
+            ordered_idx_desc = ordered_idx_desc[0:self.pre_nms_top_n]
+        ordered_idx_desc = ordered_idx_desc.ravel()
+        
+        self.scores = self.scores[ordered_idx_desc, :]
+        self.boxes = self.boxes[ordered_idx_desc, :]
+        
+        nms_indices = tf.image.non_max_suppression(self.boxes,
+                                                   self.scores,
+                                                   max_output_size=self.post_nms_top_n,
+                                                   iou_threshold=self.iou_thresh,
+                                                   name='activeBox_indice')
+        print ('non_max_suppression self.boxes ', self.boxes.shape)
+        self.boxes = tf.gather(self.boxes, nms_indices)
+        
+    def get_filtered_boxes(self):
+        self.clip_boxes()
+        self.filter_min_size()
+        self.non_max_suppression()
+        
+        return self.boxes
+    
+        
 
 class Proposals():
     def __init__(self, mode, rpn_box_class_prob, rpn_bbox):
         self.rpn_box_class_prob = rpn_box_class_prob
         self.rpn_bbox = rpn_bbox
+        
         if mode == 'train':
             self.PRE_NMS_TOP_N = 12000
             self.POST_NMS_TOP_N = 2000
             self.NMS_THRESHOLD = 0.7
-            self.MIN_SIZE = 16
+            self.MIN_BOX_HW = 16        # Min height and width of a box
         else:
             self.PRE_NMS_TOP_N = 6000
             self.POST_NMS_TOP_N = 300
             self.NMS_THRESHOLD = 0.7
-            self.MIN_SIZE = 16
-            
+            self.MIN_BOX_HW = 16          # Min height and width of a box
+        
+        self.IMAGE_SHAPE = [224,224,3]
         self.build()
     
     def build(self):
@@ -331,14 +391,18 @@ class Proposals():
         print('bbox_delta : rpn_bbox reshaped ', bbox_delta.shape, bbox_delta)
         
         # Stage 4:
-        proposals = corner_pixels_to_center_inv(anchors_, bbox_delta)
+        self.proposals = corner_pixels_to_center_inv(anchors_, bbox_delta)
         
         # Stage 5: Filter proposals
-        print (proposals)
+        self.proposals = FilterBoxes(self.IMAGE_SHAPE, self.MIN_BOX_HW, self.PRE_NMS_TOP_N, self.POST_NMS_TOP_N,
+                                self.NMS_THRESHOLD, self.proposals, scores).get_filtered_boxes()
         
-        
-    
-        # FILTERING CONDITIONS
+    def get_proposals(self):
+        return self.proposals
+
+
+def get_proposal_wrapper(mode, rpn_box_class_prob, rpn_bbox):
+    return Proposals(mode, rpn_box_class_prob, rpn_bbox).get_proposals()
 
        
         
@@ -346,6 +410,6 @@ def debugg():
     # PROPOSALS
     rpn_box_class_prob = np.random.random((1, 14, 14, 18))
     rpn_bbox = np.random.random((1, 14, 14, 36))
-    Proposals('test', rpn_box_class_prob=rpn_box_class_prob, rpn_bbox=rpn_bbox)
+    proposals = Proposals('test', rpn_box_class_prob=rpn_box_class_prob, rpn_bbox=rpn_bbox)
     
-debugg()
+# debugg()

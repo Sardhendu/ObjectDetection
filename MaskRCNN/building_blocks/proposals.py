@@ -29,9 +29,8 @@ class ProposalLayer():
         Applies Non-max suppression (NMS) to set of boxes
 
         Arguments:
-        scores -- tensor of shape (None,), output of yolo_filter_boxes()
-        boxes -- tensor of shape (None, 4), output of yolo_filter_boxes() that have been scaled to the image size (see
-        later)
+        scores -- tensor of shape (None,),
+        boxes -- tensor of shape (None, 4),
         max_boxes -- integer, maximum number of predicted boxes you'd like
         iou_threshold -- real value, "intersection over union" threshold used for NMS filtering
 
