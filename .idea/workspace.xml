@@ -57,13 +57,14 @@
       <file leaf-file-name="proposals.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/FasterRCNN/building_blocks/proposals.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-15">
-              <caret line="128" column="14" lean-forward="false" selection-start-line="128" selection-start-column="14" selection-end-line="128" selection-end-column="14" />
+            <state relative-caret-position="1371">
+              <caret line="192" column="33" lean-forward="false" selection-start-line="192" selection-start-column="33" selection-end-line="192" selection-end-column="33" />
               <folding>
                 <element signature="e#1684#1698#0" expanded="true" />
                 <element signature="e#3371#4047#1" expanded="false" />
-                <marker date="1527822589996" expanded="false" signature="7823:11973" ph="&quot;&quot;&quot;Understand whats happening...&quot;&quot;&quot;" />
-                <marker date="1527822589996" expanded="false" signature="14053:18564" ph="&quot;&quot;&quot;Understand whats happening...&quot;&quot;&quot;" />
+                <element signature="e#5000#6744#1" expanded="false" />
+                <element signature="e#8980#13465#1" expanded="false" />
+                <marker date="1527827503904" expanded="false" signature="15545:20056" ph="&quot;&quot;&quot;Understand whats happening...&quot;&quot;&quot;" />
               </folding>
             </state>
           </provider>
@@ -111,7 +112,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>load_weights</find>
       <find>fpn_c5m5</find>
       <find>xIN</find>
       <find>self.weights</find>
@@ -141,6 +141,7 @@
       <find>self.conv4_1</find>
       <find>c_y</find>
       <find>box_deltas</find>
+      <find>get_anchors</find>
     </findStrings>
     <replaceStrings>
       <replace>add_smry=False</replace>
@@ -473,7 +474,7 @@
         <state relative-caret-position="160">
           <caret line="8" column="0" lean-forward="false" selection-start-line="8" selection-start-column="0" selection-end-line="8" selection-end-column="0" />
           <folding>
-            <element signature="e#322#340#0" expanded="true" />
+            <element signature="e#322#340#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -560,7 +561,7 @@
         <state relative-caret-position="160">
           <caret line="8" column="0" lean-forward="false" selection-start-line="8" selection-start-column="0" selection-end-line="8" selection-end-column="0" />
           <folding>
-            <element signature="e#322#340#0" expanded="true" />
+            <element signature="e#322#340#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -581,7 +582,7 @@
         <state relative-caret-position="3260">
           <caret line="167" column="8" lean-forward="false" selection-start-line="167" selection-start-column="8" selection-end-line="167" selection-end-column="8" />
           <folding>
-            <element signature="e#322#340#0" expanded="true" />
+            <element signature="e#322#340#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -714,7 +715,7 @@
         <state relative-caret-position="4260">
           <caret line="218" column="38" lean-forward="false" selection-start-line="218" selection-start-column="38" selection-end-line="218" selection-end-column="38" />
           <folding>
-            <element signature="e#322#340#0" expanded="true" />
+            <element signature="e#322#340#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -798,16 +799,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/FasterRCNN/building_blocks/main.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="460">
-          <caret line="23" column="7" lean-forward="false" selection-start-line="23" selection-start-column="7" selection-end-line="23" selection-end-column="7" />
-          <folding>
-            <element signature="e#1#15#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/FasterRCNN/building_blocks/rpn.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-727">
@@ -838,15 +829,26 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/FasterRCNN/building_blocks/main.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="460">
+          <caret line="23" column="7" lean-forward="false" selection-start-line="23" selection-start-column="7" selection-end-line="23" selection-end-column="7" />
+          <folding>
+            <element signature="e#1#15#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/FasterRCNN/building_blocks/proposals.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-15">
-          <caret line="128" column="14" lean-forward="false" selection-start-line="128" selection-start-column="14" selection-end-line="128" selection-end-column="14" />
+        <state relative-caret-position="1371">
+          <caret line="192" column="33" lean-forward="false" selection-start-line="192" selection-start-column="33" selection-end-line="192" selection-end-column="33" />
           <folding>
             <element signature="e#1684#1698#0" expanded="true" />
             <element signature="e#3371#4047#1" expanded="false" />
-            <marker date="1527822589996" expanded="false" signature="7823:11973" ph="&quot;&quot;&quot;Understand whats happening...&quot;&quot;&quot;" />
-            <marker date="1527822589996" expanded="false" signature="14053:18564" ph="&quot;&quot;&quot;Understand whats happening...&quot;&quot;&quot;" />
+            <element signature="e#5000#6744#1" expanded="false" />
+            <element signature="e#8980#13465#1" expanded="false" />
+            <marker date="1527827503904" expanded="false" signature="15545:20056" ph="&quot;&quot;&quot;Understand whats happening...&quot;&quot;&quot;" />
           </folding>
         </state>
       </provider>

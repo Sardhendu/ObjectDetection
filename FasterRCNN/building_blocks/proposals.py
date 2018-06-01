@@ -143,20 +143,27 @@ def corner_pixels_to_center_inv(anchor_boxes, pred_box_deltas):
                     | . (.2,.2)  |
                 0,0 --------------
     
-    2. However, the anchor boxes represents values in integers which when transormed with the corner box prediction
+    2. However, the anchor boxes represents values in integers which when transformed with the corner box prediction
     would represent the corner coordinates in the origin image
     
-                            184
+        
+        The question we have to ask ourselves is that, given we are at a pixel position in the original image with
+        pred_box_deltas = [ 0.2  0.8  0.2  0.8], anchor_width = 184, anchor_height = 96, anchor_cx = 8, anchor_cy = 8
+        then, what is the center_x, center_y in the original image.
+        
+        
+                              184
                     <--- anchor_width ---->
-                    ______________________         ___
-                    |                     |         |
-                    |                     |         |
-                    |                     |         |
-                    |                     |    anchor height =
-                    |                     |         |
-                    |                     |         |
-                    |                     |         |
-                    -----------------------        ---
+                    ______________________ (0.8,0.8)   ___
+                    |                     |             |
+                    |                     |             |
+                    |                     |             |
+                    |          .          |       anchor height = 96
+                    | (pred_cx, pred_cy)  |             |
+                    |                     |             |
+                    |                     |             |
+        (0.2, 0.2)  -----------------------            ---
+        
     '''
     if anchor_boxes.shape[0] == 0:
         return np.zeros((0, pred_box_deltas[1]), dtype=pred_box_deltas.dtype)
@@ -169,14 +176,28 @@ def corner_pixels_to_center_inv(anchor_boxes, pred_box_deltas):
     anchor_cx = anchor_boxes[:, 0] + anchor_width / 2
     anchor_cy = anchor_boxes[:, 1] + anchor_height / 2
 
-    dx = pred_box_deltas[:, 0].reshape(-1,1)
-    dy = pred_box_deltas[:, 1].reshape(-1,1)
-    dw = pred_box_deltas[:, 2].reshape(-1,1)
-    dh = pred_box_deltas[:, 3].reshape(-1,1)
+    dx = pred_box_deltas[:, 0].reshape(-1,1)    # In 0-1 range
+    dy = pred_box_deltas[:, 1].reshape(-1,1)    # In 0-1 range
+    dw = pred_box_deltas[:, 2].reshape(-1,1)    # In logarithmic scale
+    dh = pred_box_deltas[:, 3].reshape(-1,1)    # In logarithmic scale
     
     # Prediction Boxes = anchor_boxes + pred_box_deltas
-    print(anchor_width)#[:, np.newaxis])
-    # pred_ctr_x = dx * anchor_width[:, np.newaxis] + anchor_cx[:, np.newaxis]
+    pred_cx = dx * anchor_width.reshape(-1,1) + anchor_cx.reshape(-1,1)
+    pred_cy = dy * anchor_height.reshape(-1,1) + anchor_cy.reshape(-1,1)
+    # Transform weights and heights from logarithmic scale to normal scale
+    pred_w = np.exp(dw) * anchor_width.reshape(-1,1)
+    pred_h = np.exp(dh) * anchor_height.reshape(-1,1)
+    
+    # Convert the prection boxes back to corner points
+    pred_boxes = np.zeros(pred_box_deltas.shape, dtype=pred_box_deltas.dtype)#.reshape(-1,4)
+    # print ((pred_cx - pred_w / 2).shape)
+    pred_boxes[:, 0::4] = pred_cx - pred_w / 2  # bottom_left_x
+    pred_boxes[:, 1::4] = pred_cy - pred_h / 2  # bottom_left_y
+    pred_boxes[:, 2::4] = pred_cx + pred_w / 2  # upper_right_x
+    pred_boxes[:, 3::4] = pred_cy + pred_h / 2  # upper_right_y
+    
+    return pred_boxes
+    
     
 
 class Proposals():
@@ -204,14 +225,14 @@ class Proposals():
         Theory:
         
         Stage_1 =
-        
+    
         Stage_2 = Get only the foreground probabilities
         We have 18 (9*2) anchor probabilities, we take that the first 9 values corresponds to Foreground
         probabilities and the Last 9 values corresponds to Background probabilities. We consider only the
         foreground probabilities
         
         Stage_3 = Get pixels position to specify anchors:
-        In practise we have to interpolate the anchors on the original image that is 224x224 and the feature_map size is 14x14. Which says that the center pixel position in the original image would be every point at a stride of 16 (224/14 = 16). So we create a mesh grid of each pixel position that we consider to be the center to place anchors. Total pixel position = 14x14 = 196 (feature map shape). So to concrete it, we would require a 196x4 shape matrix where 196 is the pixel position and 4 is the (c_y, c_x, h, w) anchor bbox.
+        In practise we have to interpolate the anchors on the original image that is 224x224 and the feature_map size is 14x14. Which says that the center pixel position in the original image would be every point at a stride of 16 (224/14 = 16). So we create a mesh grid of each pixel position that we consider to be the center to place anchors. Total pixel position = 14x14 = 196 (feature map shape). So to concrete it, we would require a 196x4 shape matrix where 196 is the pixel position and 4 is the ([lower_left_x, lower_left_y, upper_right_x, upper_right_y] anchor bbox.
         
             Generate a matrix just like this
              shifts  =  [[  0   0   0   0]
@@ -236,9 +257,14 @@ class Proposals():
         Stage 4:
         From the previous step we get 196*4 where 196 is the shifts (of number of center pixel coordinates). Also
         from stage 1 we have 9 different anchors bbox. In total we would have 196*9 = 1764 anchors bbox for all the
-        pixel position in the original image. Note the 9 anchors we have depicts the pixel position (0,
-        0) of the image 224x224, in order to capture different pixels position we have to add 16 to the c_x while
-        shifting in x direction and add 16 to c_y while shifting in y direction: Basically we add the matrix
+        pixel position in the original image. Note the 9 anchors we have depicts different shapes. The format anchors are
+        chosen is [lower_left_x, lower_left_y, upper_right_x, upper_right_y]. So we have a anchor [ -84.  -40.   99.   55.]
+        then the
+            Height of the anchor box is 55 - (-40) = 95
+            Width of anchor box is in 99 - (-84) = 183
+            
+        We say at image[0,0] we have one anchor [ -84.  -40.   99.   55.] whose height is 95 and width is 183. In-orrder
+        to capture different pixels position we have to add 16 to the corner position. Basically we add the matrix
         generated from stage_3. Also, as we shift we would like to try all different heights and widths of anchors.
         
         anchors_ = 1764x4   [[ -84.  -40.   99.   55.]  # [-84,  -40.,   99,   55.]
@@ -428,8 +454,8 @@ class Proposals():
         
 def debugg():
     # PROPOSALS
-    rpn_box_class_prob = np.random.random((2, 2, 2, 18))
-    rpn_bbox = np.random.random((2, 2, 2, 36))
+    rpn_box_class_prob = np.random.random((1, 14, 14, 18))
+    rpn_bbox = np.random.random((1, 14, 14, 36))
     Proposals('test', rpn_box_class_prob=rpn_box_class_prob, rpn_bbox=rpn_bbox)
     
 debugg()
