@@ -57,14 +57,28 @@
       <file leaf-file-name="proposals.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/FasterRCNN/building_blocks/proposals.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1371">
-              <caret line="192" column="33" lean-forward="false" selection-start-line="192" selection-start-column="33" selection-end-line="192" selection-end-column="33" />
+            <state relative-caret-position="282">
+              <caret line="201" column="61" lean-forward="false" selection-start-line="201" selection-start-column="53" selection-end-line="201" selection-end-column="61" />
               <folding>
                 <element signature="e#1684#1698#0" expanded="true" />
                 <element signature="e#3371#4047#1" expanded="false" />
                 <element signature="e#5000#6744#1" expanded="false" />
-                <element signature="e#8980#13465#1" expanded="false" />
-                <marker date="1527827503904" expanded="false" signature="15545:20056" ph="&quot;&quot;&quot;Understand whats happening...&quot;&quot;&quot;" />
+                <element signature="e#9282#14057#1" expanded="false" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="proposals.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/MaskRCNN/building_blocks/proposals.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="155">
+              <caret line="52" column="24" lean-forward="false" selection-start-line="52" selection-start-column="8" selection-end-line="52" selection-end-column="24" />
+              <folding>
+                <element signature="e#1253#1813#1" expanded="false" />
+                <element signature="e#2395#3065#1" expanded="false" />
+                <element signature="e#3622#5853#1" expanded="false" />
+                <element signature="e#6628#7313#1" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -123,7 +137,6 @@
       <find>input_anchors</find>
       <find>anchors</find>
       <find>a_fore</find>
-      <find>clip_boxes_to_01</find>
       <find>box_delta</find>
       <find>classes</find>
       <find>inputs</find>
@@ -142,6 +155,7 @@
       <find>c_y</find>
       <find>box_deltas</find>
       <find>get_anchors</find>
+      <find>clip_boxes_to_01</find>
     </findStrings>
     <replaceStrings>
       <replace>add_smry=False</replace>
@@ -809,19 +823,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/MaskRCNN/building_blocks/proposals.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1029">
-          <caret line="208" column="31" lean-forward="true" selection-start-line="208" selection-start-column="31" selection-end-line="208" selection-end-column="31" />
-          <folding>
-            <element signature="e#1253#1813#1" expanded="false" />
-            <element signature="e#2395#3065#1" expanded="false" />
-            <element signature="e#3622#5853#1" expanded="false" />
-            <element signature="e#6628#7313#1" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/FasterRCNN/building_blocks/logfile.log">
       <provider selected="true" editor-type-id="LogFileEditorProvider">
         <state relative-caret-position="20">
@@ -839,16 +840,28 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/MaskRCNN/building_blocks/proposals.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="155">
+          <caret line="52" column="24" lean-forward="false" selection-start-line="52" selection-start-column="8" selection-end-line="52" selection-end-column="24" />
+          <folding>
+            <element signature="e#1253#1813#1" expanded="false" />
+            <element signature="e#2395#3065#1" expanded="false" />
+            <element signature="e#3622#5853#1" expanded="false" />
+            <element signature="e#6628#7313#1" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/FasterRCNN/building_blocks/proposals.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1371">
-          <caret line="192" column="33" lean-forward="false" selection-start-line="192" selection-start-column="33" selection-end-line="192" selection-end-column="33" />
+        <state relative-caret-position="282">
+          <caret line="201" column="61" lean-forward="false" selection-start-line="201" selection-start-column="53" selection-end-line="201" selection-end-column="61" />
           <folding>
             <element signature="e#1684#1698#0" expanded="true" />
             <element signature="e#3371#4047#1" expanded="false" />
             <element signature="e#5000#6744#1" expanded="false" />
-            <element signature="e#8980#13465#1" expanded="false" />
-            <marker date="1527827503904" expanded="false" signature="15545:20056" ph="&quot;&quot;&quot;Understand whats happening...&quot;&quot;&quot;" />
+            <element signature="e#9282#14057#1" expanded="false" />
           </folding>
         </state>
       </provider>

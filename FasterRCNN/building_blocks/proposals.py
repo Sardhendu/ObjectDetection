@@ -197,8 +197,12 @@ def corner_pixels_to_center_inv(anchor_boxes, pred_box_deltas):
     pred_boxes[:, 3::4] = pred_cy + pred_h / 2  # upper_right_y
     
     return pred_boxes
-    
-    
+
+def clip_boxes_to_01(boxes, ):
+    boxes[:, 0] = np.maximum(np.minimum(boxes[:, 0], im_shape[0, 1] - 1), 0)
+    boxes[:, 1] = np.maximum(np.minimum(boxes[:, 1], im_shape[0, 0] - 1), 0)
+    boxes[:, 2] = np.maximum(np.minimum(boxes[:, 2], im_shape[0, 1] - 1), 0)
+    boxes[:, 3] = np.maximum(np.minimum(boxes[:, 3], im_shape[0, 0] - 1), 0)
 
 class Proposals():
     def __init__(self, mode, rpn_box_class_prob, rpn_bbox):
@@ -215,128 +219,9 @@ class Proposals():
             self.NMS_THRESHOLD = 0.7
             self.MIN_SIZE = 16
             
-        # self.build()
-        self.build2()
-        
+        self.build()
+    
     def build(self):
-        '''
-        Understand whats happening
-        
-        Theory:
-        
-        Stage_1 =
-    
-        Stage_2 = Get only the foreground probabilities
-        We have 18 (9*2) anchor probabilities, we take that the first 9 values corresponds to Foreground
-        probabilities and the Last 9 values corresponds to Background probabilities. We consider only the
-        foreground probabilities
-        
-        Stage_3 = Get pixels position to specify anchors:
-        In practise we have to interpolate the anchors on the original image that is 224x224 and the feature_map size is 14x14. Which says that the center pixel position in the original image would be every point at a stride of 16 (224/14 = 16). So we create a mesh grid of each pixel position that we consider to be the center to place anchors. Total pixel position = 14x14 = 196 (feature map shape). So to concrete it, we would require a 196x4 shape matrix where 196 is the pixel position and 4 is the ([lower_left_x, lower_left_y, upper_right_x, upper_right_y] anchor bbox.
-        
-            Generate a matrix just like this
-             shifts  =  [[  0   0   0   0]
-                         [ 16   0  16   0]
-                         [ 32   0  32   0]
-                         [ 48   0  48   0]
-                         [ 64   0  64   0]
-                         [ 80   0  80   0]
-                         [ 96   0  96   0]
-                         [112   0 112   0]
-                         [128   0 128   0]
-                         [144   0 144   0]
-                         [160   0 160   0]
-                         [176   0 176   0]
-                         [192   0 192   0]
-                         [208   0 208   0]
-                         [  0  16   0  16]
-                         [ 16  16  16  16]
-                         [ 32  16  32  16]
-                         [ 48  16  48  16]
-        
-        Stage 4:
-        From the previous step we get 196*4 where 196 is the shifts (of number of center pixel coordinates). Also
-        from stage 1 we have 9 different anchors bbox. In total we would have 196*9 = 1764 anchors bbox for all the
-        pixel position in the original image. Note the 9 anchors we have depicts different shapes. The format anchors are
-        chosen is [lower_left_x, lower_left_y, upper_right_x, upper_right_y]. So we have a anchor [ -84.  -40.   99.   55.]
-        then the
-            Height of the anchor box is 55 - (-40) = 95
-            Width of anchor box is in 99 - (-84) = 183
-            
-        We say at image[0,0] we have one anchor [ -84.  -40.   99.   55.] whose height is 95 and width is 183. In-orrder
-        to capture different pixels position we have to add 16 to the corner position. Basically we add the matrix
-        generated from stage_3. Also, as we shift we would like to try all different heights and widths of anchors.
-        
-        anchors_ = 1764x4   [[ -84.  -40.   99.   55.]  # [-84,  -40.,   99,   55.]
-                             [-176.  -88.  191.  103.]  # [-176.  -88.  191.  103.]
-                             [-360. -184.  375.  199.]  # [-360. -184.  375.  199.]
-                             [ -56.  -56.   71.   71.]  # [ -56.  -56.   71.   71.]
-                             [-120. -120.  135.  135.]  # [-120. -120.  135.  135.] + [ 0 0 0 0] --> (shifts[0])
-                             [-248. -248.  263.  263.]  # [-248. -248.  263.  263.]
-                             [ -36.  -80.   51.   95.]  # [ -36.  -80.   51.   95.]
-                             [ -80. -168.   95.  183.]  # [ -80. -168.   95.  183.]
-                             [-168. -344.  183.  359.]  # [-168. -344.  183.  359.]
-                             
-                            [[ -68.  -40.  115.   55.]  # [-84,  -40.,   99,   55.]
-                             [-160.  -88.  207.  103.]  # [-176.  -88.  191.  103.]
-                             [-344. -184.  391.  199.]  # [-360. -184.  375.  199.]
-                             [ -40.  -56.   87.   71.]  # [ -56.  -56.   71.   71.]
-                             [-104. -120.  151.  135.]  # [-120. -120.  135.  135.] + [ 16 0 16 0] --> (shifts[1])
-                             [-232. -248.  279.  263.]  # [-248. -248.  263.  263.]
-                             [ -20.  -80.   67.   95.]  # [ -36.  -80.   51.   95.]
-                             [ -64. -168.  111.  183.]  # [ -80. -168.   95.  183.]
-                             [-152. -344.  199.  359.]] # [-168. -344.  183.  359.]
-        '''
-        
-        # Stage1:
-        anchors_ = get_anchors()
-
-        num_anchors = anchors_.shape[0]  # Should be 9
-        print (self.rpn_box_class_prob.shape, self.rpn_bbox.shape)
-        rpn_bbox_class_prob = np.transpose(self.rpn_box_class_prob, [0, 3, 1, 2])  # [1, 9*2, height, width ]
-        rpn_bbox = np.transpose(self.rpn_bbox, [0, 3, 1, 2])  # [1, 9*4, height, width ]
-        
-        logging.info('rpn_bbox_cls_prob reshaped: %s', str(rpn_bbox_class_prob.shape))
-        logging.info('rpn_bbox reshaped: %s', str(rpn_bbox.shape))
-        
-        # Stage 2
-        fg_prob = rpn_bbox_class_prob[:,:num_anchors, :,:]
-        print ('fg_prob ', fg_prob)
-        logging.info('fg_prob shape %s', str(fg_prob.shape))
-
-        # Stage 3:
-        height, width = fg_prob.shape[-2:]
-        print ('height, width ', height, width)
-        shift_x = np.arange(0, width) * conf.RPN_FEATURE_STRIDE  # [0,16,32,48,64,80,96,112,128,144,160,176,192,208]
-        shift_y = np.arange(0, height) * conf.RPN_FEATURE_STRIDE # [0,16,32,48,64,80,96,112,128,144,160,176,192,208]
-        shift_x, shift_y = np.meshgrid(shift_x, shift_y)
-
-        shifts = np.vstack((shift_x.ravel(), shift_y.ravel(), shift_x.ravel(), shift_y.ravel()))
-        shifts = shifts.transpose()
-        num_shifts = shifts.shape[0]
-
-        print('')
-        print(shift_x)
-        print(shift_y)
-        print ('')
-        print(shifts.shape)
-
-
-        # Stage 4:
-        anchors_ = anchors_.reshape((1, num_anchors, 4)) + shifts.reshape(1, num_shifts, 4).transpose((1, 0, 2))
-        anchors_ = anchors_.reshape((num_shifts * num_anchors), 4)
-        print('')
-        print('anchors ', anchors_.shape, anchors_)
-
-        bbox_delta = rpn_bbox.transpose((0, 2, 3, 1)).reshape((-1, 4))  # [ A*K, 4]
-        scores = fg_prob.transpose((0, 2, 3, 1)).reshape((-1, 1))  # [ A*K, 1]
-        print('scores: rpn_bbox_cls_prob reshaped:', str(scores.shape))
-        print('bbox_delta : rpn_bbox reshaped: %s', str(bbox_delta.shape))
-        
-        # FILTERING CONDITIONS
-        
-    
-    def build2(self):
         '''
         Understand whats happening
 
@@ -376,16 +261,17 @@ class Proposals():
                          [ 48  16  48  16]
 
         Stage 3:
-        From the previous step we get 196*4 where 196 is the shifts (of number of center pixel coordinates).
-        Also
-        from stage 1 we have 9 different anchors bbox. In total we would have 196*9 = 1764 anchors bbox for
-        all the
-        pixel position in the original image. Note the 9 anchors we have depicts the pixel position (0,
-        0) of the image 224x224, in order to capture different pixels position we have to add 16 to the c_x
-        while
-        shifting in x direction and add 16 to c_y while shifting in y direction: Basically we add the matrix
-        generated from stage_3. Also, as we shift we would like to try all different heights and widths of
-        anchors.
+        From the previous step we get 196*4 where 196 is the shifts (of number of center pixel coordinates). Also
+        from stage 1 we have 9 different anchors bbox. In total we would have 196*9 = 1764 anchors bbox for all the
+        pixel position in the original image. Note the 9 anchors we have depicts different shapes. The format anchors are
+        chosen is [lower_left_x, lower_left_y, upper_right_x, upper_right_y]. So we have a anchor [ -84.  -40.   99.   55.]
+        then the
+            Height of the anchor box is 55 - (-40) = 95
+            Width of anchor box is in 99 - (-84) = 183
+            
+        We say at image[0,0] we have one anchor [ -84.  -40.   99.   55.] whose height is 95 and width is 183. In-orrder
+        to capture different pixels position we have to add 16 to the corner position. Basically we add the matrix
+        generated from stage_3. Also, as we shift we would like to try all different heights and widths of anchors.
 
         anchors_ = 1764x4   [[ -84.  -40.   99.   55.]  # [-84,  -40.,   99,   55.]
                              [-176.  -88.  191.  103.]  # [-176.  -88.  191.  103.]
@@ -414,7 +300,7 @@ class Proposals():
         
         print ('')
         print ('................... build 2')
-        logging.info('build 2')
+        logging.info('build')
         
         # Stage1:
         anchors_ = get_anchors()
@@ -445,7 +331,11 @@ class Proposals():
         print('bbox_delta : rpn_bbox reshaped ', bbox_delta.shape, bbox_delta)
         
         # Stage 4:
-        corner_pixels_to_center_inv(anchors_, bbox_delta)
+        proposals = corner_pixels_to_center_inv(anchors_, bbox_delta)
+        
+        # Stage 5: Filter proposals
+        print (proposals)
+        
         
     
         # FILTERING CONDITIONS
