@@ -1,3 +1,1 @@
-2018-05-31 16:04:22,577 INFO     rpn_bbox_cls_prob reshaped: (1, 18, 14, 14)
-2018-05-31 16:04:22,577 INFO     rpn_bbox reshaped: (1, 36, 14, 14)
-2018-05-31 16:04:22,577 INFO     fg_prob shape (1, 9, 14, 14)
+2018-05-31 22:05:15,235 INFO     build 2
