@@ -22,8 +22,8 @@ class vgg16():
             self.model = np.load(model_path, encoding="latin1")
         else:
             self.model = None
-            
-        print (self.model.keys())
+        
+        # print (self.model.keys())
     
     def init_weights(self, shape=None, name='w'):
         if self.mode == 'train':
@@ -97,11 +97,23 @@ class vgg16():
 
 
 def debugg():
-    model_path = '/Users/sam/All-Program/App-DataSet/ObjectDetection/FasterRCNN/vgg16_weights.npz'
+    model_path = '/Users/sam/All-Program/App-DataSet/ObjectDetection/FasterRCNN/VGG_imagenet.npy'
     obj_vgg = vgg16(mode='test', model_path=model_path)
-    feature_map = obj_vgg.get_feature_map([224, 224, 3])
+    input_image, feature_map = obj_vgg.get_feature_map([224, 224, 3])
+    print(feature_map.shape)
     
+    # LOAD MODEL AND TEST
+    # model_2path = '/Users/sam/All-Program/App-DataSet/ObjectDetection/FasterRCNN/vgg16_weights.npz'
+    # model = np.load(model_path, encoding="latin1").item()
+    # model2 = np.load(model_2path, encoding="latin1")
+    # # print (model)
+    # for k, v in model.items():
+    #     if k == 'conv1_1':
+    #         print (v['biases'])#, v.shape)#['conv4_3_W'].shape)
+    #
+    # for k, v in model2.items():
+    #     if k == 'conv1_1_b':
+    #         print (v)
+
 # debugg()
-# b = np.load()
-# for k, v in b.items():
-#     print (k, v.shape)#['conv4_3_W'].shape)
+

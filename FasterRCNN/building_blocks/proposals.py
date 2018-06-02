@@ -118,6 +118,7 @@ def non_max_suppression_fast(boxes, scores, overlapThresh, max_output_size):
     
     # return only the bounding boxes that were keeped using the
     # integer data type
+    
     if max_output_size < len(keep):
         return boxes[keep[0:max_output_size],:]
     else:
@@ -161,7 +162,7 @@ def non_max_suppression(boxes, scores, iou_thresh, max_output_size):
             ovr = inter / (iarea + areas[j] - inter)
             if ovr >= iou_thresh:
                 suppressed[j] = 1
-
+    # print(keep)
     if max_output_size < len(keep):
         return boxes[keep[0:max_output_size],:]
     else:
@@ -347,7 +348,7 @@ class FilterBoxes():
         self.scores = self.scores[self.keep_idx, :]
         print('filter_min_size self.boxes ', self.boxes.shape)
     
-    def non_max_suppression(self):
+    def nms(self):
         ordered_idx_desc = self.scores.argsort()[::-1]
         if self.pre_nms_top_n < len(ordered_idx_desc):
             ordered_idx_desc = ordered_idx_desc[0:self.pre_nms_top_n]
@@ -355,14 +356,15 @@ class FilterBoxes():
         
         self.scores = self.scores[ordered_idx_desc, :]
         self.boxes = self.boxes[ordered_idx_desc, :]
-
+        print ('Pre Non-Max suppression boxes: ', self.boxes.shape)
+        
         self.boxes = non_max_suppression(self.boxes, self.scores, self.iou_thresh, self.post_nms_top_n)
-        print ('non_max_suppression self.boxes ', self.boxes.shape)
+        print ('Post non_max_suppression boxes ', self.boxes.shape)
         
     def get_filtered_boxes(self):
         self.clip_boxes()
         self.filter_min_size()
-        self.non_max_suppression()
+        self.nms()
         
         return self.boxes
     
@@ -376,12 +378,12 @@ class Proposals():
         if mode == 'train':
             self.PRE_NMS_TOP_N = 12000
             self.POST_NMS_TOP_N = 2000
-            self.NMS_THRESHOLD = 0.7
+            self.NMS_THRESHOLD = 0.2
             self.MIN_BOX_HW = 16        # Min height and width of a box
         else:
             self.PRE_NMS_TOP_N = 6000
             self.POST_NMS_TOP_N = 300
-            self.NMS_THRESHOLD = 0.7
+            self.NMS_THRESHOLD = 0.2
             self.MIN_BOX_HW = 16          # Min height and width of a box
         
         self.IMAGE_SHAPE = [224,224,3]
@@ -466,17 +468,18 @@ class Proposals():
         
         print ('')
         print ('................... build 2')
-        logging.info('build')
-        
+        # logging.info('build')
+        print('rpn_bbox_cls_prob:', self.rpn_box_class_prob.shape)
+        print('rpn_bbox:', self.rpn_bbox.shape)
         # Stage1:
         anchors_ = get_anchors()
         num_anchors = anchors_.shape[0]  # Should be 9
         self.rpn_box_class_prob = self.rpn_box_class_prob[:, :, :, :num_anchors]  # Get the foreground probs
-        scores = self.rpn_box_class_prob.reshape((-1, 1))
-        bbox_delta = self.rpn_bbox.reshape((-1, 4))
+        scores = self.rpn_box_class_prob.reshape(-1, 1)
+        bbox_delta = self.rpn_bbox.reshape(-1, 4)
     
-        # print ('scores: rpn_bbox_cls_prob reshaped:', str(scores.shape))
-        # print ('bbox_delta : rpn_bbox reshaped: %s', str(bbox_delta.shape))
+        print ('scores: rpn_bbox_cls_prob reshaped:', scores.shape)
+        print ('bbox_delta : rpn_bbox reshaped:', bbox_delta.shape)
     
         # Stage 2
         height, width = self.rpn_box_class_prob.shape[1:3]
@@ -491,17 +494,16 @@ class Proposals():
         anchors_ = anchors_.reshape((1, num_anchors, 4)) + shifts.reshape(1, num_shifts, 4).transpose((1, 0, 2))
         anchors_ = anchors_.reshape((num_shifts * num_anchors), 4)
         print('')
-        print('anchors ', anchors_.shape, anchors_)
-        
-        print ('')
-        print('bbox_delta : rpn_bbox reshaped ', bbox_delta.shape, bbox_delta)
+        print('anchors ', anchors_.shape)
         
         # Stage 4:
         self.proposals = corner_pixels_to_center_inv(anchors_, bbox_delta)
+        print ('proposals shape (corner pixel to center)', self.proposals.shape)
         
         # Stage 5: Filter proposals
         self.proposals = FilterBoxes(self.IMAGE_SHAPE, self.MIN_BOX_HW, self.PRE_NMS_TOP_N, self.POST_NMS_TOP_N,
                                 self.NMS_THRESHOLD, self.proposals, scores).get_filtered_boxes()
+        print('proposals shape (after filter)', self.proposals.shape)
         
     def get_proposals(self):
         return self.proposals
