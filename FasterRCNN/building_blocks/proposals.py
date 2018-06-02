@@ -36,34 +36,145 @@ import tensorflow as tf
 
 from FasterRCNN.config import config as conf
 
+
 logging.basicConfig(level=logging.DEBUG, filename="logfile.log", filemode="w",
                     format="%(asctime)-15s %(levelname)-8s %(message)s")
 
-# def get_anc_cx_cy_h_w(anchor):
-#     '''
-#     Get the center_x, center_y, height and width of an anchor
-#     :return:
-#     '''
-#     width = anchor[2] - anchor[0] + 1
-#     height = anchor[3] - anchor[1] + 1
-#     center_x = anchor[0] + (width - 1)/2
-#     center_y = anchor[1] + (height - 1) / 2
-#     print (anchor)
-#     return center_x, center_y, width, height
-#
-# def get_anc_given_cx_cy_h_w():
-#     pass
-#
-#
-# def generate_anchors():
-#     anchors = np.array([1, 1, 16, 16]) - 1 # = [0,0,15,15], where 0,0 is coordinate and
-#     # 15,15 is the width and height
-#     cx, cy, w, h = get_anc_cx_cy_h_w(anchors)
-#     print (cx, cy, w, h)
-    
-  
-# generate_anchors()
 
+def non_max_suppression_fast(boxes, scores, overlapThresh, max_output_size):
+    '''
+    FEW IMPORTANT NOTES:
+    
+    1. This module takes a vector approach where we have have the inner for loop that loop through all other boxes
+    given the running box
+    2. Note inorder to compute the non-max suppression in a fast way, we don't actually do Intersection over union.
+    We do an approximate overlap. If we do intersection over union then we may have to loop through all other threshold.
+    
+    '''
+    
+    # print('')
+    # print('NMS 2 ............')
+    # print ('')
+    scores = scores.ravel()
+    # if there are no boxes, return an empty list
+    if len(boxes) == 0:
+        return []
+    
+    # if the bounding boxes integers, convert them to floats --
+    # this is important since we'll be doing a bunch of divisions
+    if boxes.dtype.kind == "i":
+        boxes = boxes.astype("float")
+    
+    # initialize the list of keeped indexes
+    keep = []
+    
+    # grab the coordinates of the bounding boxes
+    x1 = boxes[:, 0]
+    y1 = boxes[:, 1]
+    x2 = boxes[:, 2]
+    y2 = boxes[:, 3]
+    
+    # compute the area of the bounding boxes and sort the bounding
+    # boxes by the bottom-right y-coordinate of the bounding box
+    area = (x2 - x1 + 1) * (y2 - y1 + 1)
+    # print ('area ', area)
+    idxs = scores.argsort()#[::-1]
+
+    # print('idx ', idxs)
+    # keep looping while some indexes still remain in the indexes
+    # list
+    while len(idxs) > 0:
+        # print('idx .. ', idxs)
+        # grab the last index in the indexes list and add the
+        # index value to the list of keeped indexes
+        last = len(idxs) - 1
+        i = idxs[last]
+        keep.append(i)
+        
+        # Here we basically find the lower left coordinate and upper right coordinate of the intersecting space of the box with highest score (x1[last]) with all other boxes.
+        xx1 = np.maximum(x1[i], x1[idxs[:last]])
+        # print('xx1', x1[i], x1[idxs[:last]], xx1)
+        yy1 = np.maximum(y1[i], y1[idxs[:last]])
+        # print('yy1', y1[i], y1[idxs[:last]], yy1)
+        xx2 = np.minimum(x2[i], x2[idxs[:last]])
+        # print('xx2', x2[i], x2[idxs[:last]], xx2)
+        yy2 = np.minimum(y2[i], y2[idxs[:last]])
+        # print('yy2', y2[i], y2[idxs[:last]], yy2)
+        
+        # To handle the case where xx2 < xx1 or yy2 < yy1. Because when we say lower left and upper right then xx1<xx2 and yy1<yy2
+        w = np.maximum(0, np.maximum(xx2 - xx1, 1))
+        h = np.maximum(0, np.maximum(yy2 - yy1, 1))
+        # w = np.maximum(0.0, xx2 - xx1 + 1)
+        # h = np.maximum(0.0, yy2 - yy1 + 1)
+        # print ('Area : ', w, h, w*h)
+        
+        # compute the ratio of overlap =  intersection_area / area_of_rectangle_in_while_loop.
+        overlap = (w * h) / area[idxs[:last]]
+        # print('Overlap: ', overlap)
+        
+        # delete all indexes from the index list that have
+        idxs = np.delete(idxs, np.concatenate(([last],
+                                               np.where(overlap > overlapThresh)[0])))
+    
+    # return only the bounding boxes that were keeped using the
+    # integer data type
+    if max_output_size < len(keep):
+        return boxes[keep[0:max_output_size],:]
+    else:
+        return boxes[keep,:]
+
+def non_max_suppression(boxes, scores, iou_thresh, max_output_size):
+    # print('NMS 1 ............')
+    x1 = boxes[:, 0]
+    y1 = boxes[:, 1]
+    x2 = boxes[:, 2]
+    y2 = boxes[:, 3]
+    scores = scores.ravel()
+    
+    ndets = boxes.shape[0]
+    order = scores.argsort()[::-1]
+    suppressed = np.zeros((ndets), dtype=np.int)
+    areas = (x2 - x1 + 1) * (y2 - y1 + 1)
+    
+    keep = []
+    for _i in range(ndets):
+        i = order[_i]
+        if suppressed[i] == 1:
+            continue
+        keep.append(i)
+        ix1 = x1[i]
+        iy1 = y1[i]
+        ix2 = x2[i]
+        iy2 = y2[i]
+        iarea = areas[i]
+        for _j in range(_i + 1, ndets):
+            j = order[_j]
+            if suppressed[j] == 1:
+                continue
+            xx1 = max(ix1, x1[j])
+            yy1 = max(iy1, y1[j])
+            xx2 = min(ix2, x2[j])
+            yy2 = min(iy2, y2[j])
+            w = max(0.0, xx2 - xx1 + 1)
+            h = max(0.0, yy2 - yy1 + 1)
+            inter = w * h
+            ovr = inter / (iarea + areas[j] - inter)
+            if ovr >= iou_thresh:
+                suppressed[j] = 1
+
+    if max_output_size < len(keep):
+        return boxes[keep[0:max_output_size],:]
+    else:
+        return boxes[keep,:]
+    
+    
+def non_max_suppression_tf(boxes, score, iou_thresh, max_output_size):
+    nms_indices = tf.image.non_max_suppression(boxes,
+                                               score,
+                                       max_output_size=max_output_size,
+                                       iou_threshold=iou_thresh,
+                                       name='activeBox_indice')
+    return tf.gather(boxes, nms_indices)
 
 def get_anchors():
     '''Shaoqing's matlab implementation: ZF net anchors
@@ -244,14 +355,9 @@ class FilterBoxes():
         
         self.scores = self.scores[ordered_idx_desc, :]
         self.boxes = self.boxes[ordered_idx_desc, :]
-        
-        nms_indices = tf.image.non_max_suppression(self.boxes,
-                                                   self.scores,
-                                                   max_output_size=self.post_nms_top_n,
-                                                   iou_threshold=self.iou_thresh,
-                                                   name='activeBox_indice')
+
+        self.boxes = non_max_suppression(self.boxes, self.scores, self.iou_thresh, self.post_nms_top_n)
         print ('non_max_suppression self.boxes ', self.boxes.shape)
-        self.boxes = tf.gather(self.boxes, nms_indices)
         
     def get_filtered_boxes(self):
         self.clip_boxes()
@@ -410,6 +516,18 @@ def debugg():
     # PROPOSALS
     rpn_box_class_prob = np.random.random((1, 14, 14, 18))
     rpn_bbox = np.random.random((1, 14, 14, 36))
-    proposals = Proposals('test', rpn_box_class_prob=rpn_box_class_prob, rpn_bbox=rpn_bbox)
+    proposals = get_proposal_wrapper('test', rpn_box_class_prob=rpn_box_class_prob, rpn_bbox=rpn_bbox)
+    print (proposals.shape)
+    
+    
+    # Understand non-max-suppression
+    # proposals = np.array([[1, 1, 5, 5], [4, 0, 7, 1], [2, 2, 4, 4], [10, 10, 20, 20], [0, 0, 4, 4]])
+    # # scores = np.array([0.9, 0.8, 1, 0.7, 1]).reshape(-1, 1)
+    # scores = np.array([1, 1, 1, 1, 1]).reshape(-1, 1)
+    # keep = non_max_suppression(proposals, scores, 0.7, 3)
+    # keep_2 = non_max_suppression_fast(proposals, scores, 0.7, 3)
+    # print(keep)
+    # print ('')
+    # print( keep_2)
     
 # debugg()

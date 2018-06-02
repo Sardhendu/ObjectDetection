@@ -69,9 +69,9 @@ class vgg16():
         return tf.nn.max_pool(x, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding="SAME")
     
     def get_feature_map(self, image_shape):
-        x = tf.placeholder(dtype=tf.float32, shape=[None, image_shape[0], image_shape[1], image_shape[2]])
+        xIN = tf.placeholder(dtype=tf.float32, shape=[None, image_shape[0], image_shape[1], image_shape[2]])
         # print(x.get_shape().as_list())
-        x = self.conv2d(x,  [3, 3, 3, 64],  [64], scope_name="conv1_1")
+        x = self.conv2d(xIN,  [3, 3, 3, 64],  [64], scope_name="conv1_1")
         x = self.conv2d(x,  [3, 3, 64, 64], [64], scope_name="conv1_2")
         x = self.max_pool(x, scope_name="pool1")
 
@@ -93,7 +93,7 @@ class vgg16():
         x = self.conv2d(x,   [3, 3, 512, 512],  [512], scope_name="conv5_2")
         x = self.conv2d(x,   [3, 3, 512, 512],  [512], scope_name="conv5_3")
         
-        return x
+        return xIN, x
 
 
 def debugg():
