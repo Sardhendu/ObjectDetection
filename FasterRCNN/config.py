@@ -3,6 +3,7 @@
 import numpy as np
 
 class config(object):
+    NUM_CLASSES = 4
     
     # RPN
     RPN_FEATURE_STRIDE = 16

@@ -17,6 +17,8 @@ the whole convolutional operation to generate the feature map is shared across b
 import numpy as np
 import tensorflow as tf
 
+from FasterRCNN.config import config as conf
+
 def roi_pool(feature_map, proposals, image_shape):
     '''
     Understand what going underneath
@@ -82,20 +84,43 @@ class FastRCNN():
     be used by the FastRCNN network. Also the feature map generated is again used by the FastRCNN network to classify the objects in the proposed region. This enables a lot of parameter sharing across both the RPN and the FastRCNN
     network
     
-    Network Architecture:                                                    -----> FC_21 --> Softmax (Classify objects)
-                                                                             |
-    Conv Feature_map                                                         |
-    ---------------> ROI Pooling layer ---> FC1 + Dropout ---> FC2 + Dropout -
-                                                                             |
-                                                                             |
-                                                                             -----> FC_21 --> Regression (Bbox Refine)
+    Network Architecture:                                                 --> FC21 + RELU --> Softmax (Classify objects)
+                                                                          |
+    Feature_map                                                           |
+    ----------> ROI Pooling ---> FC1 + RELU + Drop ---> FC1 + RELU + Drop -
+                                                                          |
+                                                                          |
+                                                                          --> FC21 + RELU --> Regression (Bbox Refine)
     '''
     def __init__(self, feature_map, proposals, image_shape):
         self.feature_map = feature_map
         self.proposals = proposals
         self.image_shape = image_shape
+        self.num_classes = conf.NUM_CLASSES
+        self.keep_prop = 0.5
         
         
+        self.weights = dict(
+            fc1 = tf.get_variable(dtype=tf.float32, shape=[49*512, 1024], initializer=tf.random_normal_initializer(
+                    stddev=0.005), name='FC1_w'),
+            fc2 = tf.get_variable(dtype=tf.float32, shape=[1024, 1024], initializer=tf.random_normal_initializer(
+                    stddev=0.005), name='FC2_w'),
+            fc21 = tf.get_variable(dtype=tf.float32, shape=[1024, self.num_classes], initializer=tf.random_normal_initializer(
+                    stddev=0.005), name='FC21_w'),
+            fc22 = tf.get_variable(dtype=tf.float32, shape=[1024, 4*self.num_classes], initializer=tf.random_normal_initializer(
+                    stddev = 0.005), name = 'FC22_w')
+        )
+        
+        self.biases = dict(
+            fc1=tf.get_variable(dtype=tf.float32, shape=[1024], initializer=tf.constant_initializer(1.0),
+                                name='FC1_b'),
+            fc2=tf.get_variable(dtype=tf.float32, shape=[1024], initializer=tf.constant_initializer(1.0),
+                                name='FC2_b'),
+            fc21=tf.get_variable(dtype=tf.float32, shape=[self.num_classes], initializer=tf.constant_initializer(1.0),
+                                 name='FC21_b'),
+            fc22=tf.get_variable(dtype=tf.float32, shape=[4 * self.num_classes], initializer=tf.constant_initializer(1.0),
+                                 name='FC22_b')
+        )
     
     def build(self):
         '''
@@ -106,10 +131,24 @@ class FastRCNN():
             maps to the fully connected layers and then through the softmax layer and regression layer
         :return:
         '''
-        self.pooled_feature_map = roi_pool(self.feature_map, self.proposals, self.image_shape)
+        xx = roi_pool(self.feature_map, self.proposals, self.image_shape)
 
+        with tf.variable_scope('fastrcnn_fc'):
+            xx = tf.nn.dropout(self.fc_layers(xx, 'fc1'), keep_prob=self.keep_prop)
+            xx = tf.nn.dropout(self.fc_layers(xx, 'fc2'), keep_prob=self.keep_prop)
         
-    def fc_layers(self):
+        with tf.variable_scope('fastrcnn_class_prob'):
+            rcnn_class_scores = self.fc_layers(xx, 'fc21')
+            
+        with tf.variable_scope('fastrcnn_bbox_refine'):
+            rcnn_bbox_refine = self.fc_layers(xx, 'fc22')
+            
+        
+        
+    def fc_layers(self, x, layer_name):
+        return tf.nn.relu(
+                        tf.matmul(x, self.weights[str(layer_name)]) + self.biases[str(layer_name)]
+                )
         
 
 
