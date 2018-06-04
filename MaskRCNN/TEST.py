@@ -165,15 +165,15 @@ class ProposalLayer():
         
         # Apply deltas to anchors to get refined anchors.
         # [batch, N, (y1, x1, y2, x2)]
-        boxes = batch_slice([pre_nms_anchors, deltas],
+        boxess = batch_slice([pre_nms_anchors, deltas],
                                   lambda x, y: apply_box_deltas_graph(x, y), self.batch_size,
                                   names=["refined_anchors"])
-        logging.info('Shape boxes after batch_slice: %s', boxes.get_shape().as_list())
+        logging.info('Shape boxes after batch_slice: %s', boxess.get_shape().as_list())
         
         # Clip to image boundaries. Since we're in normalized coordinates,
         # clip to 0..1 range. [batch, N, (y1, x1, y2, x2)]
         window = np.array([0, 0, 1, 1], dtype=np.float32)
-        boxes = batch_slice(boxes,
+        boxes = batch_slice(boxess,
                                   lambda x: clip_boxes_graph(x, window), self.batch_size,
                                   names=["refined_anchors_clipped"])
         logging.info('Clipped Boxes after batch_slice: %s', boxes.get_shape().as_list())
@@ -193,12 +193,12 @@ class ProposalLayer():
             padding = tf.maximum(self.proposal_count - tf.shape(proposals)[0], 0)
             proposals = tf.pad(proposals, [(0, padding), (0, 0)])
             return proposals
-        proposals = batch_slice([boxes, scores], nms, 1)
+        proposals = batch_slice([boxes, scores], nms, self.batch_size)
         
         logging.info('Proposal shape after batch_slice: %s', proposals.get_shape().as_list())
         
         return (self.rpn_class_probs, self.rpn_bbox, self.input_anchors, proposals,
-                dict(ix=ix, scores=scores, deltas=deltas, pre_nms_anchors=pre_nms_anchors))
+                dict(ix=ix, scores=scores, deltas=deltas, pre_nms_anchors=pre_nms_anchors, boxess=boxess, boxes=boxes))
     
     def compute_output_shape(self, input_shape):
         logging.info('IN THE compute_output_shape function OF ProposalLayer')
@@ -229,6 +229,10 @@ with tf.Session() as sess:
     sc_ = sess.run([others['scores']], feed_dict=feed_dict)
     dt_ = sess.run([others['deltas']], feed_dict=feed_dict)
     pnmsa_ = sess.run([others['pre_nms_anchors']], feed_dict=feed_dict)
+    boxess_ = sess.run([others['boxess']], feed_dict=feed_dict)
+    boxes_ = sess.run([others['boxes']], feed_dict=feed_dict)
+    p_ = sess.run([proposals], feed_dict=feed_dict)
+    
     print(ix_)
     print ('')
     print(sc_)
@@ -236,9 +240,15 @@ with tf.Session() as sess:
     print(dt_)
     print('')
     print(pnmsa_)
-    
-    
-    
+    print('')
+    print(boxess_)
+    print('')
+    print(boxes_)
+    print('')
+    print(p_)
+
+
+
 '''
 ix = [array([[0, 3, 2, 1, 4],
        [1, 2, 0, 4, 3],
@@ -289,5 +299,45 @@ pnmsa_ = [array([[[ 0.66516078,  0.7107172 ,  0.104709  ,  0.41347158],
         [ 0.63724017,  0.69959635,  0.14438523,  0.45761779],
         [ 0.50528699,  0.13827209,  0.50424409,  0.81720257],
         [ 0.2975572 ,  0.38713291,  0.40366048,  0.97275996]]], dtype=float32)]
+        
+        
+delta_anchors = [array([[[ 0.65874195,  0.71861047,  0.04293984,  0.36567649],
+        [ 0.40541095, -0.00262791,  1.01388812,  0.84925073],
+        [ 0.38500136,  0.21740168,  0.78406721,  0.79722756],
+        [ 0.09251355,  0.30461103,  0.34043097,  0.93761951]],
+
+       [[ 0.5129149 ,  0.66836518,  0.55283123,  0.12865484],
+        [ 0.45805818,  0.70922279,  0.09634772,  0.17698866],
+        [ 0.71594203,  0.79307377,  0.91383362,  0.06458205],
+        [ 0.15392342,  0.08832273,  0.92285311,  1.02339268]],
+
+       [[ 0.40462527,  0.96165276,  0.36991575,  0.86672235],
+        [ 0.64431632,  0.68435603,  0.05980986,  0.42470446],
+        [ 0.50524819,  0.18596455,  0.50408059,  0.86492682],
+        [ 0.28855395,  0.36950359,  0.41522977,  1.01763153]]], dtype=float32)]
+
+boxes_=[array([[[ 0.65874195,  0.71861047,  0.04293984,  0.36567649],
+        [ 0.40541095,  0.        ,  1.        ,  0.84925073],
+        [ 0.38500136,  0.21740168,  0.78406721,  0.79722756],
+        [ 0.09251355,  0.30461103,  0.34043097,  0.93761951]],
+
+       [[ 0.5129149 ,  0.66836518,  0.55283123,  0.12865484],
+        [ 0.45805818,  0.70922279,  0.09634772,  0.17698866],
+        [ 0.71594203,  0.79307377,  0.91383362,  0.06458205],
+        [ 0.15392342,  0.08832273,  0.92285311,  1.        ]],
+
+       [[ 0.40462527,  0.96165276,  0.36991575,  0.86672235],
+        [ 0.64431632,  0.68435603,  0.05980986,  0.42470446],
+        [ 0.50524819,  0.18596455,  0.50408059,  0.86492682],
+        [ 0.28855395,  0.36950359,  0.41522977,  1.        ]]], dtype=float32)]
+        
+proposals = [array([[[ 0.65874195,  0.71861047,  0.04293984,  0.36567649],
+        [ 0.40541095,  0.        ,  1.        ,  0.84925073]],
+
+       [[ 0.5129149 ,  0.66836518,  0.55283123,  0.12865484],
+        [ 0.45805818,  0.70922279,  0.09634772,  0.17698866]],
+
+       [[ 0.40462527,  0.96165276,  0.36991575,  0.86672235],
+        [ 0.64431632,  0.68435603,  0.05980986,  0.42470446]]], dtype=float32)]
 '''
 

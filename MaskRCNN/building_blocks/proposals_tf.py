@@ -39,8 +39,8 @@ class Proposals():
                                        name="input_anchors")
         self.rpn_bbox_stddev = conf.RPN_BBOX_STDDEV
         self.num_box_before_nms = 4 #conf.PRE_NMS_ROIS_INFERENCE
-        self.num_boxes_after_nms = conf.POST_NMS_ROIS_INFERENCE
-        self.iou_threshold = conf.RPN_NMS_THRESHOLD
+        self.num_boxes_after_nms = 2#conf.POST_NMS_ROIS_INFERENCE
+        self.iou_threshold = 0.3#conf.RPN_NMS_THRESHOLD
         self.inference_batch_size = inference_batch_size
         
         self.build()
@@ -53,8 +53,8 @@ class Proposals():
         :param inference_batch_size:
             inputs:
             (1, 196608, 2) (1, 196608, 2) (1, 196608, 4)
-            * rpn_probs: [batch, anchors, (bg prob, fg prob)]
-                        say for one image with 256x256 feature map and 3 anchors (dim rpn_probs)= (1,196608, 2)
+            * rpn_class_probs: [batch, anchors, (bg prob, fg prob)]
+                        say for one image with 256x256 feature map and 3 anchors (dim rpn_class_probs)= (1,196608, 2)
             * rpn_bbox: [batch, anchors, (dy, dx, log(dh), log(dw))]
                         say for one image with 256x256 feature map and 3 anchors (dim rpn_bbox)= (1, 196608, 4)
             * anchors: [batch, (y1, x1, y2, x2)] anchors in normalized coordinates
@@ -62,31 +62,31 @@ class Proposals():
         """
     
         # We would like to only capture the foreground class probabilities
-        self.scores = self.rpn_class_probs[:, :, 1]
-        logging.info('Foreground_probs shape: %s', str(self.scores.get_shape().as_list()))
+        scores = self.rpn_class_probs[:, :, 1]
+        logging.info('Foreground_probs shape: %s', str(scores.get_shape().as_list()))
     
         # Box deltas = [batch, num_rois, 4]
-        self.bbox_delta = self.rpn_bbox * np.reshape(self.rpn_bbox_stddev, [1, 1, 4])
-        logging.info('boxes shape: %s', str(self.bbox_delta.get_shape().as_list()))
+        bbox_delta = self.rpn_bbox * np.reshape(self.rpn_bbox_stddev, [1, 1, 4])
+        logging.info('bbox_delta shape: %s', str(bbox_delta.get_shape().as_list()))
     
         # Get the anchors [None, 2]
-        self.anchors = self.input_anchors
-        logging.info('anchors shape: %s', str(self.anchors.get_shape().as_list()))
+        anchors = self.input_anchors
+        logging.info('anchors shape: %s', str(anchors.get_shape().as_list()))
     
         # Searching through lots of anchors can be time consuming. So we would select at most top 6000 of them for
         # further
         # processing
-        max_anc_before_nms = tf.minimum(self.num_box_before_nms, tf.shape(self.anchors)[1])
+        max_anc_before_nms = tf.minimum(self.num_box_before_nms, tf.shape(anchors)[1])
         logging.info('max_anc_before_nms shape: %s', str(max_anc_before_nms))
     
         # Here we fetch the idx of the top 6000 anchors
-        self.ix = tf.nn.top_k(self.scores, max_anc_before_nms, sorted=True, name="top_anchors").indices
-        logging.info('ix shape: %s', str(self.ix.get_shape().as_list()))
+        ix = tf.nn.top_k(scores, max_anc_before_nms, sorted=True, name="top_anchors").indices
+        logging.info('ix shape: %s', str(ix.get_shape().as_list()))
     
         # Now that we have the idx of the top anchors we would want to only gather the data related pertaining to
         # those idx. We would wanna gather foreground_prob and boxes only for the selected anchors.
         # scores = tf.gather_nd(scores, ix)
-        self.gather_data_for_idx(self.ix)
+        scores = self.gather_data_for_idx(ix, scores, bbox_delta, anchors)
     
         # The boxes can have values at the interval of 0,1
         window = np.array([0, 0, 1, 1], dtype=np.float32)
@@ -96,8 +96,8 @@ class Proposals():
         #  images here and stack them at the end
         self.proposals = tf.concat([
             tf.stack([
-                self.non_max_suppression(self.scores[num],
-                                         self.boxes[num],
+                self.non_max_suppression(scores[num],
+                                         self.anchor_delta[num],
                                          max_boxes=self.num_boxes_after_nms,
                                          iou_threshold=self.iou_threshold)
             ], axis=0, name='nms_%s' % str(num)
@@ -110,7 +110,7 @@ class Proposals():
         Applying Box Deltas to Anchors
         
         pre_nms_anchors = [num_batches, num_anchors, (y1, x1, y2, x2)]
-        self.bbox_delta = [num_batches, num_anchors, (center_y, center_x, h, w)]
+        self.bbox_delta = [num_batches, num_anchors, (d(c_y), d(c_x), log(h), log(w))]
         
                     _____________ (x2, y2)
                     |           |
@@ -120,19 +120,33 @@ class Proposals():
                     |           |
             (x1,y1) -------------
         
-        Since our predictions are normalized and are in the form of [center_y, center_x, h, w], we first convert our
-        anchors to the form of [center_y, center_x, h, w] and then apply box deltas (D-normalize it). After this we
-        convert the pre_nms_anchors back to the original shape of [num_batches, num_anchors, (y1, x1, y2, x2)]
+        Since our predictions are normalized and are in the form of [d(c_y), d(c_x), log(h), log(w)],
+        we first convert our anchors to the form of [center_y, center_x, h, w] and then apply box deltas (D-normalize it).
+        After this we convert the pre_nms_anchors back to the original shape of [num_batches, num_anchors, (y1, x1,
+        y2, x2)]
         
         :return:
         '''
-        height = pre_nms_anchors[:,2] - pre_nms_anchors[:,0]
-        width = pre_nms_anchors[:,3] - pre_nms_anchors[:,1]
-        center_y = pre_nms_anchors[:,0] + 0.5*height
-        center_x = pre_nms_anchors[:,1] + 0.5*width
+        height = pre_nms_anchors[:,:,2] - pre_nms_anchors[:,:,0]
+        width = pre_nms_anchors[:,:,3] - pre_nms_anchors[:,:,1]
+        center_y = pre_nms_anchors[:,:,0] + 0.5*height
+        center_x = pre_nms_anchors[:,:,1] + 0.5*width
         
+        # Apply Box Delta (A)
+        center_y += bbox_delta[:,:,0] * height
+        center_x += bbox_delta[:,:,1] * width
+        height *= tf.exp(bbox_delta[:,:,2])
+        width *= tf.exp(bbox_delta[:,:,3])
         
-        
+        # Convert back to (y1, x1, y2, x2)
+        y1 = center_y - 0.5 * height
+        x1 = center_x - 0.5 * width
+        y2 = y1 + height
+        x2 = x1 + width
+        print (y1.shape, x1.shape, y2.shape, x2.shape)
+        out = tf.stack([y1, x1, y2, x2], axis=1, name="apply_box_deltas_out")
+        out = tf.transpose(out, [0, 2, 1])
+        return out
 
     def non_max_suppression(self, scores, boxes, max_boxes=2, iou_threshold=0.7):
         """
@@ -140,7 +154,7 @@ class Proposals():
 
         Arguments:
         scores -- tensor of shape (None,),
-        boxes -- tensor of shape (None, 4),
+        boxes -- tensor of shape (None, 4),  [y1, x1, y2, x2]  where (y1, x1) are diagonal coordinates to (y2, x2)
         max_boxes -- integer, maximum number of predicted boxes you'd like
         iou_threshold -- real value, "intersection over union" threshold used for NMS filtering
 
@@ -178,16 +192,16 @@ class Proposals():
     
         # Window: [0,0,1,1] # 0,0 represents the top left corner and 1,1 represents the bottom right corner
         wy1, wx1, wy2, wx2 = tf.split(window, 4)
-        y1, x1, y2, x2 = tf.split(self.boxes, 4, axis=2)
+        y1, x1, y2, x2 = tf.split(self.anchor_delta, 4, axis=2)
     
         y1 = tf.maximum(tf.minimum(y1, wy2), wy1)
         x1 = tf.maximum(tf.minimum(x1, wx2), wx1)
         y2 = tf.maximum(tf.minimum(y2, wy2), wy1)
         x2 = tf.maximum(tf.minimum(x2, wx2), wx1)
     
-        self.boxes = tf.concat([y1, x1, y2, x2], axis=2, name="clipped_boxes")
+        self.anchor_delta = tf.concat([y1, x1, y2, x2], axis=2, name="clipped_boxes")
 
-    def gather_data_for_idx(self, ix):
+    def gather_data_for_idx(self, ix, scores, bbox_delta, anchors):
         '''
         Gathers data given indexes
 
@@ -241,34 +255,29 @@ class Proposals():
         ixs = tf.stack([mesh, ix], axis=2)
     
         # Gather only the data pertaining to the ixs
-        self.scores = tf.gather_nd(self.scores, ixs)
-        logging.info('scores shape = %s', str(self.scores.shape))
+        scores = tf.gather_nd(scores, ixs)
+        logging.info('scores shape = %s', str(scores.shape))
     
         # Gather only the data pertaining to the ixs
-        self.bbox_delta = tf.gather_nd(self.boxes, ixs)
-        logging.info('Box delta shape = %s', str(self.bbox_delta.shape))
+        bbox_delta = tf.gather_nd(bbox_delta, ixs)
+        logging.info('Box delta shape = %s', str(bbox_delta.shape))
     
         # Gather only the data pertaining to the ixs
-        self.anchors = tf.gather_nd(self.anchors, ixs)
-        logging.info('anchors shape = %s', str(self.anchors.shape))
+        anchors = tf.gather_nd(anchors, ixs)
+        logging.info('anchors shape = %s', str(anchors.shape))
     
         # return ixs, mesh, scores, boxes, anchors
-
+        self.anchor_delta = self.apply_box_deltas(anchors, bbox_delta)
+        
+        return scores
+    
+    
     def get_proposal_graph(self):
         return dict(rpn_probs=self.rpn_class_probs, rpn_bbox=self.rpn_bbox,
                     input_anchors=self.input_anchors, proposals=self.proposals)
     
-    def get_ix(self):
-        return self.ix
-    
-    def get_scores(self):
-        return self.scores
-    
-    def get_bboxes_delta(self):
-        return self.boxes
-    
-    def get_anchors(self):
-        return self.anchors
+    def get_anchors_delta(self):
+        return self.anchor_delta
    
 
 
@@ -287,29 +296,36 @@ def debugg():
 
     obj_p = Proposals(conf, inference_batch_size=3)
     p_graph = obj_p.get_proposal_graph()
-    ix = obj_p.get_ix()
-    sc = obj_p.get_scores()
-    dt = obj_p.get_bboxes_delta()
-    anc = obj_p.get_anchors()
+    # ix = obj_p.get_ix()
+    # sc = obj_p.get_scores()
+    # dt = obj_p.get_bboxes_delta()
+    # anc = obj_p.get_anchors()
+    ancd = obj_p.get_anchors_delta()
     # print(proposals)
     feed_dict = {p_graph['rpn_probs']: a, p_graph['rpn_bbox']: b, p_graph['input_anchors']: c}
     with tf.Session() as sess:
         sess.run(tf.global_variables_initializer())
-    
-        ix_ = sess.run([ix], feed_dict=feed_dict)
-        sc_ = sess.run([sc], feed_dict=feed_dict)
-        dt_ = sess.run([dt], feed_dict=feed_dict)
-        pnmsa_ = sess.run([anc], feed_dict=feed_dict)
-        print(ix_)
+
+        # ix_ = sess.run([ix], feed_dict=feed_dict)
+        # sc_ = sess.run([sc], feed_dict=feed_dict)
+        # dt_ = sess.run([dt], feed_dict=feed_dict)
+        # pnmsa_ = sess.run([anc], feed_dict=feed_dict)
+        ancd_ = sess.run([ancd], feed_dict=feed_dict)
+        p_ = sess.run(p_graph['proposals'], feed_dict=feed_dict)
+        # print(ix_)
+        # print ('')
+        # print (sc_)
+        # print('')
+        # print(dt_[0].shape)
+        # print('')
+        # print(pnmsa_[0].shape)
+        print('')
+        print(ancd_)
         print ('')
-        print (sc_)
-        print('')
-        print(dt_)
-        print('')
-        print(pnmsa_)
-        
-        
-debugg()
+        print(p_)
+
+
+# debugg()
 
 
 
@@ -364,31 +380,35 @@ pnmsa_ = [array([[[ 0.66516078,  0.7107172 ,  0.104709  ,  0.41347158],
         [ 0.63724017,  0.69959635,  0.14438523,  0.45761779],
         [ 0.50528699,  0.13827209,  0.50424409,  0.81720257],
         [ 0.2975572 ,  0.38713291,  0.40366048,  0.97275996]]], dtype=float32)]
+        
+anchor_delta = [array([[[ 0.65874195,  0.71861047,  0.04293984,  0.36567649],
+        [ 0.40541095, -0.00262791,  1.01388812,  0.84925073],
+        [ 0.38500136,  0.21740168,  0.78406721,  0.79722756],
+        [ 0.09251355,  0.30461103,  0.34043097,  0.93761951]],
+
+       [[ 0.5129149 ,  0.66836518,  0.55283123,  0.12865484],
+        [ 0.45805818,  0.70922279,  0.09634772,  0.17698866],
+        [ 0.71594203,  0.79307377,  0.91383362,  0.06458205],
+        [ 0.15392342,  0.08832273,  0.92285311,  1.02339268]],
+
+       [[ 0.40462527,  0.96165276,  0.36991575,  0.86672235],
+        [ 0.64431632,  0.68435603,  0.05980986,  0.42470446],
+        [ 0.50524819,  0.18596455,  0.50408059,  0.86492682],
+        [ 0.28855395,  0.36950359,  0.41522977,  1.01763153]]], dtype=float32)]
+        
+[array([[[ 0.65874195,  0.71861047,  0.04293984,  0.36567649],
+        [ 0.40541095,  0.        ,  1.        ,  0.84925073],
+        [ 0.38500136,  0.21740168,  0.78406721,  0.79722756],
+        [ 0.09251355,  0.30461103,  0.34043097,  0.93761951]],
+
+       [[ 0.5129149 ,  0.66836518,  0.55283123,  0.12865484],
+        [ 0.45805818,  0.70922279,  0.09634772,  0.17698866],
+        [ 0.71594203,  0.79307377,  0.91383362,  0.06458205],
+        [ 0.15392342,  0.08832273,  0.92285311,  1.        ]],
+
+       [[ 0.40462527,  0.96165276,  0.36991575,  0.86672235],
+        [ 0.64431632,  0.68435603,  0.05980986,  0.42470446],
+        [ 0.50524819,  0.18596455,  0.50408059,  0.86492682],
+        [ 0.28855395,  0.36950359,  0.41522977,  1.        ]]], dtype=float32)]
 '''
 
-
-
-
-    # proposal_graph = Proposals(conf,inference_batch_size=3).get_proposal_graph()
-    # # scores, boxes, anchors, max_anc_before_nms, ix, ixs, mesh, before_xy, after_xy, clipped, nms_idx, bx_nw = outs
-    #
-    # with tf.Session() as sess:
-    #     sess.run(tf.global_variables_initializer())
-    #     np.random.seed(871)
-    #     a= np.random.random((3, 5, 2))
-    #     b= np.random.random((3, 5, 4))
-    #     c= np.random.random((3, 5, 4))
-    #     feed_dict={proposal_graph['rpn_probs']: a, proposal_graph['rpn_bbox']: b, proposal_graph['input_anchors']: c}
-    #
-    #     print('rpn_probs ', a)
-    #     print('')
-    #     print('rpn_bbox ', b)
-    #     print('')
-    #     print('anchors ', c)
-    #     proposals_ = sess.run(proposal_graph['proposals'], feed_dict=feed_dict)
-    #     print ('')
-    #     print('')
-    #     print('proposals_ = ', proposals_.shape, proposals_)
-    #
-
-# debugg()

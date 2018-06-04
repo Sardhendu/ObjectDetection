@@ -1,31 +1,33 @@
-2018-06-03 21:00:51,561 INFO     IN THE CALL FUNCTION OF ProposalLayer
-2018-06-03 21:00:51,561 INFO     Shape rpn_class: [None, None, 2]
-2018-06-03 21:00:51,561 INFO     Shape rpn_bbox: [None, None, 4]
-2018-06-03 21:00:51,561 INFO     Shape anchors: [None, None, 4]
-2018-06-03 21:00:51,568 INFO     Shape scores : [None, None]
-2018-06-03 21:00:51,570 INFO     Shape deltas (input[1]): [None, None, 4]
-2018-06-03 21:00:51,578 INFO     tf.shape(anchors)[1] = Tensor("strided_slice_1:0", shape=(), dtype=int32)
-2018-06-03 21:00:51,586 INFO     Shape pre_nms_limit : []
-2018-06-03 21:00:51,588 INFO     Shape ix : [None, None]
-2018-06-03 21:00:51,638 INFO     outputs shape,..... 1
-2018-06-03 21:00:51,640 INFO     result shape,..... (3, ?)
-2018-06-03 21:00:51,640 INFO     Shape scores after batch_slice: [3, None]
-2018-06-03 21:00:51,682 INFO     outputs shape,..... 1
-2018-06-03 21:00:51,683 INFO     result shape,..... (3, ?, 4)
-2018-06-03 21:00:51,683 INFO     Shape deltas after batch_slice: [3, None, 4]
-2018-06-03 21:00:51,726 INFO     outputs shape,..... 1
-2018-06-03 21:00:51,727 INFO     result shape,..... (3, ?, 4)
-2018-06-03 21:00:51,727 INFO     Shape pre_nms_anchors after batch_slice: [3, None, 4]
-2018-06-03 21:00:52,021 INFO     outputs shape,..... 1
-2018-06-03 21:00:52,022 INFO     result shape,..... (3, ?, 4)
-2018-06-03 21:00:52,023 INFO     Shape boxes after batch_slice: [3, None, 4]
-2018-06-03 21:00:52,029 INFO     Inside: clip_boxes_graph boxes.shape = (?, 4)
-2018-06-03 21:00:52,056 INFO     Inside: clip_boxes_graph boxes.shape = (?, 4)
-2018-06-03 21:00:52,081 INFO     Inside: clip_boxes_graph boxes.shape = (?, 4)
-2018-06-03 21:00:52,099 INFO     outputs shape,..... 1
-2018-06-03 21:00:52,101 INFO     result shape,..... (3, ?, 4)
-2018-06-03 21:00:52,101 INFO     Clipped Boxes after batch_slice: [3, None, 4]
-2018-06-03 21:00:52,115 INFO     IN THE CALL nms Function inside call function OF ProposalLayer
-2018-06-03 21:00:52,139 INFO     outputs shape,..... 1
-2018-06-03 21:00:52,140 INFO     result shape,..... (1, ?, ?)
-2018-06-03 21:00:52,140 INFO     Proposal shape after batch_slice: [1, None, None]
+2018-06-03 22:55:50,166 INFO     IN THE CALL FUNCTION OF ProposalLayer
+2018-06-03 22:55:50,166 INFO     Shape rpn_class: [None, None, 2]
+2018-06-03 22:55:50,166 INFO     Shape rpn_bbox: [None, None, 4]
+2018-06-03 22:55:50,166 INFO     Shape anchors: [None, None, 4]
+2018-06-03 22:55:50,174 INFO     Shape scores : [None, None]
+2018-06-03 22:55:50,176 INFO     Shape deltas (input[1]): [None, None, 4]
+2018-06-03 22:55:50,183 INFO     tf.shape(anchors)[1] = Tensor("strided_slice_1:0", shape=(), dtype=int32)
+2018-06-03 22:55:50,193 INFO     Shape pre_nms_limit : []
+2018-06-03 22:55:50,195 INFO     Shape ix : [None, None]
+2018-06-03 22:55:50,241 INFO     outputs shape,..... 1
+2018-06-03 22:55:50,243 INFO     result shape,..... (3, ?)
+2018-06-03 22:55:50,243 INFO     Shape scores after batch_slice: [3, None]
+2018-06-03 22:55:50,285 INFO     outputs shape,..... 1
+2018-06-03 22:55:50,287 INFO     result shape,..... (3, ?, 4)
+2018-06-03 22:55:50,287 INFO     Shape deltas after batch_slice: [3, None, 4]
+2018-06-03 22:55:50,329 INFO     outputs shape,..... 1
+2018-06-03 22:55:50,331 INFO     result shape,..... (3, ?, 4)
+2018-06-03 22:55:50,331 INFO     Shape pre_nms_anchors after batch_slice: [3, None, 4]
+2018-06-03 22:55:50,625 INFO     outputs shape,..... 1
+2018-06-03 22:55:50,626 INFO     result shape,..... (3, ?, 4)
+2018-06-03 22:55:50,626 INFO     Shape boxes after batch_slice: [3, None, 4]
+2018-06-03 22:55:50,633 INFO     Inside: clip_boxes_graph boxes.shape = (?, 4)
+2018-06-03 22:55:50,659 INFO     Inside: clip_boxes_graph boxes.shape = (?, 4)
+2018-06-03 22:55:50,685 INFO     Inside: clip_boxes_graph boxes.shape = (?, 4)
+2018-06-03 22:55:50,704 INFO     outputs shape,..... 1
+2018-06-03 22:55:50,705 INFO     result shape,..... (3, ?, 4)
+2018-06-03 22:55:50,706 INFO     Clipped Boxes after batch_slice: [3, None, 4]
+2018-06-03 22:55:50,719 INFO     IN THE CALL nms Function inside call function OF ProposalLayer
+2018-06-03 22:55:50,751 INFO     IN THE CALL nms Function inside call function OF ProposalLayer
+2018-06-03 22:55:50,783 INFO     IN THE CALL nms Function inside call function OF ProposalLayer
+2018-06-03 22:55:50,802 INFO     outputs shape,..... 1
+2018-06-03 22:55:50,804 INFO     result shape,..... (3, ?, ?)
+2018-06-03 22:55:50,804 INFO     Proposal shape after batch_slice: [3, None, None]
