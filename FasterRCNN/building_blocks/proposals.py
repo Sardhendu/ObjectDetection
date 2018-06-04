@@ -505,6 +505,13 @@ class Proposals():
                                 self.NMS_THRESHOLD, self.proposals, scores).get_filtered_boxes()
         print('proposals shape (after filter)', self.proposals.shape)
         
+        # Add index column to the proposals to smooth following process
+        batch_inds = np.zeros((self.proposals.shape[0], 1), dtype=np.float32)  # [ len(keep), 1]
+
+        # proposal structure: [0, x1, y1, x2, y2]
+        self.proposals = np.column_stack((batch_inds, self.proposals.astype(np.float32, copy=False)))
+        
+        
     def get_proposals(self):
         return self.proposals
 

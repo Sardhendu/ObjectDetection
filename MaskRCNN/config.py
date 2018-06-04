@@ -29,7 +29,7 @@ class config(object):
     RPN_ANCHOR_SCALES = (32, 64, 128, 256, 512)
 
     # Bounding box refinement standard deviation for RPN and final detections.
-    RPN_BBOX_STD_DEV = np.array([0.1, 0.1, 0.2, 0.2])
+    RPN_BBOX_STDDEV = np.array([0.1, 0.1, 0.2, 0.2])
     BBOX_STD_DEV = np.array([0.1, 0.1, 0.2, 0.2])
 
     # Max number of anchors before NMS

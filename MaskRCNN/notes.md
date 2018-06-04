@@ -53,5 +53,34 @@ FPN: https://medium.com/@jonathan_hui/understanding-feature-pyramid-networks-for
     
 
  
+ 
+ 
+ 
+#### ABOUT THE WHOLE MODULE in short:
+
+1. FPN(Feature pyramid network): This step is basically used to generate feature maps at different scales.
+    We generate 4 different scale feature maps each with a depth of 256
+        *   P2=[num_batches, 256, 256, 256], total pixels
+        *   P3=[num_batches, 128, 128, 256], 
+        *   P4=[num_batches, 64, 64, 256], 
+        *   P5=[num_batches, 32, 32, 256]
+        
+2. RPN (Region Proposal Networks): Performs two steps.
+    Assumption:
+        * anchor_stride=1 and anchor_per_pixel = 3, this means that at every pixel in the feature map we generate 3 anchors. 
+        
+    1. Generate rpn_class_prob: says if the pixel is foreground or background 
+        * For feature map 256x256 (P2): [num_batch, 256x256x3, 2], 2-> (bg_prob, fg_prob)
+        * For feature map 256x256 (P3): [num_batch, 128x128x3, 2], 2-> (bg_prob, fg_prob)
+        * For feature map 256x256 (P4): [num_batch, 64x64x3, 2], 2-> (bg_prob, fg_prob)
+        * For feature map 256x256 (P5): [num_batch, 32x32x3, 2], 2-> (bg_prob, fg_prob)
+        
+    2. Generate bounding boxes: given that the pixel is foreground, this module will generate all the anchors at each pixel position.
+        * For feature map 256x256 (P2): [num_batch, 256x256x3, 4], 4-> (dy, dx, log(dh), log(dw))
+        * For feature map 256x256 (P3): [num_batch, 128x128x3, 4], 3-> (dy, dx, log(dh), log(dw))
+        * For feature map 256x256 (P4): [num_batch, 64x64x3, 4], 3-> (dy, dx, log(dh), log(dw))
+        * For feature map 256x256 (P5): [num_batch, 32x32x3, 4], 3-> (dy, dx, log(dh), log(dw))
+        
+3. Proposals ()
               
      

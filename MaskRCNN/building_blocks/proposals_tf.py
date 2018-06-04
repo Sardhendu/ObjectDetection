@@ -20,9 +20,90 @@ logging.basicConfig(level=logging.DEBUG, filename="logfile.log", filemode="w",
                     format="%(asctime)-15s %(levelname)-8s %(message)s")
 
 
-class ProposalLayer():
-    def __init__(self, conf):
-        self.conf = conf
+class Proposals():
+    '''
+    The input to this network is:
+    rpn_class_probs: [num_batches, anchor, [back_ground_probability, fore_ground_probability]]
+    '''
+    def __init__(self, conf, inference_batch_size):
+        self.rpn_class_probs = tf.placeholder(dtype=tf.float32,
+                                               shape=[None, None, 2],
+                                               name="rpn_prob")
+    
+        self.rpn_bbox = tf.placeholder(dtype=tf.float32,
+                                  shape=[None, None, 4],
+                                  name="rpn_bbox")
+    
+        self.input_anchors = tf.placeholder(dtype=tf.float32,
+                                       shape=[None, None, 4],
+                                       name="input_anchors")
+        self.rpn_bbox_stddev = conf.RPN_BBOX_STDDEV
+        self.num_box_before_nms = conf.PRE_NMS_ROIS_INFERENCE
+        self.num_boxes_after_nms = conf.POST_NMS_ROIS_INFERENCE
+        self.iou_threshold = conf.RPN_NMS_THRESHOLD
+        self.inference_batch_size = inference_batch_size
+        
+        self.build()
+
+    def build(self):
+        """
+        Main function : required to get the filtered box (proposals)
+
+        :param config:
+        :param inference_batch_size:
+            inputs:
+            (1, 196608, 2) (1, 196608, 2) (1, 196608, 4)
+            * rpn_probs: [batch, anchors, (bg prob, fg prob)]
+                        say for one image with 256x256 feature map and 3 anchors (dim rpn_probs)= (1,196608, 2)
+            * rpn_bbox: [batch, anchors, (dy, dx, log(dh), log(dw))]
+                        say for one image with 256x256 feature map and 3 anchors (dim rpn_bbox)= (1, 196608, 4)
+            * anchors: [batch, (y1, x1, y2, x2)] anchors in normalized coordinates
+        :return:
+        """
+    
+        # We would like to only capture the foreground class probabilities
+        self.scores = self.rpn_class_probs[:, :, 1]
+        logging.info('Foreground_probs shape: %s', str(self.scores.get_shape().as_list()))
+    
+        # Box deltas = [batch, num_rois, 4]
+        self.boxes = self.rpn_bbox * np.reshape(self.rpn_bbox_stddev, [1, 1, 4])
+        logging.info('boxes shape: %s', str(self.boxes.get_shape().as_list()))
+    
+        # Get the anchors [None, 2]
+        self.anchors = self.input_anchors
+        logging.info('anchors shape: %s', str(self.anchors.get_shape().as_list()))
+    
+        # Searching through lots of anchors can be time consuming. So we would select at most top 6000 of them for
+        # further
+        # processing
+        max_anc_before_nms = tf.minimum(self.num_box_before_nms, tf.shape(self.anchors)[1])
+        logging.info('max_anc_before_nms shape: %s', str(max_anc_before_nms))
+    
+        # Here we fetch the idx of the top 6000 anchors
+        ix = tf.nn.top_k(self.scores, max_anc_before_nms, sorted=True, name="top_anchors").indices
+        logging.info('ix shape: %s', str(ix.get_shape().as_list()))
+    
+        # Now that we have the idx of the top anchors we would want to only gather the data related pertaining to
+        # those idx. We would wanna gather foreground_prob and boxes only for the selected anchors.
+        # scores = tf.gather_nd(scores, ix)
+        self.gather_data_for_idx(ix)
+    
+        # The boxes can have values at the interval of 0,1
+        window = np.array([0, 0, 1, 1], dtype=np.float32)
+        self.clip_boxes_to_01(window=window)
+    
+        # Perform Non-max suppression. Non max suppression is performed for one image at a time, so we loop over the
+        #  images here and stack them at the end
+        self.proposals = tf.concat([
+            tf.stack([
+                self.non_max_suppression(self.scores[num],
+                                         self.boxes[num],
+                                         max_boxes=self.num_boxes_after_nms,
+                                         iou_threshold=self.iou_threshold)
+            ], axis=0, name='nms_%s' % str(num)
+            ) for num in range(0, self.inference_batch_size)], axis=0, name='concat_boxes'
+        )
+        logging.info('bx_nw shape: %s', str(self.proposals.get_shape().as_list()))
 
     def non_max_suppression(self, scores, boxes, max_boxes=2, iou_threshold=0.7):
         """
@@ -142,84 +223,17 @@ class ProposalLayer():
     
         # return ixs, mesh, scores, boxes, anchors
 
-    def proposals(self, inference_batch_size):
-        """
-        Main function : required to get the filtered box (proposals)
-        
-        :param config:
-        :param inference_batch_size:
-            inputs:
-            (1, 196608, 2) (1, 196608, 2) (1, 196608, 4)
-            * rpn_probs: [batch, anchors, (bg prob, fg prob)]
-                        say for one image with 256x256 feature map and 3 anchors (dim rpn_probs)= (1,196608, 2)
-            * rpn_bbox: [batch, anchors, (dy, dx, log(dh), log(dw))]
-                        say for one image with 256x256 feature map and 3 anchors (dim rpn_bbox)= (1, 196608, 4)
-            * anchors: [batch, (y1, x1, y2, x2)] anchors in normalized coordinates
-        :return:
-        """
+    def get_proposal_graph(self):
+        return dict(rpn_probs=self.rpn_class_probs, rpn_bbox=self.rpn_bbox,
+                    input_anchors=self.input_anchors, proposals=self.proposals)
+   
 
-        rpn_probs = tf.placeholder(dtype=tf.float32,
-                                   shape=[None, None, 2],
-                                   name="rpn_prob")
 
-        rpn_bbox = tf.placeholder(dtype=tf.float32,
-                                 shape=[None, None, 4],
-                                 name="rpn_bbox")
-
-        input_anchors = tf.placeholder(dtype=tf.float32,
-                                       shape=[None, None, 4],
-                                       name="input_anchors")
-        
-        # We would like to only capture the foreground class probabilities
-        self.scores = rpn_probs[:,:,1]
-        logging.info('Foreground_probs shape: %s', str(self.scores.get_shape().as_list()))
-        
-        # Box deltas = [batch, num_rois, 4]
-        self.boxes = rpn_bbox * np.reshape(self.conf.RPN_BBOX_STD_DEV, [1, 1, 4])
-        logging.info('boxes shape: %s', str(self.boxes.get_shape().as_list()))
-        
-        # Get the anchors [None, 2]
-        self.anchors = input_anchors
-        logging.info('anchors shape: %s', str(self.anchors.get_shape().as_list()))
-        
-        # Searching through lots of anchors can be time consuming. So we would select at most top 6000 of them for further
-        # processing
-        max_anc_before_nms = tf.minimum(self.conf.PRE_NMS_ROIS_INFERENCE, tf.shape(self.anchors)[1])
-        logging.info('max_anc_before_nms shape: %s', str(max_anc_before_nms))
-        
-        # Here we fetch the idx of the top 6000 anchors
-        ix = tf.nn.top_k(self.scores, max_anc_before_nms, sorted=True, name="top_anchors").indices
-        logging.info('ix shape: %s', str(ix.get_shape().as_list()))
-        
-        # Now that we have the idx of the top anchors we would want to only gather the data related pertaining to those idx. We would wanna gather foreground_prob and boxes only for the selected anchors.
-        # scores = tf.gather_nd(scores, ix)
-        self.gather_data_for_idx(ix)
-        
-        # The boxes can have values at the interval of 0,1
-        window = np.array([0, 0, 1, 1], dtype=np.float32)
-        self.clip_boxes_to_01(window=window)
-        
-        # Perform Non-max suppression. Non max suppression is performed for one image at a time, so we loop over the
-        #  images here and stack them at the end
-        proposals = tf.concat([
-                        tf.stack([
-                            self.non_max_suppression(self.scores[num],
-                                                     self.boxes[num],
-                                                     max_boxes=self.conf.POST_NMS_ROIS_INFERENCE,
-                                                     iou_threshold=self.conf.RPN_NMS_THRESHOLD)
-                        ], axis=0, name='nms_%s'%str(num)
-                    ) for num in range(0,inference_batch_size)], axis=0, name='concat_boxes'
-                )
-        logging.info('bx_nw shape: %s', str(proposals.get_shape().as_list()))
-        
-        return dict(rpn_probs=rpn_probs, rpn_bbox=rpn_bbox, input_anchors=input_anchors, proposals=proposals)
-    
 
 def debugg():
     from MaskRCNN.config import config as conf
 
-    obj_pl = ProposalLayer(conf)
-    proposal_graph = obj_pl.proposals(inference_batch_size=3)
+    proposal_graph = Proposals(conf,inference_batch_size=3).get_proposal_graph()
     # scores, boxes, anchors, max_anc_before_nms, ix, ixs, mesh, before_xy, after_xy, clipped, nms_idx, bx_nw = outs
     
     with tf.Session() as sess:

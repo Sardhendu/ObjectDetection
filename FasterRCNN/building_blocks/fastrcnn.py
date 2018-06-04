@@ -50,10 +50,9 @@ def roi_pool(feature_map, proposals, image_shape):
     '''
     image_shape = np.array(image_shape, dtype='float32')
 
-    box_ind = np.zeros(proposals.shape[0])
-    box_ind = tf.cast(box_ind, dtype=tf.int32)
-    boxes = proposals#[:,1:]
-    print (boxes.dtype, image_shape.dtype)
+    # box_ind = np.zeros(proposals.shape[0])
+    box_ind = tf.cast(proposals[:,0], dtype=tf.int32)
+    boxes = proposals[:,1:]
     
     # Change xy dimensions
     boxes = tf.stack([boxes[:,1], boxes[:,0], boxes[:,3], boxes[:,2]], axis=1)
@@ -63,13 +62,11 @@ def roi_pool(feature_map, proposals, image_shape):
                              dtype=tf.float32)
     image_shape_tf = tf.reshape(image_shape_tf, [1,image_shape_tf.shape[0]])
     boxes = tf.div(boxes, image_shape_tf, name='normalized_boxes')
-    print(image_shape_tf.shape, boxes.shape)
     
     # Pool Feature map
     crop_size = tf.constant([14,14])
     feature_map = tf.image.crop_and_resize(image=feature_map, boxes=boxes, box_ind=box_ind, crop_size=crop_size)
     pooled_feature_map = tf.layers.max_pooling2d(feature_map, pool_size=2, strides=2, padding='SAME')
-    print (pooled_feature_map.shape)
     return pooled_feature_map
     
 
@@ -122,6 +119,8 @@ class FastRCNN():
                                  name='FC22_b')
         )
     
+        self.build()
+        
     def build(self):
         '''
         What does the network say:
@@ -132,27 +131,39 @@ class FastRCNN():
         :return:
         '''
         xx = roi_pool(self.feature_map, self.proposals, self.image_shape)
-
+        print('FastRCNN - Pooled Feature Map shape = ', str(xx.shape))
+        xx = tf.contrib.layers.flatten(xx)
+        
         with tf.variable_scope('fastrcnn_fc'):
             xx = tf.nn.dropout(self.fc_layers(xx, 'fc1'), keep_prob=self.keep_prop)
+            print('FastRCNN - FC1 shape = ', str(xx.shape))
             xx = tf.nn.dropout(self.fc_layers(xx, 'fc2'), keep_prob=self.keep_prop)
+            print('FastRCNN - FC2 shape = ', str(xx.shape))
         
         with tf.variable_scope('fastrcnn_class_prob'):
             rcnn_class_scores = self.fc_layers(xx, 'fc21')
+            self.rcnn_class_probs = tf.nn.softmax(rcnn_class_scores, name='rcnn_softmax')
+            print('FastRCNN - FC21 + Softmax shape = ', str(self.rcnn_class_probs.shape))
             
         with tf.variable_scope('fastrcnn_bbox_refine'):
-            rcnn_bbox_refine = self.fc_layers(xx, 'fc22')
-            
-        
+            self.rcnn_bbox_refine = self.fc_layers(xx, 'fc22')
+            print('FastRCNN - FC21 + Box Reg shape = ', str(self.rcnn_bbox_refine.shape))
         
     def fc_layers(self, x, layer_name):
         return tf.nn.relu(
                         tf.matmul(x, self.weights[str(layer_name)]) + self.biases[str(layer_name)]
                 )
+    
+    def get_class_probs(self):
+        return self.rcnn_class_probs
+    
+    def get_bbox_refinement(self):
+        return self.rcnn_bbox_refine
         
 
 
-feature_map = np.array(np.random.random((1,14,14,512)),dtype='float32')
-proposals = np.array(np.random.random((100,4)), dtype='float32')
-image_shape = np.array([224,224,3])
-roi_pool(feature_map, proposals, image_shape)
+# feature_map = tf.constant(np.array(np.random.random((1,14,14,512)),dtype='float32'), dtype=tf.float32)
+# proposals = tf.constant(np.array(np.random.random((100,5)), dtype='float32'))
+# image_shape = np.array([224,224,3])
+# obj_roi_pool = FastRCNN(feature_map, proposals, image_shape)
+# class_probs = obj_roi_pool.get_class_probs()
