@@ -38,7 +38,7 @@ class Proposals():
                                        shape=[None, None, 4],
                                        name="input_anchors")
         self.rpn_bbox_stddev = conf.RPN_BBOX_STDDEV
-        self.num_box_before_nms = conf.PRE_NMS_ROIS_INFERENCE
+        self.num_box_before_nms = 4 #conf.PRE_NMS_ROIS_INFERENCE
         self.num_boxes_after_nms = conf.POST_NMS_ROIS_INFERENCE
         self.iou_threshold = conf.RPN_NMS_THRESHOLD
         self.inference_batch_size = inference_batch_size
@@ -66,8 +66,8 @@ class Proposals():
         logging.info('Foreground_probs shape: %s', str(self.scores.get_shape().as_list()))
     
         # Box deltas = [batch, num_rois, 4]
-        self.boxes = self.rpn_bbox * np.reshape(self.rpn_bbox_stddev, [1, 1, 4])
-        logging.info('boxes shape: %s', str(self.boxes.get_shape().as_list()))
+        self.bbox_delta = self.rpn_bbox * np.reshape(self.rpn_bbox_stddev, [1, 1, 4])
+        logging.info('boxes shape: %s', str(self.bbox_delta.get_shape().as_list()))
     
         # Get the anchors [None, 2]
         self.anchors = self.input_anchors
@@ -80,13 +80,13 @@ class Proposals():
         logging.info('max_anc_before_nms shape: %s', str(max_anc_before_nms))
     
         # Here we fetch the idx of the top 6000 anchors
-        ix = tf.nn.top_k(self.scores, max_anc_before_nms, sorted=True, name="top_anchors").indices
-        logging.info('ix shape: %s', str(ix.get_shape().as_list()))
+        self.ix = tf.nn.top_k(self.scores, max_anc_before_nms, sorted=True, name="top_anchors").indices
+        logging.info('ix shape: %s', str(self.ix.get_shape().as_list()))
     
         # Now that we have the idx of the top anchors we would want to only gather the data related pertaining to
         # those idx. We would wanna gather foreground_prob and boxes only for the selected anchors.
         # scores = tf.gather_nd(scores, ix)
-        self.gather_data_for_idx(ix)
+        self.gather_data_for_idx(self.ix)
     
         # The boxes can have values at the interval of 0,1
         window = np.array([0, 0, 1, 1], dtype=np.float32)
@@ -104,6 +104,35 @@ class Proposals():
             ) for num in range(0, self.inference_batch_size)], axis=0, name='concat_boxes'
         )
         logging.info('bx_nw shape: %s', str(self.proposals.get_shape().as_list()))
+        
+    def apply_box_deltas(self, pre_nms_anchors, bbox_delta):
+        '''
+        Applying Box Deltas to Anchors
+        
+        pre_nms_anchors = [num_batches, num_anchors, (y1, x1, y2, x2)]
+        self.bbox_delta = [num_batches, num_anchors, (center_y, center_x, h, w)]
+        
+                    _____________ (x2, y2)
+                    |           |
+                    |           |
+                    |           |
+                    |           |
+                    |           |
+            (x1,y1) -------------
+        
+        Since our predictions are normalized and are in the form of [center_y, center_x, h, w], we first convert our
+        anchors to the form of [center_y, center_x, h, w] and then apply box deltas (D-normalize it). After this we
+        convert the pre_nms_anchors back to the original shape of [num_batches, num_anchors, (y1, x1, y2, x2)]
+        
+        :return:
+        '''
+        height = pre_nms_anchors[:,2] - pre_nms_anchors[:,0]
+        width = pre_nms_anchors[:,3] - pre_nms_anchors[:,1]
+        center_y = pre_nms_anchors[:,0] + 0.5*height
+        center_x = pre_nms_anchors[:,1] + 0.5*width
+        
+        
+        
 
     def non_max_suppression(self, scores, boxes, max_boxes=2, iou_threshold=0.7):
         """
@@ -206,6 +235,8 @@ class Proposals():
                            [1 1]    # says to select the 1 index of 1 image
                            [1 3]]]  # says to select the 3 index of 1 image
         '''
+        
+        print ('Gathering Data')
         mesh = tf.meshgrid(tf.range(tf.shape(ix)[1]), tf.range(tf.shape(ix)[0]))[1]
         ixs = tf.stack([mesh, ix], axis=2)
     
@@ -214,8 +245,8 @@ class Proposals():
         logging.info('scores shape = %s', str(self.scores.shape))
     
         # Gather only the data pertaining to the ixs
-        self.boxes = tf.gather_nd(self.boxes, ixs)
-        logging.info('Box delta shape = %s', str(self.boxes.shape))
+        self.bbox_delta = tf.gather_nd(self.boxes, ixs)
+        logging.info('Box delta shape = %s', str(self.bbox_delta.shape))
     
         # Gather only the data pertaining to the ixs
         self.anchors = tf.gather_nd(self.anchors, ixs)
@@ -226,6 +257,18 @@ class Proposals():
     def get_proposal_graph(self):
         return dict(rpn_probs=self.rpn_class_probs, rpn_bbox=self.rpn_bbox,
                     input_anchors=self.input_anchors, proposals=self.proposals)
+    
+    def get_ix(self):
+        return self.ix
+    
+    def get_scores(self):
+        return self.scores
+    
+    def get_bboxes_delta(self):
+        return self.boxes
+    
+    def get_anchors(self):
+        return self.anchors
    
 
 
@@ -233,26 +276,119 @@ class Proposals():
 def debugg():
     from MaskRCNN.config import config as conf
 
-    proposal_graph = Proposals(conf,inference_batch_size=3).get_proposal_graph()
-    # scores, boxes, anchors, max_anc_before_nms, ix, ixs, mesh, before_xy, after_xy, clipped, nms_idx, bx_nw = outs
-    
+    np.random.seed(325)
+    num_batches = 2
+    proposal_count = 2
+    nms_threshold = np.float32(0.3)
+
+    a = np.array(np.random.random((3, 5, 2)), dtype='float32')
+    b = np.array(np.random.random((3, 5, 4)), dtype='float32')
+    c = np.array(np.random.random((3, 5, 4)), dtype='float32')
+
+    obj_p = Proposals(conf, inference_batch_size=3)
+    p_graph = obj_p.get_proposal_graph()
+    ix = obj_p.get_ix()
+    sc = obj_p.get_scores()
+    dt = obj_p.get_bboxes_delta()
+    anc = obj_p.get_anchors()
+    # print(proposals)
+    feed_dict = {p_graph['rpn_probs']: a, p_graph['rpn_bbox']: b, p_graph['input_anchors']: c}
     with tf.Session() as sess:
         sess.run(tf.global_variables_initializer())
-        np.random.seed(871)
-        a= np.random.random((3, 5, 2))
-        b= np.random.random((3, 5, 4))
-        c= np.random.random((3, 5, 4))
-        feed_dict={proposal_graph['rpn_probs']: a, proposal_graph['rpn_bbox']: b, proposal_graph['input_anchors']: c}
-
-        print('rpn_probs ', a)
-        print('')
-        print('rpn_bbox ', b)
-        print('')
-        print('anchors ', c)
-        proposals_ = sess.run(proposal_graph['proposals'], feed_dict=feed_dict)
+    
+        ix_ = sess.run([ix], feed_dict=feed_dict)
+        sc_ = sess.run([sc], feed_dict=feed_dict)
+        dt_ = sess.run([dt], feed_dict=feed_dict)
+        pnmsa_ = sess.run([anc], feed_dict=feed_dict)
+        print(ix_)
         print ('')
+        print (sc_)
         print('')
-        print('proposals_ = ', proposals_.shape, proposals_)
+        print(dt_)
+        print('')
+        print(pnmsa_)
+        
+        
+debugg()
+
+
+
+
+'''
+ix = [array([[0, 3, 2, 1, 4],
+       [1, 2, 0, 4, 3],
+       [4, 0, 2, 3, 1]], dtype=int32)]
+
+sc_ = [array([[ 0.98104852,  0.79038447,  0.76019788,  0.68306577],
+       [ 0.95836937,  0.92400974,  0.55117744,  0.54641497],
+       [ 0.92985797,  0.9152084 ,  0.90162092,  0.88823181]], dtype=float32)]
        
+dt_ = [array([[[  6.08330965e-02,   6.71194121e-02,   9.41824615e-02,
+           1.71722159e-01],
+        [  3.85359898e-02,   9.32771638e-02,   6.52525723e-02,
+           1.92653507e-01],
+        [  6.77995607e-02,   6.24737255e-02,   1.89149845e-02,
+           1.74794272e-02],
+        [  8.25559869e-02,   4.15760539e-02,   1.90824702e-01,
+           7.37159774e-02]],
+
+       [[  1.43593876e-02,   1.00482712e-02,   5.03815077e-02,
+           3.92356282e-03],
+        [  7.38601610e-02,   2.49234634e-03,   1.27579302e-01,
+           6.00859821e-02],
+        [  5.37443422e-02,   3.63819599e-02,   1.18435375e-01,
+           7.35748857e-02],
+        [  5.09575866e-02,   8.80408734e-02,   1.45163164e-01,
+           1.63295969e-01]],
+
+       [[  9.55238715e-02,   1.13850981e-02,   1.28908351e-01,
+           2.66324226e-02],
+        [  7.86226615e-02,   9.94997323e-02,   1.70552894e-01,
+           7.04915524e-02],
+        [  9.70137939e-02,   7.02699199e-02,   1.12953506e-01,
+           4.68629441e-05],
+        [  1.20924581e-02,   2.32591256e-02,   1.77218363e-01,
+           1.01405002e-01]]], dtype=float32)]
+           
+pnmsa_ = [array([[[ 0.66516078,  0.7107172 ,  0.104709  ,  0.41347158],
+        [ 0.4026624 ,  0.00647369,  0.97270262,  0.70907563],
+        [ 0.36219054,  0.18682894,  0.75377899,  0.75660789],
+        [ 0.0971365 ,  0.30265555,  0.30198509,  0.8906796 ]],
+
+       [[ 0.51335049,  0.67271036,  0.55130559,  0.13511348],
+        [ 0.45991206,  0.69495296,  0.141526  ,  0.19375683],
+        [ 0.71754569,  0.79186046,  0.89333463,  0.11504316],
+        [ 0.17198341,  0.0888403 ,  0.83701622,  0.88303244]],
+
+       [[ 0.40544087,  0.96145767,  0.37492931,  0.86902213],
+        [ 0.63724017,  0.69959635,  0.14438523,  0.45761779],
+        [ 0.50528699,  0.13827209,  0.50424409,  0.81720257],
+        [ 0.2975572 ,  0.38713291,  0.40366048,  0.97275996]]], dtype=float32)]
+'''
+
+
+
+
+    # proposal_graph = Proposals(conf,inference_batch_size=3).get_proposal_graph()
+    # # scores, boxes, anchors, max_anc_before_nms, ix, ixs, mesh, before_xy, after_xy, clipped, nms_idx, bx_nw = outs
+    #
+    # with tf.Session() as sess:
+    #     sess.run(tf.global_variables_initializer())
+    #     np.random.seed(871)
+    #     a= np.random.random((3, 5, 2))
+    #     b= np.random.random((3, 5, 4))
+    #     c= np.random.random((3, 5, 4))
+    #     feed_dict={proposal_graph['rpn_probs']: a, proposal_graph['rpn_bbox']: b, proposal_graph['input_anchors']: c}
+    #
+    #     print('rpn_probs ', a)
+    #     print('')
+    #     print('rpn_bbox ', b)
+    #     print('')
+    #     print('anchors ', c)
+    #     proposals_ = sess.run(proposal_graph['proposals'], feed_dict=feed_dict)
+    #     print ('')
+    #     print('')
+    #     print('proposals_ = ', proposals_.shape, proposals_)
+    #
 
 # debugg()

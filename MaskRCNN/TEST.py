@@ -110,50 +110,63 @@ class ProposalLayer():
         self.config = config
         self.proposal_count = proposal_count
         self.nms_threshold = nms_threshold
+        self.batch_size = 3
+        self.rpn_class_probs = tf.placeholder(dtype=tf.float32,
+                                              shape=[None, None, 2],
+                                              name="rpn_prob")
+
+        self.rpn_bbox = tf.placeholder(dtype=tf.float32,
+                                       shape=[None, None, 4],
+                                       name="rpn_bbox")
+
+        self.input_anchors = tf.placeholder(dtype=tf.float32,
+                                            shape=[None, None, 4],
+                                            name="input_anchors")
         
         print('RUNNING ProposalLayer ......................')
     
-    def call(self, inputs):
+    def call(self):
         logging.info('IN THE CALL FUNCTION OF ProposalLayer')
-        logging.info('Length of inputs: %s', len(inputs))
-        logging.info('Shape rpn_class: %s', inputs[0].shape)#get_shape().as_list())
-        logging.info('Shape rpn_bbox: %s', inputs[1].shape)#get_shape().as_list())
-        logging.info('Shape anchors: %s', inputs[2].shape)#get_shape().as_list())
+        logging.info('Shape rpn_class: %s', self.rpn_class_probs.get_shape().as_list())
+        logging.info('Shape rpn_bbox: %s', self.rpn_bbox.get_shape().as_list())
+        logging.info('Shape anchors: %s', self.input_anchors.get_shape().as_list())
         # Box Scores. Use the foreground class confidence. [Batch, num_rois, 1]
-        scores = inputs[0][:, :, 1]
-        logging.info('Shape scores : %s', scores.shape)#get_shape().as_list())
+        scores = self.rpn_class_probs[:, :, 1]
+        logging.info('Shape scores : %s', scores.get_shape().as_list())
         
         # Box deltas [batch, num_rois, 4]
-        deltas = inputs[1]
+        deltas = self.rpn_bbox
         deltas = deltas * np.reshape(self.config.RPN_BBOX_STDDEV, [1, 1, 4])
-        logging.info('Shape deltas (input[1]): %s', deltas.shape)#get_shape().as_list())
+        logging.info('Shape deltas (input[1]): %s', deltas.get_shape().as_list())
         # Anchors
-        anchors = inputs[2]
+        anchors = self.input_anchors
+        
+        print (scores.dtype, deltas.dtype, anchors.dtype)
         
         # Improve performance by trimming to top anchors by score
         # and doing the rest on the smaller subset.
         logging.info('tf.shape(anchors)[1] = %s', tf.shape(anchors)[1])
-        pre_nms_limit = tf.minimum(6000, tf.shape(anchors)[1])
+        pre_nms_limit = tf.minimum(4, tf.shape(anchors)[1])
         logging.info('Shape pre_nms_limit : %s', pre_nms_limit.get_shape().as_list())
         
         ix = tf.nn.top_k(scores, pre_nms_limit, sorted=True,
                          name="top_anchors").indices
         logging.info('Shape ix : %s', ix.get_shape().as_list())
         
-        scores = batch_slice([scores, ix], lambda x, y: tf.gather(x, y), 1)
+        scores = batch_slice([scores, ix], lambda x, y: tf.gather(x, y), self.batch_size)
         logging.info('Shape scores after batch_slice: %s', scores.get_shape().as_list())
         
-        deltas = batch_slice([deltas, ix], lambda x, y: tf.gather(x, y), 1)
+        deltas = batch_slice([deltas, ix], lambda x, y: tf.gather(x, y), self.batch_size)
         logging.info('Shape deltas after batch_slice: %s', deltas.get_shape().as_list())
         
-        pre_nms_anchors = batch_slice([anchors, ix], lambda a, x: tf.gather(a, x), 1,
+        pre_nms_anchors = batch_slice([anchors, ix], lambda a, x: tf.gather(a, x), self.batch_size,
                                             names=["pre_nms_anchors"])
         logging.info('Shape pre_nms_anchors after batch_slice: %s', pre_nms_anchors.get_shape().as_list())
         
         # Apply deltas to anchors to get refined anchors.
         # [batch, N, (y1, x1, y2, x2)]
         boxes = batch_slice([pre_nms_anchors, deltas],
-                                  lambda x, y: apply_box_deltas_graph(x, y), 1,
+                                  lambda x, y: apply_box_deltas_graph(x, y), self.batch_size,
                                   names=["refined_anchors"])
         logging.info('Shape boxes after batch_slice: %s', boxes.get_shape().as_list())
         
@@ -161,7 +174,7 @@ class ProposalLayer():
         # clip to 0..1 range. [batch, N, (y1, x1, y2, x2)]
         window = np.array([0, 0, 1, 1], dtype=np.float32)
         boxes = batch_slice(boxes,
-                                  lambda x: clip_boxes_graph(x, window), 1,
+                                  lambda x: clip_boxes_graph(x, window), self.batch_size,
                                   names=["refined_anchors_clipped"])
         logging.info('Clipped Boxes after batch_slice: %s', boxes.get_shape().as_list())
         
@@ -184,11 +197,14 @@ class ProposalLayer():
         
         logging.info('Proposal shape after batch_slice: %s', proposals.get_shape().as_list())
         
-        return proposals
+        return (self.rpn_class_probs, self.rpn_bbox, self.input_anchors, proposals,
+                dict(ix=ix, scores=scores, deltas=deltas, pre_nms_anchors=pre_nms_anchors))
     
     def compute_output_shape(self, input_shape):
         logging.info('IN THE compute_output_shape function OF ProposalLayer')
         return (None, self.proposal_count, 4)
+    
+    
 
 
 
@@ -196,10 +212,82 @@ from MaskRCNN.config import config
 np.random.seed(325)
 num_batches = 2
 proposal_count = 2
-nms_threshold = 0.3
+nms_threshold = np.float32(0.3)
 
-rpn_class_probs = np.array(np.random.random((3,5,2)), dtype='float32')
-rpn_bbox = np.array(np.random.random((3, 5, 4)), dtype='float32')
-input_anchors = np.array(np.random.random((3, 5, 4)), dtype='float32')
+a = np.array(np.random.random((3,5,2)), dtype='float32')
+b = np.array(np.random.random((3, 5, 4)), dtype='float32')
+c = np.array(np.random.random((3, 5, 4)), dtype='float32')
 
-proposals = ProposalLayer(proposal_count, nms_threshold, config).call([rpn_class_probs, rpn_bbox, input_anchors])
+rpn_class_probs, rpn_bbox, input_anchors, proposals, others = ProposalLayer(proposal_count, nms_threshold,
+                                                                            config).call()
+# print(proposals)
+feed_dict={rpn_class_probs: a, rpn_bbox: b, input_anchors: c}
+with tf.Session() as sess:
+    sess.run(tf.global_variables_initializer())
+    
+    ix_ = sess.run([others['ix']], feed_dict = feed_dict)
+    sc_ = sess.run([others['scores']], feed_dict=feed_dict)
+    dt_ = sess.run([others['deltas']], feed_dict=feed_dict)
+    pnmsa_ = sess.run([others['pre_nms_anchors']], feed_dict=feed_dict)
+    print(ix_)
+    print ('')
+    print(sc_)
+    print('')
+    print(dt_)
+    print('')
+    print(pnmsa_)
+    
+    
+    
+'''
+ix = [array([[0, 3, 2, 1, 4],
+       [1, 2, 0, 4, 3],
+       [4, 0, 2, 3, 1]], dtype=int32)]
+       
+sc_ = [array([[ 0.98104852,  0.79038447,  0.76019788,  0.68306577],
+       [ 0.95836937,  0.92400974,  0.55117744,  0.54641497],
+       [ 0.92985797,  0.9152084 ,  0.90162092,  0.88823181]], dtype=float32)]
+
+dt_ = [array([[[  6.08330965e-02,   6.71194121e-02,   9.41824615e-02,
+           1.71722159e-01],
+        [  3.85359898e-02,   9.32771638e-02,   6.52525723e-02,
+           1.92653507e-01],
+        [  6.77995607e-02,   6.24737255e-02,   1.89149845e-02,
+           1.74794272e-02],
+        [  8.25559869e-02,   4.15760539e-02,   1.90824702e-01,
+           7.37159774e-02]],
+
+       [[  1.43593876e-02,   1.00482712e-02,   5.03815077e-02,
+           3.92356282e-03],
+        [  7.38601610e-02,   2.49234634e-03,   1.27579302e-01,
+           6.00859821e-02],
+        [  5.37443422e-02,   3.63819599e-02,   1.18435375e-01,
+           7.35748857e-02],
+        [  5.09575866e-02,   8.80408734e-02,   1.45163164e-01,
+           1.63295969e-01]],
+
+       [[  9.55238715e-02,   1.13850981e-02,   1.28908351e-01,
+           2.66324226e-02],
+        [  7.86226615e-02,   9.94997323e-02,   1.70552894e-01,
+           7.04915524e-02],
+        [  9.70137939e-02,   7.02699199e-02,   1.12953506e-01,
+           4.68629441e-05],
+        [  1.20924581e-02,   2.32591256e-02,   1.77218363e-01,
+           1.01405002e-01]]], dtype=float32)]
+           
+pnmsa_ = [array([[[ 0.66516078,  0.7107172 ,  0.104709  ,  0.41347158],
+        [ 0.4026624 ,  0.00647369,  0.97270262,  0.70907563],
+        [ 0.36219054,  0.18682894,  0.75377899,  0.75660789],
+        [ 0.0971365 ,  0.30265555,  0.30198509,  0.8906796 ]],
+
+       [[ 0.51335049,  0.67271036,  0.55130559,  0.13511348],
+        [ 0.45991206,  0.69495296,  0.141526  ,  0.19375683],
+        [ 0.71754569,  0.79186046,  0.89333463,  0.11504316],
+        [ 0.17198341,  0.0888403 ,  0.83701622,  0.88303244]],
+
+       [[ 0.40544087,  0.96145767,  0.37492931,  0.86902213],
+        [ 0.63724017,  0.69959635,  0.14438523,  0.45761779],
+        [ 0.50528699,  0.13827209,  0.50424409,  0.81720257],
+        [ 0.2975572 ,  0.38713291,  0.40366048,  0.97275996]]], dtype=float32)]
+'''
+

@@ -1,19 +1,31 @@
-2018-06-03 20:18:14,319 INFO     IN THE CALL FUNCTION OF ProposalLayer
-2018-06-03 20:18:14,320 INFO     Length of inputs: 3
-2018-06-03 20:18:14,320 INFO     Shape rpn_class: (3, 5, 2)
-2018-06-03 20:18:14,320 INFO     Shape rpn_bbox: (3, 5, 4)
-2018-06-03 20:18:14,320 INFO     Shape anchors: (3, 5, 4)
-2018-06-03 20:18:14,320 INFO     Shape scores : (3, 5)
-2018-06-03 20:18:14,321 INFO     Shape deltas (input[1]): (3, 5, 4)
-2018-06-03 20:18:14,349 INFO     tf.shape(anchors)[1] = Tensor("strided_slice:0", shape=(), dtype=int32)
-2018-06-03 20:18:14,359 INFO     Shape pre_nms_limit : []
-2018-06-03 20:18:14,361 INFO     Shape ix : [3, None]
-2018-06-03 20:18:14,370 INFO     outputs shape,..... 1
-2018-06-03 20:18:14,371 INFO     result shape,..... (1, ?)
-2018-06-03 20:18:14,371 INFO     Shape scores after batch_slice: [1, None]
-2018-06-03 20:18:14,380 INFO     outputs shape,..... 1
-2018-06-03 20:18:14,381 INFO     result shape,..... (1, ?, 4)
-2018-06-03 20:18:14,381 INFO     Shape deltas after batch_slice: [1, None, 4]
-2018-06-03 20:18:14,390 INFO     outputs shape,..... 1
-2018-06-03 20:18:14,391 INFO     result shape,..... (1, ?, 4)
-2018-06-03 20:18:14,391 INFO     Shape pre_nms_anchors after batch_slice: [1, None, 4]
+2018-06-03 21:00:51,561 INFO     IN THE CALL FUNCTION OF ProposalLayer
+2018-06-03 21:00:51,561 INFO     Shape rpn_class: [None, None, 2]
+2018-06-03 21:00:51,561 INFO     Shape rpn_bbox: [None, None, 4]
+2018-06-03 21:00:51,561 INFO     Shape anchors: [None, None, 4]
+2018-06-03 21:00:51,568 INFO     Shape scores : [None, None]
+2018-06-03 21:00:51,570 INFO     Shape deltas (input[1]): [None, None, 4]
+2018-06-03 21:00:51,578 INFO     tf.shape(anchors)[1] = Tensor("strided_slice_1:0", shape=(), dtype=int32)
+2018-06-03 21:00:51,586 INFO     Shape pre_nms_limit : []
+2018-06-03 21:00:51,588 INFO     Shape ix : [None, None]
+2018-06-03 21:00:51,638 INFO     outputs shape,..... 1
+2018-06-03 21:00:51,640 INFO     result shape,..... (3, ?)
+2018-06-03 21:00:51,640 INFO     Shape scores after batch_slice: [3, None]
+2018-06-03 21:00:51,682 INFO     outputs shape,..... 1
+2018-06-03 21:00:51,683 INFO     result shape,..... (3, ?, 4)
+2018-06-03 21:00:51,683 INFO     Shape deltas after batch_slice: [3, None, 4]
+2018-06-03 21:00:51,726 INFO     outputs shape,..... 1
+2018-06-03 21:00:51,727 INFO     result shape,..... (3, ?, 4)
+2018-06-03 21:00:51,727 INFO     Shape pre_nms_anchors after batch_slice: [3, None, 4]
+2018-06-03 21:00:52,021 INFO     outputs shape,..... 1
+2018-06-03 21:00:52,022 INFO     result shape,..... (3, ?, 4)
+2018-06-03 21:00:52,023 INFO     Shape boxes after batch_slice: [3, None, 4]
+2018-06-03 21:00:52,029 INFO     Inside: clip_boxes_graph boxes.shape = (?, 4)
+2018-06-03 21:00:52,056 INFO     Inside: clip_boxes_graph boxes.shape = (?, 4)
+2018-06-03 21:00:52,081 INFO     Inside: clip_boxes_graph boxes.shape = (?, 4)
+2018-06-03 21:00:52,099 INFO     outputs shape,..... 1
+2018-06-03 21:00:52,101 INFO     result shape,..... (3, ?, 4)
+2018-06-03 21:00:52,101 INFO     Clipped Boxes after batch_slice: [3, None, 4]
+2018-06-03 21:00:52,115 INFO     IN THE CALL nms Function inside call function OF ProposalLayer
+2018-06-03 21:00:52,139 INFO     outputs shape,..... 1
+2018-06-03 21:00:52,140 INFO     result shape,..... (1, ?, ?)
+2018-06-03 21:00:52,140 INFO     Proposal shape after batch_slice: [1, None, None]
