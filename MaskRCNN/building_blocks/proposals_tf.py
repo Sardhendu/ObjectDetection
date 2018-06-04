@@ -121,9 +121,9 @@ class Proposals():
             (x1,y1) -------------
         
         Since our predictions are normalized and are in the form of [d(c_y), d(c_x), log(h), log(w)],
-        we first convert our anchors to the form of [center_y, center_x, h, w] and then apply box deltas (D-normalize it).
-        After this we convert the pre_nms_anchors back to the original shape of [num_batches, num_anchors, (y1, x1,
-        y2, x2)]
+        we first convert our anchors to the form of [center_y, center_x, h, w] and then apply box deltas (to
+        normalize anchors that have un-normalized coordinate values). After this we convert the pre_nms_anchors back to the
+        original shape of [num_batches, num_anchors, (y1, x1,y2, x2)]
         
         :return:
         '''

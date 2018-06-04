@@ -2,12 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="0fb3f822-3e88-486f-b205-d71003adecdd" name="Default" comment="">
-      <change type="DELETED" beforePath="$PROJECT_DIR$/MaskRCNN/building_blocks/proposals_np.py" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/MaskRCNN/TEST.py" afterPath="$PROJECT_DIR$/MaskRCNN/TEST.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/MaskRCNN/building_blocks/logfile.log" afterPath="$PROJECT_DIR$/MaskRCNN/building_blocks/logfile.log" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/MaskRCNN/building_blocks/proposals_debug.py" afterPath="$PROJECT_DIR$/MaskRCNN/building_blocks/proposals_debug.py" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/MaskRCNN/TEST.py" afterPath="" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/MaskRCNN/building_blocks/proposals_tf.py" afterPath="$PROJECT_DIR$/MaskRCNN/building_blocks/proposals_tf.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/MaskRCNN/logfile.log" afterPath="$PROJECT_DIR$/MaskRCNN/logfile.log" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -24,25 +21,14 @@
       <file leaf-file-name="proposals_tf.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/MaskRCNN/building_blocks/proposals_tf.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="380">
-              <caret line="108" column="8" lean-forward="false" selection-start-line="108" selection-start-column="8" selection-end-line="108" selection-end-column="8" />
+            <state relative-caret-position="3600">
+              <caret line="284" column="13" lean-forward="true" selection-start-line="284" selection-start-column="13" selection-end-line="284" selection-end-column="13" />
               <folding>
                 <element signature="e#2214#2903#1" expanded="false" />
-                <element signature="e#5351#6221#1" expanded="false" />
-                <element signature="e#7139#7650#1" expanded="false" />
-                <element signature="e#9502#11733#1" expanded="false" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="TEST.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/MaskRCNN/TEST.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="200">
-              <caret line="197" column="11" lean-forward="true" selection-start-line="0" selection-start-column="0" selection-end-line="343" selection-end-column="0" />
-              <folding>
-                <element signature="e#1#24#0" expanded="true" />
+                <element signature="e#5351#6268#1" expanded="false" />
+                <element signature="e#7186#7697#1" expanded="false" />
+                <element signature="e#8279#8949#1" expanded="false" />
+                <element signature="e#9549#11780#1" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -185,8 +171,8 @@
         <option value="$PROJECT_DIR$/MaskRCNN/building_blocks/proposals_np.py" />
         <option value="$PROJECT_DIR$/MaskRCNN/building_blocks/main.py" />
         <option value="$PROJECT_DIR$/MaskRCNN/TEST.py" />
-        <option value="$PROJECT_DIR$/MaskRCNN/building_blocks/proposals_tf.py" />
         <option value="$PROJECT_DIR$/MaskRCNN/building_blocks/proposals_debug.py" />
+        <option value="$PROJECT_DIR$/MaskRCNN/building_blocks/proposals_tf.py" />
       </list>
     </option>
   </component>
@@ -819,16 +805,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/MaskRCNN/TEST.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="200">
-          <caret line="197" column="11" lean-forward="true" selection-start-line="0" selection-start-column="0" selection-end-line="343" selection-end-column="0" />
-          <folding>
-            <element signature="e#1#24#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/MaskRCNN/building_blocks/proposals_debug.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="200">
@@ -839,15 +815,24 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/MaskRCNN/TEST.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="200">
+          <caret line="197" column="26" lean-forward="false" selection-start-line="197" selection-start-column="26" selection-end-line="197" selection-end-column="26" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/MaskRCNN/building_blocks/proposals_tf.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="380">
-          <caret line="108" column="8" lean-forward="false" selection-start-line="108" selection-start-column="8" selection-end-line="108" selection-end-column="8" />
+        <state relative-caret-position="3600">
+          <caret line="284" column="13" lean-forward="true" selection-start-line="284" selection-start-column="13" selection-end-line="284" selection-end-column="13" />
           <folding>
             <element signature="e#2214#2903#1" expanded="false" />
-            <element signature="e#5351#6221#1" expanded="false" />
-            <element signature="e#7139#7650#1" expanded="false" />
-            <element signature="e#9502#11733#1" expanded="false" />
+            <element signature="e#5351#6268#1" expanded="false" />
+            <element signature="e#7186#7697#1" expanded="false" />
+            <element signature="e#8279#8949#1" expanded="false" />
+            <element signature="e#9549#11780#1" expanded="false" />
           </folding>
         </state>
       </provider>
