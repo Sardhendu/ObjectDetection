@@ -14,7 +14,7 @@ logging.basicConfig(level=logging.DEBUG, filename="logfile.log", filemode="w",
 
 
 
-
+# https://github.com/CharlesShang/FastMaskRCNN
 
 def inference(inference_batch_size):
     xIN = tf.placeholder(dtype=tf.float32,
