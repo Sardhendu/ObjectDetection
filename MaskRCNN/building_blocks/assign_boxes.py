@@ -12,7 +12,20 @@ def log2_graph(x):
     """Implementatin of Log2. TF doesn't have a native implemenation."""
     return tf.log(x) / tf.log(2.0)
 
-def assign_boxes_debugg(boxes, image_shape):
+def assign_boxes_debugg(boxes, image_shape, feature_maps, pool_shape):
+    '''
+    
+    
+    My Notes: While we did the proposal generation, we selected proposals by stacking anchors from each feature map.
+    The problem is that in doing so, we were able to get the best possible proposal, but at the same time we lost
+    track of which proposal were part of which feature map. Now for ROI pooling (t perform crop and resize operation)
+    we need to know the proposals and the feature map they were generated from. Here we take an attempt to first know which
+    proposals were generated from which feature map and then we crop/resize a 7x7 regions from those feature map for
+    object detection and bounding box refinement.
+    
+    This preprocess is very easy when we use a single Resnet, VGG or any other network because we just generate a
+    single feature map of one scale.
+    '''
     # Image meta
     # Holds details about the image. See compose_image_meta()
     
@@ -37,37 +50,44 @@ def assign_boxes_debugg(boxes, image_shape):
             2, roi_level))
     roi_level = tf.squeeze(roi_level, 2)
     
-    return aa, bb, roi_level
+    
     
     # # Loop through levels and apply ROI pooling to each. P2 to P5.
-    # pooled = []
-    # box_to_level = []
-    # for i, level in enumerate(range(2, 6)):
-    #     ix = tf.where(tf.equal(roi_level, level))
-    #     level_boxes = tf.gather_nd(boxes, ix)
-    #
-    #     # Box indicies for crop_and_resize.
-    #     box_indices = tf.cast(ix[:, 0], tf.int32)
-    #
-    #     # Keep track of which box is mapped to which level
-    #     box_to_level.append(ix)
-    #
-    #     # Stop gradient propogation to ROI proposals
-    #     level_boxes = tf.stop_gradient(level_boxes)
-    #     box_indices = tf.stop_gradient(box_indices)
-    #
-    #     # Crop and Resize
-    #     # From Mask R-CNN paper: "We sample four regular locations, so
-    #     # that we can evaluate either max or average pooling. In fact,
-    #     # interpolating only a single value at each bin center (without
-    #     # pooling) is nearly as effective."
-    #     #
-    #     # Here we use the simplified approach of a single value per bin,
-    #     # which is how it's done in tf.crop_and_resize()
-    #     # Result: [batch * num_boxes, pool_height, pool_width, channels]
-    #     pooled.append(tf.image.crop_and_resize(
-    #             feature_maps[i], level_boxes, box_indices, pool_shape,
-    #             method="bilinear"))
+    pooled = []
+    box_indice = []  # Added by sam
+    level_boxeses = []
+    box_to_level = []
+    for i, level in enumerate(range(2, 6)):
+        ix = tf.where(tf.equal(roi_level, level))
+        level_boxes = tf.gather_nd(boxes, ix)
+        level_boxeses.append(level_boxes)
+
+        # Box indicies for crop_and_resize.
+        box_indices = tf.cast(ix[:, 0], tf.int32)
+        box_indice.append(box_indices)
+
+        # Keep track of which box is mapped to which level
+        box_to_level.append(ix)
+
+        # Stop gradient propogation to ROI proposals
+        level_boxes = tf.stop_gradient(level_boxes)
+        box_indices = tf.stop_gradient(box_indices)
+
+        # Crop and Resize
+        # From Mask R-CNN paper: "We sample four regular locations, so
+        # that we can evaluate either max or average pooling. In fact,
+        # interpolating only a single value at each bin center (without
+        # pooling) is nearly as effective."
+        #
+        # Here we use the simplified approach of a single value per bin,
+        # which is how it's done in tf.crop_and_resize()
+        # Result: [batch * num_boxes, pool_height, pool_width, channels]
+        
+        pooled.append(tf.image.crop_and_resize(
+                feature_maps[i], level_boxes, box_indices, pool_shape,
+                method="bilinear"))
+
+    return aa, bb, roi_level, box_to_level, level_boxeses, box_indice, pooled
     #
     # # Pack pooled features into one tensor
     # pooled = tf.concat(pooled, axis=0)
@@ -94,11 +114,11 @@ def assign_boxes_debugg(boxes, image_shape):
 
 def assign_boxes(boxes, layers, image_shape):
     '''
-    
     :param boxes: Normalized anchor boxes (Proposals)
     :param layers: [2, 3, 4, 5] , pertaining to P2, P3, P4, P5
     :return:
     '''
+    
     k0 = 4
     min_k = min(layers)
     max_k = max(layers)
@@ -122,11 +142,21 @@ def assign_boxes(boxes, layers, image_shape):
 
     # k = np.minimum(5, np.maximum(2, k))
 
-    print (k)
-    #
-    #
+    return k.astype(np.int32)
 
 
+# def assign_2():
+#     assigned_layers = tf.reshape(assigned_layers, [-1])
+#
+#     assigned_tensors = []
+#     for t in tensors:
+#         split_tensors = []
+#         for l in layers:
+#             tf.cast(l, tf.int32)
+#             inds = tf.where(tf.equal(assigned_layers, l))
+#             inds = tf.reshape(inds, [-1])
+#             split_tensors.append(tf.gather(t, inds))
+#         assigned_tensors.append(split_tensors)
     
     
 def debugg():
@@ -136,10 +166,19 @@ def debugg():
     np.random.seed(325)
     num_batches = 3
 
+    # P2 = (2, 256, 256, 256), P3 = (2, 128, 128, 256), P4 = (2, 64, 64, 256), P5 = (2, 32, 32, 256)
+    
+    P2 = np.array(np.random.random((3, 256, 256,256)), dtype='float32')
+    P3 = np.array(np.random.random((3, 128, 128, 256)), dtype='float32')
+    P4 = np.array(np.random.random((3, 64, 64, 256)), dtype='float32')
+    P5 = np.array(np.random.random((3, 32, 32, 256)), dtype='float32')
+    feature_maps = [P2, P3, P4, P5]
+    
     a = np.array(np.random.random((3, 5, 2)), dtype='float32')
     b = np.array(np.random.random((3, 5, 4)), dtype='float32')
     c = np.array(np.random.random((3, 5, 4)), dtype='float32')
 
+    
     obj_p = Proposals(conf, inference_batch_size=num_batches)
     p_graph = obj_p.get_proposal_graph()
     ancd = obj_p.get_anchors_delta()
@@ -148,22 +187,33 @@ def debugg():
     with tf.Session() as sess:
         sess.run(tf.global_variables_initializer())
         p_ = sess.run(p_graph['proposals'], feed_dict=feed_dict)
+        #
+        # print('')
+        # print(p_.shape)
+        # print('')
+        # print (p_)
+        # print ('')
+        # assign_boxes(p_, [2,3,4,5], image_shape=[800, 1024])
 
-        print('')
-        print(p_.shape)
-        print('')
-        print (p_)
-        print ('')
-        assign_boxes(p_, [2,3,4,5], image_shape=[800, 1024])
-
-        roi_level = assign_boxes_debugg(boxes=p_, image_shape=[800, 1024])
+        aa, bb, roi_level, box_to_level, level_boxes, box_indice, pooled = assign_boxes_debugg(boxes=p_, image_shape=[
+            800, 1024], feature_maps=feature_maps, pool_shape=7)
         
-        aa_, bb_, r_l = sess.run(roi_level)
+        aa_, bb_, r_l, btl, lbx, b_idx = sess.run([aa, bb, roi_level, box_to_level, level_boxes, box_indice ])
         print ('')
         print('TENSORFLOW STUFF.........')
-        print (aa_)
-        print (bb_)
-        print (r_l)
+        print('proposals ', p_)
+        print('')
+        print ('aa_ ', aa_)
+        print ('')
+        print ('bb_ ', bb_)
+        print ('')
+        print ('roi level ', r_l)
+        print ('')
+        print ('box_to_level ', btl)
+        print ('')
+        print('level_boxes ', lbx)
+        print('')
+        print ('box_indice ', b_idx)
 
 debugg()
 

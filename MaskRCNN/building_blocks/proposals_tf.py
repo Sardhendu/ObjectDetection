@@ -39,7 +39,7 @@ class Proposals():
                                        name="input_anchors")
         self.rpn_bbox_stddev = conf.RPN_BBOX_STDDEV
         self.num_box_before_nms = 4 #conf.PRE_NMS_ROIS_INFERENCE
-        self.num_boxes_after_nms = 2#conf.POST_NMS_ROIS_INFERENCE
+        self.num_boxes_after_nms = 3#conf.POST_NMS_ROIS_INFERENCE
         self.iou_threshold = 0.3#conf.RPN_NMS_THRESHOLD
         self.inference_batch_size = inference_batch_size
         

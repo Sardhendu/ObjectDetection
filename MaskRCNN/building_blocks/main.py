@@ -59,16 +59,18 @@ def main(pretrained_weights_path):
         
         # RUN FPN GRAPH
         feed_dict = {input_comp_graph['xIN']: np.random.random((batch_size, 1024, 1024, 3))}
-        p2, p3, p4, p5 = sess.run([fpn_comp_graph['fpn_p2'], fpn_comp_graph['fpn_p3'],
-                                   fpn_comp_graph['fpn_p4'], fpn_comp_graph['fpn_p5']], feed_dict=feed_dict)
+        p2, p3, p4, p5, p6 = sess.run([fpn_comp_graph['fpn_p2'], fpn_comp_graph['fpn_p3'],
+                                       fpn_comp_graph['fpn_p4'], fpn_comp_graph['fpn_p5'],
+                                       fpn_comp_graph['fpn_p6']], feed_dict=feed_dict)
         
-        print('FPN P2=%s, P3=%s, P4=%s, P5=%s'%(str(p2.shape), str(p3.shape), str(p4.shape), str(p5.shape)))
+        print('FPN P2=%s, P3=%s, P4=%s, P5=%s, P6=%s'%(str(p2.shape), str(p3.shape), str(p4.shape), str(p5.shape),
+                                                       str(p6.shape)))
 
         # RUN RPN GRAPH
         # rpn_logits = []
         rpn_probs = []
         rpn_bboxes = []
-        for fpn_p in [p2, p3, p4, p5]:
+        for fpn_p in [p2, p3, p4, p5, p6]:
             _, rpn_prob, rpn_bbox = sess.run([rpn_comp_graph['rpn_class_logits'],
                                                       rpn_comp_graph['rpn_class_probs'],
                                                       rpn_comp_graph['rpn_bbox']],
