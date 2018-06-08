@@ -73,6 +73,8 @@ def roi_pool(feature_map, proposals, image_shape):
 
 class FastRCNN():
     '''
+    Network
+    
     FastRCNN in general, is a network that takes input the Proposals. These Proposals are generated using selective
     search. It then perform convolution operation on the Proposals to classify the object in the Proposal boundary.
     
