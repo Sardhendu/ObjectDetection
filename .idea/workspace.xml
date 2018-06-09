@@ -2,17 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="0fb3f822-3e88-486f-b205-d71003adecdd" name="Default" comment="">
-      <change type="MOVED" beforePath="$PROJECT_DIR$/MaskRCNN/building_blocks/assign_boxes.py" afterPath="$PROJECT_DIR$/MaskRCNN/building_blocks/maskrcnn.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/FasterRCNN/building_blocks/fastrcnn.py" afterPath="$PROJECT_DIR$/FasterRCNN/building_blocks/fastrcnn.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/MaskRCNN/building_blocks/load_params.py" afterPath="$PROJECT_DIR$/MaskRCNN/building_blocks/load_params.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/MaskRCNN/building_blocks/logfile.log" afterPath="$PROJECT_DIR$/MaskRCNN/building_blocks/logfile.log" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/MaskRCNN/building_blocks/main.py" afterPath="$PROJECT_DIR$/MaskRCNN/building_blocks/main.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/MaskRCNN/building_blocks/proposals_tf.py" afterPath="$PROJECT_DIR$/MaskRCNN/building_blocks/proposals_tf.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/MaskRCNN/building_blocks/maskrcnn.py" afterPath="$PROJECT_DIR$/MaskRCNN/building_blocks/maskrcnn.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Notebooks/.ipynb_checkpoints/FasterRCNN_run-checkpoint.ipynb" afterPath="$PROJECT_DIR$/Notebooks/.ipynb_checkpoints/FasterRCNN_run-checkpoint.ipynb" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Notebooks/FasterRCNN_run.ipynb" afterPath="$PROJECT_DIR$/Notebooks/FasterRCNN_run.ipynb" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Notebooks/MaskRCNN_FeatureVIZ.ipynb" afterPath="$PROJECT_DIR$/Notebooks/MaskRCNN_FeatureVIZ.ipynb" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Notebooks/logfile.log" afterPath="$PROJECT_DIR$/Notebooks/logfile.log" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -29,14 +22,33 @@
       <file leaf-file-name="proposals_tf.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/MaskRCNN/building_blocks/proposals_tf.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-1861">
-              <caret line="40" column="35" lean-forward="false" selection-start-line="40" selection-start-column="35" selection-end-line="40" selection-end-column="35" />
+            <state relative-caret-position="-3053">
+              <caret line="36" column="26" lean-forward="false" selection-start-line="36" selection-start-column="13" selection-end-line="36" selection-end-column="26" />
               <folding>
                 <element signature="e#2214#2903#1" expanded="false" />
                 <element signature="e#5351#6268#1" expanded="false" />
                 <element signature="e#7186#7697#1" expanded="false" />
                 <element signature="e#8279#8949#1" expanded="false" />
                 <element signature="e#9549#11780#1" expanded="false" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="maskrcnn.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/MaskRCNN/building_blocks/maskrcnn.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="399">
+              <caret line="312" column="17" lean-forward="true" selection-start-line="312" selection-start-column="17" selection-end-line="312" selection-end-column="17" />
+              <folding>
+                <element signature="e#250#290#0" expanded="true" />
+                <element signature="e#1846#1953#0" expanded="false" />
+                <element signature="e#2048#7943#0" expanded="false" />
+                <element signature="e#2048#3958#1" expanded="false" />
+                <element signature="e#4214#4284#0" expanded="false" />
+                <element signature="e#5519#5536#0" expanded="false" />
+                <element signature="e#6832#6900#0" expanded="false" />
+                <element signature="e#8522#9221#1" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -73,24 +85,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="maskrcnn.py" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/MaskRCNN/building_blocks/maskrcnn.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-875">
-              <caret line="226" column="13" lean-forward="true" selection-start-line="226" selection-start-column="13" selection-end-line="226" selection-end-column="13" />
-              <folding>
-                <element signature="e#251#274#0" expanded="true" />
-                <element signature="e#555#2365#1" expanded="false" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="fpn.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/MaskRCNN/building_blocks/fpn.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="3216">
-              <caret line="197" column="26" lean-forward="false" selection-start-line="197" selection-start-column="26" selection-end-line="197" selection-end-column="26" />
+            <state relative-caret-position="328">
+              <caret line="53" column="36" lean-forward="false" selection-start-line="53" selection-start-column="36" selection-end-line="53" selection-end-column="36" />
               <folding />
             </state>
           </provider>
@@ -99,8 +98,8 @@
       <file leaf-file-name="ops.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/MaskRCNN/building_blocks/ops.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-1847">
-              <caret line="22" column="32" lean-forward="true" selection-start-line="22" selection-start-column="32" selection-end-line="22" selection-end-column="32" />
+            <state relative-caret-position="337">
+              <caret line="19" column="0" lean-forward="false" selection-start-line="19" selection-start-column="0" selection-end-line="19" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -109,7 +108,7 @@
       <file leaf-file-name="fastrcnn.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/FasterRCNN/building_blocks/fastrcnn.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-1028">
+            <state relative-caret-position="-868">
               <caret line="56" column="12" lean-forward="false" selection-start-line="56" selection-start-column="6" selection-end-line="56" selection-end-column="12" />
               <folding>
                 <element signature="e#954#2597#1" expanded="false" />
@@ -143,9 +142,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>rpn_class_prob</find>
-      <find>C5</find>
-      <find>conf</find>
       <find>tf.shape</find>
       <find>rpn_class_logits</find>
       <find>RPN_ANCHOR_SCALES</find>
@@ -172,7 +168,10 @@
       <find>set_pretrained_weights</find>
       <find>rpn_model</find>
       <find>rpn_class_probss</find>
+      <find>BatchNorm</find>
       <find>roi_pooling</find>
+      <find>mrcnn</find>
+      <find>get_anchors_delta</find>
     </findStrings>
     <replaceStrings>
       <replace>add_smry=False</replace>
@@ -470,7 +469,7 @@
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.39842632" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.398332" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Data View" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -791,22 +790,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/MaskRCNN/building_blocks/fpn.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3216">
-          <caret line="197" column="26" lean-forward="false" selection-start-line="197" selection-start-column="26" selection-end-line="197" selection-end-column="26" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/MaskRCNN/building_blocks/ops.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1847">
-          <caret line="22" column="32" lean-forward="true" selection-start-line="22" selection-start-column="32" selection-end-line="22" selection-end-column="32" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$USER_HOME$/App-Setup/anaconda/envs/anaconda35/lib/python3.5/site-packages/tensorflow/python/framework/tensor_util.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="344">
@@ -852,7 +835,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/FasterRCNN/building_blocks/fastrcnn.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1028">
+        <state relative-caret-position="-868">
           <caret line="56" column="12" lean-forward="false" selection-start-line="56" selection-start-column="6" selection-end-line="56" selection-end-column="12" />
           <folding>
             <element signature="e#954#2597#1" expanded="false" />
@@ -862,10 +845,26 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/MaskRCNN/building_blocks/ops.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="337">
+          <caret line="19" column="0" lean-forward="false" selection-start-line="19" selection-start-column="0" selection-end-line="19" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/MaskRCNN/building_blocks/fpn.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="328">
+          <caret line="53" column="36" lean-forward="false" selection-start-line="53" selection-start-column="36" selection-end-line="53" selection-end-column="36" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/MaskRCNN/building_blocks/proposals_tf.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1861">
-          <caret line="40" column="35" lean-forward="false" selection-start-line="40" selection-start-column="35" selection-end-line="40" selection-end-column="35" />
+        <state relative-caret-position="-3053">
+          <caret line="36" column="26" lean-forward="false" selection-start-line="36" selection-start-column="13" selection-end-line="36" selection-end-column="26" />
           <folding>
             <element signature="e#2214#2903#1" expanded="false" />
             <element signature="e#5351#6268#1" expanded="false" />
@@ -878,11 +877,17 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/MaskRCNN/building_blocks/maskrcnn.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-875">
-          <caret line="226" column="13" lean-forward="true" selection-start-line="226" selection-start-column="13" selection-end-line="226" selection-end-column="13" />
+        <state relative-caret-position="399">
+          <caret line="312" column="17" lean-forward="true" selection-start-line="312" selection-start-column="17" selection-end-line="312" selection-end-column="17" />
           <folding>
-            <element signature="e#251#274#0" expanded="true" />
-            <element signature="e#555#2365#1" expanded="false" />
+            <element signature="e#250#290#0" expanded="true" />
+            <element signature="e#1846#1953#0" expanded="false" />
+            <element signature="e#2048#7943#0" expanded="false" />
+            <element signature="e#2048#3958#1" expanded="false" />
+            <element signature="e#4214#4284#0" expanded="false" />
+            <element signature="e#5519#5536#0" expanded="false" />
+            <element signature="e#6832#6900#0" expanded="false" />
+            <element signature="e#8522#9221#1" expanded="false" />
           </folding>
         </state>
       </provider>

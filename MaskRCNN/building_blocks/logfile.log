@@ -1,9 +1,9 @@
-2018-06-08 02:32:12,375 INFO     Foreground_probs shape: [None, None]
-2018-06-08 02:32:12,377 INFO     bbox_delta shape: [None, None, 4]
-2018-06-08 02:32:12,377 INFO     anchors shape: [None, None, 4]
-2018-06-08 02:32:12,386 INFO     max_anc_before_nms shape: Tensor("Minimum:0", shape=(), dtype=int32)
-2018-06-08 02:32:12,388 INFO     ix shape: [None, None]
-2018-06-08 02:32:12,429 INFO     scores shape = (?, ?)
-2018-06-08 02:32:12,430 INFO     Box delta shape = (?, ?, 4)
-2018-06-08 02:32:12,432 INFO     anchors shape = (?, ?, 4)
-2018-06-08 02:32:12,580 INFO     bx_nw shape: [2, None, 4]
+2018-06-08 21:50:14,566 INFO     Foreground_probs shape: [None, None]
+2018-06-08 21:50:14,569 INFO     bbox_delta shape: [None, None, 4]
+2018-06-08 21:50:14,569 INFO     anchors shape: [None, None, 4]
+2018-06-08 21:50:14,578 INFO     max_anc_before_nms shape: Tensor("Minimum:0", shape=(), dtype=int32)
+2018-06-08 21:50:14,580 INFO     ix shape: [None, None]
+2018-06-08 21:50:14,625 INFO     scores shape = (?, ?)
+2018-06-08 21:50:14,627 INFO     Box delta shape = (?, ?, 4)
+2018-06-08 21:50:14,628 INFO     anchors shape = (?, ?, 4)
+2018-06-08 21:50:14,821 INFO     bx_nw shape: [2, None, 4]
