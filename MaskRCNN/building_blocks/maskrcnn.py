@@ -44,7 +44,7 @@ class MaskRCNN():
         
         self.build(proposals, feature_maps, type)
     
-    def build(self, proposals, feature_maps, type='tf', DEBUG=False):
+    def build(self, proposals, feature_maps, type='keras', DEBUG=False):
         self.roi_pooling(self.image_shape, self.pool_shape, self.levels, proposals, feature_maps)
         
         if type=='tf':
@@ -174,15 +174,56 @@ class MaskRCNN():
         print (self.pooled_rois.shape)
 
         rois_shape = self.pooled_rois.get_shape().as_list()
+        
+        # Note we dont perform batch normalization, because as per matterport github implementation of Mask RCNN,
+        # it is suggested to not have it becasue batch norm doesnt perform well with very small batches.
+        # FC Layer 1
         x = tf.concat([
                 tf.stack([
-                    ops.conv_layer(self.pooled_rois[i], k_shape=self.pool_shape + [rois_shape[-1], 1024],
-                                   stride=1, padding='VALID', scope_name='mrcnn_class_ddconv1')
+                    ops.activation(ops.conv_layer(self.pooled_rois[i], k_shape=self.pool_shape + [rois_shape[-1], 1024],
+                                   stride=1, padding='VALID', scope_name='mrcnn_class_conv1'), 'relu', 'FC1_relu')
                     for i in range(0,rois_shape[0])])],
                 axis=0)
-
         self.FC1 = x if self.DEBUG else []
-    
+
+        # FC Layer 2
+        x = tf.concat([
+                tf.stack([
+                    ops.activation(ops.conv_layer(x[i], k_shape=[1,1,1024,1024],
+                                  stride=1, padding='VALID', scope_name='mrcnn_class_conv2'), 'relu', 'FC2_relu')
+                    for i in range(0, rois_shape[0])])],
+                    axis=0)
+        self.FC2 = x if self.DEBUG else []
+        
+        
+        # Squeeze the 2nd and 3rd dimension [num_batch, num_proposals, 1, 1, 1024] to [num_batch, num_proposals, 1024]
+        shared = tf.squeeze(x,[2,3])
+        self.shared = shared if self.DEBUG else []
+        
+        with tf.variable_scope('mrcnn_class_scores'):
+            mrcnn_class_logits = tf.concat([
+                tf.stack([
+                    ops.fc_layers(shared[i], k_shape=[1024, self.num_classes],scope_name='mrcnn_class_logits')
+                    for i in range(0, rois_shape[0])])],
+                    axis=0)
+
+            self.mrcnn_probs = tf.concat([
+                tf.stack([
+                    ops.activation(mrcnn_class_logits[i], 'softmax', scope_name='mrcnn_class')
+                    for i in range(0, rois_shape[0])])],
+                    axis=0)
+            
+        with tf.variable_scope('mrcnn_class_bbox'):
+            x = tf.concat([
+                tf.stack([
+                    ops.fc_layers(shared[i], k_shape=[1024, self.num_classes*4], scope_name='mrcnn_bbox')
+                    for i in range(0, rois_shape[0])])],
+                    axis=0)
+
+            s = tf.shape(x)
+            self.mrcnn_bbox = tf.reshape(x, [s[0], s[1], self.num_classes, 4], name="mrcnn_bbox")
+
+
     def classifier_with_fpn_keras(self):
         '''
         Detecting Objects and Refining Bbox:
@@ -216,7 +257,7 @@ class MaskRCNN():
 
         # Shared Convolution across the Classifier and Regressor
         shared = KL.Lambda(lambda x: K.squeeze(K.squeeze(x, 3), 2), name="pool_squeeze")(x)
-        self.shared = x if self.DEBUG else []
+        self.shared = shared if self.DEBUG else []
 
         # Classifier (Object detection)
         with tf.variable_scope('mrcnn_class_scores'):
@@ -247,6 +288,9 @@ class MaskRCNN():
         return self.box_to_level, self.sorting_tensor, self.ix, self.FC1, self.FC2, self.shared
 
     
+    
+    
+    
 
 
 def debugg():
@@ -272,35 +316,27 @@ def debugg():
     # Proposal Layer
     obj_p = Proposals(conf, inference_batch_size=num_batches)
     p_graph = obj_p.get_proposal_graph()
-    # ancd = obj_p.get_anchors_delta()
     
     print(p_graph)
     print('')
 
-    # # Mask RCNN layer
+    # Mask RCNN : ROI Pooling
     obj_MRCNN = MaskRCNN(image_shape=[800, 1024], pool_shape=[7, 7], num_classes=81, levels=[2, 3, 4, 5],
-                         proposals=p_graph['proposals'], feature_maps=feature_maps, DEBUG=True)
+                         proposals=p_graph['proposals'], feature_maps=feature_maps, type='tf', DEBUG=True)
     pooled_rois = obj_MRCNN.get_rois()
     mrcnn_class_probs = obj_MRCNN.get_mrcnn_class_probs()
     mrcnn_bbox = obj_MRCNN.get_mrcnn_bbox()
     box_to_level, sorting_tensor, ix, FC1, FC2, shared = obj_MRCNN.debug_outputs()
 
     feed_dict = {p_graph['rpn_probs']: a, p_graph['rpn_bbox']: b, p_graph['input_anchors']: c}
+    
     with tf.Session() as sess:
         sess.run(tf.global_variables_initializer())
-        # p_ = sess.run(p_graph['proposals'], feed_dict=feed_dict)
-        #
-        # print('')
-        # print(p_.shape)
-        # print('')
-        # print (p_)
-        # print ('')
-        # assign_boxes(p_, [2,3,4,5], image_shape=[800, 1024])
-
 
         (proposals_, pooled_rois_, box_to_level_, sorting_tensor_, ix_, FC1_, FC2_, shared_, mrcnn_class_probs_,
          mrcnn_bbox_)  =  sess.run([p_graph['proposals'], pooled_rois, box_to_level, sorting_tensor, ix, FC1, FC2,
                                     shared, mrcnn_class_probs, mrcnn_bbox], feed_dict=feed_dict)
+
         print ('')
         print('TENSORFLOW STUFF.........')
         print('proposals ', proposals_)
@@ -313,91 +349,20 @@ def debugg():
         print('')
         print('pooled ', pooled_rois[0].shape)
         print('')
-    #     # print('mrcnn_class_probs ', cs.shape)
         print('')
         print ('FC1_ shape: ', FC1_.shape, FC1_)
-        print ('')
-        print('FC2_ shape: ', FC2_.shape, FC2_)
         print('')
-        print('shared_ shape: ', shared_.shape, shared)
-    #     print ('')
-        
+        print('FC2_ shape: ', FC2_.shape, FC2_)
+        print ('')
+        print('shared shape: ', shared_.shape, shared_)
         print('mrcnn_class_probs_ ', mrcnn_class_probs_.shape, mrcnn_class_probs_)
         print('')
         print('mrcnn_bbox_ ', mrcnn_bbox_.shape, mrcnn_bbox_)
         print('')
-    
+    #
 
-debugg()
-
-
+# debugg()
 
 
 
 
-
-
-'''
-
-[[-0.61580211  0.59458905]
- [ 0.03991634 -0.36171046]
- [-0.03470951 -0.58450645]]
-[[-0.35293397  0.84925073]
- [-0.53971034 -0.53223413]
- [-0.09493041 -0.25965157]]
-[[[ 0.21733749]
-  [ 0.50495517]]
-
- [[ 0.02154326]
-  [ 0.19251466]]
-
- [[ 0.00329499]
-  [ 0.15176801]]]
-[ 4.  5.  3.  4.  1.  4.]
-[ 4.  5.  3.  4.  2.  4.]'''
-
-
-def assign_boxes(boxes, layers, image_shape):
-    '''
-    :param boxes: Normalized anchor boxes (Proposals)
-    :param layers: [2, 3, 4, 5] , pertaining to P2, P3, P4, P5
-    :return:
-    '''
-    
-    k0 = 4
-    min_k = min(layers)
-    max_k = max(layers)
-    
-    h = boxes[:, :, 2] - boxes[:, :, 0]
-    w = boxes[:, :, 3] - boxes[:, :, 1]
-    # print(h)
-    # print(w)
-    areas = h * w
-    # areas = areas.reshape([areas.shape[0], areas.shape[1], 1]) # [num_batches, num_boxes, 1]
-    image_area = image_shape[0] * image_shape[1]
-    print(areas)
-    
-    # We use the formula given in the FPN (Feature Pyramid Network paper), this formula has another interesting term
-    # which is the multiplication of np.sqrt(image_area), this is done (I guess) because our boxes are still in
-    # normalized coordinates
-    print(np.sqrt(areas))
-    print(np.sqrt(image_area))
-    k = k0 + np.round(np.log2(np.sqrt(areas) / 224 * np.sqrt(image_area)))  # The paper says to perform
-    # floor operation
-    
-    # k = np.minimum(5, np.maximum(2, k))
-    
-    return k.astype(np.int32)
-
-# def assign_2():
-#     assigned_layers = tf.reshape(assigned_layers, [-1])
-#
-#     assigned_tensors = []
-#     for t in tensors:
-#         split_tensors = []
-#         for l in layers:
-#             tf.cast(l, tf.int32)
-#             inds = tf.where(tf.equal(assigned_layers, l))
-#             inds = tf.reshape(inds, [-1])
-#             split_tensors.append(tf.gather(t, inds))
-#         assigned_tensors.append(split_tensors)

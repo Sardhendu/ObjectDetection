@@ -200,5 +200,7 @@ def activation(X, type='relu', scope_name='relu'):
         return tf.nn.sigmoid(X, name=scope_name)
     elif type == 'tanh':
         return tf.nn.tanh(X, name=scope_name)
+    elif type == 'softmax':
+        return tf.nn.softmax(X, name=scope_name)
     else:
         raise ValueError('Provide proper Activation function')
