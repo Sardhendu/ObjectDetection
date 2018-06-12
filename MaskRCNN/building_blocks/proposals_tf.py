@@ -50,9 +50,9 @@ class Proposals():
 
         self.DEBUG = DEBUG
         self.rpn_bbox_stddev = conf.RPN_BBOX_STDDEV
-        self.num_box_before_nms = 5 #conf.PRE_NMS_ROIS_INFERENCE
-        self.num_boxes_after_nms = 4#conf.POST_NMS_ROIS_INFERENCE
-        self.iou_threshold = 0.3#conf.RPN_NMS_THRESHOLD
+        self.num_box_before_nms = conf.PRE_NMS_ROIS_INFERENCE # 5
+        self.num_boxes_after_nms = conf.POST_NMS_ROIS_INFERENCE # 4
+        self.iou_threshold = conf.RPN_NMS_THRESHOLD # 0.3
         self.batch_size = batch_size
         
         self.build()
@@ -281,7 +281,6 @@ class Proposals():
                            [1 3]]]  # says to select the 3 index of 1 image
         '''
         
-        print ('Gathering Data')
         mesh = tf.meshgrid(tf.range(tf.shape(ix)[1]), tf.range(tf.shape(ix)[0]))[1]
         ixs = tf.stack([mesh, ix], axis=2)
     

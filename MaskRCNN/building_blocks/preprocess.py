@@ -83,10 +83,17 @@ def process_images(list_of_images, list_of_image_ids):
     
     
     # Generate Anchors
-    resnet_stage_shapes = utils.get_resnet_stage_shapes(conf, image_shape=[5, 5, 3])
-    anchors = utils.gen_anchors(batch_size=transformed_images.shape[0], scales=conf.RPN_ANCHOR_SCALES,
-                                ratios=conf.RPN_ANCHOR_RATIOS, feature_shapes=resnet_stage_shapes,
-                                feature_strides=conf.RESNET_STRIDES, anchor_strides=conf.RPN_ANCHOR_STRIDE)
+    resnet_stage_shapes = utils.get_resnet_stage_shapes(
+            conf, image_shape=transformed_images.shape[1:]
+    )
+    anchors = utils.gen_anchors(image_shape=transformed_images.shape[1:],
+                                batch_size=transformed_images.shape[0],
+                                scales=conf.RPN_ANCHOR_SCALES,
+                                ratios=conf.RPN_ANCHOR_RATIOS,
+                                feature_map_shapes=resnet_stage_shapes,
+                                feature_map_strides=conf.RESNET_STRIDES,
+                                anchor_strides=conf.RPN_ANCHOR_STRIDE)
+
     print('(process_images) Anchors: (shape) ', anchors.shape)
 
 

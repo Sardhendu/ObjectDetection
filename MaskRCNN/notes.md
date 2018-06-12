@@ -95,7 +95,7 @@ FPN: https://medium.com/@jonathan_hui/understanding-feature-pyramid-networks-for
     Required 3 inputs
     1. rpn_class_probs
     2. rpn_bbox
-    3. input_anchors: [num_batches, num_anhcors, 4]
+    3. input_anchors: [num_batches, num_anchors, 4]
         * The anchor generation depends on how many feature maps are produces by FPN and the anchor strides.
         * Say, if the feature_map is [256x256] and anchor_stride = 1, If anchors per pixel position is 3 then the total number of anchors = 256x256c3 = 196608.
         * If using an FPN model then we calculate the anchors for each feature map and append anchors generated from each feature map.

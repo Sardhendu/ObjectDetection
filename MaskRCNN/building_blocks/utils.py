@@ -106,13 +106,13 @@ def norm_boxes(anchors, shape):
     shift = np.array([0, 0, 1, 1])
     return np.divide((anchors - shift), scale).astype(np.float32)
 
-def generate_anchors_for_feature_map(scales, ratios, feature_map_shape, feature_map_stride, anchor_strides):
+def generate_anchors_for_feature_map(scales, ratios, feature_map_shapes, feature_map_strides, anchor_strides):
     """
     Generates anchors for each feature map
     
     :param scales:                  1D array of anchor sizes in pixels. Example: [32, 64, 128]
     :param ratios:                  1D array of ratios [0.5, 1, 2]
-    :param feature_map_shape:       Shape of each feature map from teh FPN network
+    :param feature_map_shapes:       Shape of each feature map from teh FPN network
     :param feature_map_stride:      1D array: Number of strides require to convolve the image into each
                                     feature map Normally [4, 8,16, 32, 64]
     :param anchor_strides:          Normally 1 (We require anchor at each position of the feature map)
@@ -130,7 +130,7 @@ def generate_anchors_for_feature_map(scales, ratios, feature_map_shape, feature_
         --> A Square anchor (ratio h:w = 1:1)
         --> A horizontal rectangular anchor (ratio h:w = 0.5:1)
         --> A vertical rectangular anchor (ratio h:w = 1:2)
-        Example: If feature_map_shape = [64x64], scale = 128 and feature_map_stride = 16
+        Example: If feature_map_shapes = [64x64], scale = 128 and feature_map_stride = 16
                 then anc1=[128 x 128] anc2=[181.02 x 90.51] anc3=[90.51 x 181.02]
     
     2. Now these three anchors developed in the above step would have to slide through every pixel with a stride 16.
@@ -184,8 +184,8 @@ def generate_anchors_for_feature_map(scales, ratios, feature_map_shape, feature_
     widths = scales * np.sqrt(ratios)
     
     # # Enumerate shifts in feature space
-    shifts_y = np.arange(0, feature_map_shape[0], anchor_strides) * feature_map_stride
-    shifts_x = np.arange(0, feature_map_shape[1], anchor_strides) * feature_map_stride
+    shifts_y = np.arange(0, feature_map_shapes[0], anchor_strides) * feature_map_strides
+    shifts_x = np.arange(0, feature_map_shapes[1], anchor_strides) * feature_map_strides
     shifts_x, shifts_y = np.meshgrid(shifts_x, shifts_y)
     
     # # Enumerate combinations of shifts, widths, and heights
@@ -212,16 +212,16 @@ def generate_anchors_for_feature_map(scales, ratios, feature_map_shape, feature_
 
 
 
-def gen_anchors(image_shape, batch_size, scales, ratios, feature_map_shape, feature_strides, anchor_strides):
+def gen_anchors(image_shape, batch_size, scales, ratios, feature_map_shapes, feature_map_strides, anchor_strides):
     """
     Create anchor boxes for each feature_map of pyramid stage and concat them
     """
     anchors = []
     for i in range(0,len(scales)):
-            # print ('running for ', scales[i], feature_map_shape[i], feature_strides[i])
-        logging.info('Anchors: running for..... scales=%s, feature_map_shape=%s, feature_strides=%s',
-                     str(scales[i]), str(feature_map_shape[i]), str(feature_strides[i]))
-        anchors.append(generate_anchors_for_feature_map(scales[i], ratios, feature_map_shape[i], feature_strides[i],
+            # print ('running for ', scales[i], feature_map_shapes[i], feature_map_strides[i])
+        logging.info('Anchors: running for..... scales=%s, feature_map_shapes=%s, feature_map_strides=%s',
+                     str(scales[i]), str(feature_map_shapes[i]), str(feature_map_strides[i]))
+        anchors.append(generate_anchors_for_feature_map(scales[i], ratios, feature_map_shapes[i], feature_map_strides[i],
                                                      anchor_strides))
     anchors = np.concatenate(anchors, axis=0)
     logging.info('Anchors: concatenated for each stage: shape = %s', str(anchors.shape))
@@ -254,13 +254,13 @@ def debug_gen_anchors():
     anchors = gen_anchors(image_shape = [1024,1024,3],
                           batch_size=2, scales=conf.RPN_ANCHOR_SCALES,
                           ratios=conf.RPN_ANCHOR_RATIOS,
-                          feature_map_shape=resnet_stage_shapes,
-                          feature_strides=conf.RESNET_STRIDES,
+                          feature_map_shapes=resnet_stage_shapes,
+                          feature_map_strides=conf.RESNET_STRIDES,
                           anchor_strides=conf.RPN_ANCHOR_STRIDE)
     print (anchors.shape, anchors)
     
     
-debug_gen_anchors()
+# debug_gen_anchors()
 
 
 

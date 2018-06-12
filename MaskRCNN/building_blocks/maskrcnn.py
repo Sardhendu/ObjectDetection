@@ -302,10 +302,10 @@ def debugg():
 
     # P2 = (2, 256, 256, 256), P3 = (2, 128, 128, 256), P4 = (2, 64, 64, 256), P5 = (2, 32, 32, 256)
 
-    P2 = np.array(np.random.random((2, 256, 256,256)), dtype='float32')
-    P3 = np.array(np.random.random((2, 128, 128, 256)), dtype='float32')
-    P4 = np.array(np.random.random((2, 64, 64, 256)), dtype='float32')
-    P5 = np.array(np.random.random((2, 32, 32, 256)), dtype='float32')
+    P2 = np.array(np.random.random((num_batches, 256, 256,256)), dtype='float32')
+    P3 = np.array(np.random.random((num_batches, 128, 128, 256)), dtype='float32')
+    P4 = np.array(np.random.random((num_batches, 64, 64, 256)), dtype='float32')
+    P5 = np.array(np.random.random((num_batches, 32, 32, 256)), dtype='float32')
     feature_maps = [P2, P3, P4, P5]
 
     a = np.array(np.random.random((2, 6, 2)), dtype='float32')
@@ -314,7 +314,7 @@ def debugg():
 
 
     # Proposal Layer
-    obj_p = Proposals(conf, inference_batch_size=num_batches)
+    obj_p = Proposals(conf, batch_size=num_batches)
     p_graph = obj_p.get_proposal_graph()
 
     # Mask RCNN : ROI Pooling
