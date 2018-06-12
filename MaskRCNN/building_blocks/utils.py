@@ -1,13 +1,68 @@
 
 
 
-import tensorflow as tf
 import numpy as np
+from skimage import transform
 import logging
 
 logging.basicConfig(level=logging.DEBUG, filename="logfile.log", filemode="w",
                     format="%(asctime)-15s %(levelname)-8s %(message)s")
 
+
+def normalize_image(images, mean_pixels):
+    """
+    Expects an RGB image (or array of images) and subtraces
+    the mean pixel and converts it to float. Expects image
+    colors in RGB order.
+    """
+    return images.astype(np.float32) - mean_pixels
+
+
+def resize_image(image, min_dim, max_dim, min_scale, mode='square'):
+    ''' Adjusting image shape for processing throught the NET
+
+    To Note:
+    1. the scale can not be less than min_scale i.e (0)
+    2. the scale can not exceed the max_scale i.e (max_dim/max_image_dim)
+    3.
+    :param image:       Can be of any dimension and resolution
+    :param min_dim:     min_dim mostly 800
+    :param max_dim:     max_dim
+    :param min_scale:   0
+    :param mode:        square [h = w]
+    :return:
+
+    '''
+    
+    h, w = image.shape[0:2]
+    
+    # Scale up not down, based on the min dimension of the image
+    scale = max(1, min_dim / min(h, w))
+    
+    # Ensure the scale is greater or equal to the minimum scale
+    scale = max(scale, min_scale) if min_scale else scale
+    
+    # Ensure that the scale is smaller or equal to the maximum scale
+    max_scale = max_dim / max(h, w)
+    scale = min(scale, max_scale)
+    
+    # If the scale is greater than 1 then perform bilinear interpolation to increase the size of h and w by the scale
+    if scale != 1:
+        image = transform.resize(image, (round(h * scale), round(w * scale)), order=1, mode='constant',
+                                 preserve_range=True)
+    
+    # Image may still be smaller than teh desired size [max_dim, max_dim], we should perform zero padding if so.
+    h, w = image.shape[:2]
+    top_pad = (max_dim - h) // 2
+    bottom_pad = max_dim - h - top_pad
+    left_pad = (max_dim - w) // 2
+    right_pad = max_dim - w - left_pad
+    
+    padding = [(top_pad, bottom_pad), (left_pad, right_pad), (0, 0)]
+    image = np.pad(image, padding, mode='constant', constant_values=0)
+    image_window = (top_pad, left_pad, h + top_pad, w + bottom_pad)
+    
+    return image.astype(image.dtype), image_window, scale, padding
 
 def get_resnet_stage_shapes(conf, image_shape):
     '''
@@ -34,11 +89,35 @@ def get_resnet_stage_shapes(conf, image_shape):
               int(np.ceil(image_shape[1] / stride))]
              for stride in conf.RESNET_STRIDES])
 
+
+def norm_boxes(anchors, shape):
+    """Converts boxes from pixel coordinates to normalized coordinates.
+    boxes: [N, (y1, x1, y2, x2)] in pixel coordinates
+    shape: [..., (height, width)] in pixels
+
+    Note: In pixel coordinates (y2, x2) is outside the box. But in normalized
+    coordinates it's inside the box.
+
+    Returns:
+        [N, (y1, x1, y2, x2)] in normalized coordinates
+    """
+    h, w = shape
+    scale = np.array([h - 1, w - 1, h - 1, w - 1])
+    shift = np.array([0, 0, 1, 1])
+    return np.divide((anchors - shift), scale).astype(np.float32)
+
 def generate_anchors_for_feature_map(scales, ratios, feature_map_shape, feature_map_stride, anchor_strides):
     """
     Generates anchors for each feature map
     
-    scales: 1D array of anchor sizes in pixels. Example: [32, 64, 128]
+    :param scales:                  1D array of anchor sizes in pixels. Example: [32, 64, 128]
+    :param ratios:                  1D array of ratios [0.5, 1, 2]
+    :param feature_map_shape:       Shape of each feature map from teh FPN network
+    :param feature_map_stride:      1D array: Number of strides require to convolve the image into each
+                                    feature map Normally [4, 8,16, 32, 64]
+    :param anchor_strides:          Normally 1 (We require anchor at each position of the feature map)
+    
+    scales:
     ratios: 1D array of anchor ratios of width/height. Example: [0.5, 1, 2]
     shape: [height, width] spatial shape of the feature map over which
             to generate anchors.
@@ -99,16 +178,16 @@ def generate_anchors_for_feature_map(scales, ratios, feature_map_shape, feature_
     scales, ratios = np.meshgrid(np.array(scales), np.array(ratios))
     scales = scales.flatten()
     ratios = ratios.flatten()
-    #
+
     # # Enumerate heights and widths from scales and ratios
     heights = scales / np.sqrt(ratios)
     widths = scales * np.sqrt(ratios)
-    #
+    
     # # Enumerate shifts in feature space
     shifts_y = np.arange(0, feature_map_shape[0], anchor_strides) * feature_map_stride
     shifts_x = np.arange(0, feature_map_shape[1], anchor_strides) * feature_map_stride
     shifts_x, shifts_y = np.meshgrid(shifts_x, shifts_y)
-
+    
     # # Enumerate combinations of shifts, widths, and heights
     box_widths, box_centers_x = np.meshgrid(widths, shifts_x)
     box_heights, box_centers_y = np.meshgrid(heights, shifts_y)
@@ -131,35 +210,57 @@ def generate_anchors_for_feature_map(scales, ratios, feature_map_shape, feature_
     return boxes
 
 
-def gen_anchors(batch_size, scales, ratios, feature_shapes, feature_strides, anchor_strides):
+
+
+def gen_anchors(image_shape, batch_size, scales, ratios, feature_map_shape, feature_strides, anchor_strides):
     """
     Create anchor boxes for each feature_map of pyramid stage and concat them
     """
     anchors = []
     for i in range(0,len(scales)):
-            # print ('running for ', scales[i], feature_shapes[i], feature_strides[i])
-        logging.info('Anchors: running for..... scales=%s, feature_shapes=%s, feature_strides=%s',
-                     str(scales[i]), str(feature_shapes[i]), str(feature_strides[i]))
-        anchors.append(generate_anchors_for_feature_map(scales[i], ratios, feature_shapes[i], feature_strides[i],
+            # print ('running for ', scales[i], feature_map_shape[i], feature_strides[i])
+        logging.info('Anchors: running for..... scales=%s, feature_map_shape=%s, feature_strides=%s',
+                     str(scales[i]), str(feature_map_shape[i]), str(feature_strides[i]))
+        anchors.append(generate_anchors_for_feature_map(scales[i], ratios, feature_map_shape[i], feature_strides[i],
                                                      anchor_strides))
     anchors = np.concatenate(anchors, axis=0)
     logging.info('Anchors: concatenated for each stage: shape = %s', str(anchors.shape))
     anchors = np.broadcast_to(anchors, (batch_size,) + anchors.shape)
     logging.info('Anchors: Broadcast to num_batches: shape = %s', str(anchors.shape))
+
+    # Normalize Anchors
+    anchors = norm_boxes(anchors, shape=image_shape[:2])
     return anchors
-        
+    
+    
+    
 
 
 
-
-def debugg():
+   
+##########################   DEBUGGER
+   
+def debug_resize_image():
+    image_resized, image_window, scale, padding = resize_image(
+            image=np.random.random((100, 200, 3)), min_dim=800, max_dim=1024, min_scale=0,
+                            mode='square')
+    print (image_resized.shape)
+    
+def debug_gen_anchors():
     from MaskRCNN.config import config as conf
     resnet_stage_shapes = get_resnet_stage_shapes(conf, image_shape=[1024,1024,3])
-    print(resnet_stage_shapes)
+    # print(resnet_stage_shapes)
 
-    anchors = gen_anchors(batch_size=2, scales=conf.RPN_ANCHOR_SCALES, ratios=conf.RPN_ANCHOR_RATIOS,
-                           feature_shapes=resnet_stage_shapes, feature_strides=conf.RESNET_STRIDES,
-                           anchor_strides=conf.RPN_ANCHOR_STRIDE)
+    anchors = gen_anchors(image_shape = [1024,1024,3],
+                          batch_size=2, scales=conf.RPN_ANCHOR_SCALES,
+                          ratios=conf.RPN_ANCHOR_RATIOS,
+                          feature_map_shape=resnet_stage_shapes,
+                          feature_strides=conf.RESNET_STRIDES,
+                          anchor_strides=conf.RPN_ANCHOR_STRIDE)
+    print (anchors.shape, anchors)
     
-# debugg()
     
+debug_gen_anchors()
+
+
+

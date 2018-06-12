@@ -25,32 +25,45 @@ class Proposals():
     The input to this network is:
     rpn_class_probs: [num_batches, anchor, [back_ground_probability, fore_ground_probability]]
     '''
-    def __init__(self, conf, inference_batch_size):
-        self.rpn_class_probs = tf.placeholder(dtype=tf.float32,
-                                               shape=[None, None, 2],
-                                               name="rpn_prob")
-    
-        self.rpn_bbox = tf.placeholder(dtype=tf.float32,
-                                  shape=[None, None, 4],
-                                  name="rpn_bbox")
-    
-        self.input_anchors = tf.placeholder(dtype=tf.float32,
-                                       shape=[None, None, 4],
-                                       name="input_anchors")
+    def __init__(self, conf, batch_size, rpn_class_probs=[], rpn_bbox=[], input_anchors=[], DEBUG=False):
+        if  len(rpn_class_probs) ==0:
+            self.rpn_class_probs = tf.placeholder(dtype=tf.float32,
+                                                   shape=[None, None, 2],
+                                                   name="rpn_prob")
+        else:
+            self.rpn_class_probs = np.array(rpn_class_probs, dtype='float32')
+            
+        if len(rpn_bbox) == 0:
+            self.rpn_bbox = tf.placeholder(dtype=tf.float32,
+                                      shape=[None, None, 4],
+                                      name="rpn_bbox")
+        else:
+            self.rpn_bbox = np.array(rpn_bbox, dtype='float32')
+            
+            
+        if len(input_anchors) == 0:
+            self.input_anchors = tf.placeholder(dtype=tf.float32,
+                                           shape=[None, None, 4],
+                                           name="input_anchors")
+        else:
+            self.input_anchors = np.array(input_anchors, dtype='float32')
+
+        self.DEBUG = DEBUG
         self.rpn_bbox_stddev = conf.RPN_BBOX_STDDEV
         self.num_box_before_nms = 5 #conf.PRE_NMS_ROIS_INFERENCE
         self.num_boxes_after_nms = 4#conf.POST_NMS_ROIS_INFERENCE
         self.iou_threshold = 0.3#conf.RPN_NMS_THRESHOLD
-        self.inference_batch_size = inference_batch_size
+        self.batch_size = batch_size
         
         self.build()
+        
 
     def build(self):
         """
         Main function : required to get the filtered box (proposals)
 
         :param config:
-        :param inference_batch_size:
+        :param batch_size:
             inputs:
             (1, 196608, 2) (1, 196608, 2) (1, 196608, 4)
             * rpn_class_probs: [batch, anchors, (bg prob, fg prob)]
@@ -63,19 +76,17 @@ class Proposals():
     
         # We would like to only capture the foreground class probabilities
         scores = self.rpn_class_probs[:, :, 1]
-        logging.info('Foreground_probs shape: %s', str(scores.get_shape().as_list()))
+        logging.info('Foreground_probs shape: %s', str(scores.shape))
     
         # Box deltas = [batch, num_rois, 4]
         bbox_delta = self.rpn_bbox * np.reshape(self.rpn_bbox_stddev, [1, 1, 4])
-        logging.info('bbox_delta shape: %s', str(bbox_delta.get_shape().as_list()))
+        logging.info('bbox_delta shape: %s', str(bbox_delta.shape))
     
         # Get the anchors [None, 2]
         anchors = self.input_anchors
-        logging.info('anchors shape: %s', str(anchors.get_shape().as_list()))
+        logging.info('anchors shape: %s', str(anchors.shape))
     
-        # Searching through lots of anchors can be time consuming. So we would select at most top 6000 of them for
-        # further
-        # processing
+        # Searching through lots of anchors can be time consuming. So we would select at most top 6000 of them for further processing [anchors = [num_batches, num_anhcors, 4]]
         max_anc_before_nms = tf.minimum(self.num_box_before_nms, tf.shape(anchors)[1])
         logging.info('max_anc_before_nms shape: %s', str(max_anc_before_nms))
     
@@ -86,24 +97,38 @@ class Proposals():
         # Now that we have the idx of the top anchors we would want to only gather the data related pertaining to
         # those idx. We would wanna gather foreground_prob and boxes only for the selected anchors.
         # scores = tf.gather_nd(scores, ix)
-        scores = self.gather_data_for_idx(ix, scores, bbox_delta, anchors)
+        scores, bbox_delta, anchors = self.gather_data_for_idx(ix, scores, bbox_delta, anchors)
+
+        # return ixs, mesh, scores, boxes, anchors
+        anchor_delta = self.apply_box_deltas(anchors, bbox_delta)
     
         # The boxes can have values at the interval of 0,1
         window = np.array([0, 0, 1, 1], dtype=np.float32)
-        self.clip_boxes_to_01(window=window)
+        self.anchor_delta_clipped = self.clip_boxes_to_01(window=window,
+                                                          anchor_delta=anchor_delta)
     
         # Perform Non-max suppression. Non max suppression is performed for one image at a time, so we loop over the
         #  images here and stack them at the end
         self.proposals = tf.concat([
             tf.stack([
                 self.non_max_suppression(scores[num],
-                                         self.anchor_delta[num],
+                                         self.anchor_delta_clipped[num],
                                          max_boxes=self.num_boxes_after_nms,
                                          iou_threshold=self.iou_threshold)
-            ], axis=0, name='nms_%s' % str(num)
-            ) for num in range(0, self.inference_batch_size)], axis=0, name='concat_boxes'
+                ], axis=0, name='nms_%s' % str(num)
+            ) for num in range(0, self.batch_size)], axis=0, name='concat_boxes'
         )
+        
         logging.info('bx_nw shape: %s', str(self.proposals.get_shape().as_list()))
+        
+        print ('(Proposals) Proposals (shape) ', self.proposals.shape)
+
+        if self.DEBUG:
+            self.bbox_delta = bbox_delta
+            self.ix = ix
+            self.scores = scores
+            self.anchors = anchors
+            self.anchor_delta = anchor_delta
         
     def apply_box_deltas(self, pre_nms_anchors, bbox_delta):
         '''
@@ -129,8 +154,8 @@ class Proposals():
         '''
         height = pre_nms_anchors[:,:,2] - pre_nms_anchors[:,:,0]
         width = pre_nms_anchors[:,:,3] - pre_nms_anchors[:,:,1]
-        center_y = pre_nms_anchors[:,:,0] + 0.5*height
-        center_x = pre_nms_anchors[:,:,1] + 0.5*width
+        center_y = pre_nms_anchors[:,:,0] + 0.5 * height
+        center_x = pre_nms_anchors[:,:,1] + 0.5 * width
         
         # Apply Box Delta (A)
         center_y += bbox_delta[:,:,0] * height
@@ -143,12 +168,12 @@ class Proposals():
         x1 = center_x - 0.5 * width
         y2 = y1 + height
         x2 = x1 + width
-        print (y1.shape, x1.shape, y2.shape, x2.shape)
+
         out = tf.stack([y1, x1, y2, x2], axis=1, name="apply_box_deltas_out")
         out = tf.transpose(out, [0, 2, 1])
         return out
 
-    def non_max_suppression(self, scores, boxes, max_boxes=2, iou_threshold=0.7):
+    def non_max_suppression(self, scores, proposals, max_boxes=2, iou_threshold=0.7):
         """
         Applies Non-max suppression (NMS) to set of boxes
 
@@ -164,16 +189,22 @@ class Proposals():
         """
     
         # Use tf.image.non_max_suppression() to get the list of indices corresponding to boxes you keep
-        nms_indices = tf.image.non_max_suppression(boxes,
+        nms_indices = tf.image.non_max_suppression(proposals,
                                                    scores,
                                                    max_output_size=max_boxes,
                                                    iou_threshold=iou_threshold,
                                                    name='activeBox_indice')
-    
-        boxes = tf.gather(boxes, nms_indices)
-        return boxes
 
-    def clip_boxes_to_01(self, window):
+        proposals = tf.gather(proposals, nms_indices)
+
+        # Sometimes due to the threshold set some batches may return num_proposals < num_boxes_after_nms
+        # Such a case would make inconsitent proposal shape across different batches. Inorder to overcome this
+        # problem, we pad the proposals with additional [0,0,0,0]
+        padding = tf.maximum(self.num_boxes_after_nms - tf.shape(proposals)[0], 0)
+        proposals = tf.pad(proposals, [(0, padding), (0, 0)])
+        return proposals
+
+    def clip_boxes_to_01(self, window, anchor_delta):
         """
         Clips Boxes within the range 0,1
 
@@ -192,14 +223,14 @@ class Proposals():
     
         # Window: [0,0,1,1] # 0,0 represents the top left corner and 1,1 represents the bottom right corner
         wy1, wx1, wy2, wx2 = tf.split(window, 4)
-        y1, x1, y2, x2 = tf.split(self.anchor_delta, 4, axis=2)
+        y1, x1, y2, x2 = tf.split(anchor_delta, 4, axis=2)
     
         y1 = tf.maximum(tf.minimum(y1, wy2), wy1)
         x1 = tf.maximum(tf.minimum(x1, wx2), wx1)
         y2 = tf.maximum(tf.minimum(y2, wy2), wy1)
         x2 = tf.maximum(tf.minimum(x2, wx2), wx1)
     
-        self.anchor_delta = tf.concat([y1, x1, y2, x2], axis=2, name="clipped_boxes")
+        return tf.concat([y1, x1, y2, x2], axis=2, name="clipped_boxes")
 
     def gather_data_for_idx(self, ix, scores, bbox_delta, anchors):
         '''
@@ -265,19 +296,19 @@ class Proposals():
         # Gather only the data pertaining to the ixs
         anchors = tf.gather_nd(anchors, ixs)
         logging.info('anchors shape = %s', str(anchors.shape))
-    
-        # return ixs, mesh, scores, boxes, anchors
-        self.anchor_delta = self.apply_box_deltas(anchors, bbox_delta)
-        
-        return scores
+
+        return scores, bbox_delta, anchors
     
     
     def get_proposal_graph(self):
         return dict(rpn_probs=self.rpn_class_probs, rpn_bbox=self.rpn_bbox,
                     input_anchors=self.input_anchors, proposals=self.proposals)
     
-    def get_anchors_delta(self):
-        return self.anchor_delta
+    def get_anchors_delta_clipped(self):
+        return self.anchor_delta_clipped
+    
+    def debug_outputs(self):
+        return self.bbox_delta, self.ix, self.scores, self.anchors, self.anchor_delta
    
 
 
@@ -286,129 +317,42 @@ def debugg():
     from MaskRCNN.config import config as conf
 
     np.random.seed(325)
-    num_batches = 2
-    proposal_count = 2
-    nms_threshold = np.float32(0.3)
 
     a = np.array(np.random.random((3, 5, 2)), dtype='float32')
     b = np.array(np.random.random((3, 5, 4)), dtype='float32')
-    c = np.array(np.random.random((3, 5, 4)), dtype='float32')
+    c = np.array(np.random.random((3, 24, 4)), dtype='float32')
 
-    obj_p = Proposals(conf, inference_batch_size=3)
+    obj_p = Proposals(conf, batch_size=3, DEBUG = True)
     p_graph = obj_p.get_proposal_graph()
-    # ix = obj_p.get_ix()
-    # sc = obj_p.get_scores()
-    # dt = obj_p.get_bboxes_delta()
-    # anc = obj_p.get_anchors()
-    ancd = obj_p.get_anchors_delta()
+    anchor_delta_clipped = obj_p.get_anchors_delta_clipped()
+    bbox_delta, ix, scores, anchors, anchor_delta = obj_p.debug_outputs()
+   
     # print(proposals)
     feed_dict = {p_graph['rpn_probs']: a, p_graph['rpn_bbox']: b, p_graph['input_anchors']: c}
     with tf.Session() as sess:
         sess.run(tf.global_variables_initializer())
 
-        # ix_ = sess.run([ix], feed_dict=feed_dict)
-        # sc_ = sess.run([sc], feed_dict=feed_dict)
-        # dt_ = sess.run([dt], feed_dict=feed_dict)
-        # pnmsa_ = sess.run([anc], feed_dict=feed_dict)
-        ancd_ = sess.run([ancd], feed_dict=feed_dict)
-        p_ = sess.run(p_graph['proposals'], feed_dict=feed_dict)
-        # print(ix_)
-        # print ('')
-        # print (sc_)
-        # print('')
-        # print(dt_[0].shape)
-        # print('')
-        # print(pnmsa_[0].shape)
+        bbox_delta_ = sess.run(bbox_delta, feed_dict=feed_dict)
+        ix_ = sess.run(ix, feed_dict=feed_dict)
+        scores_ = sess.run(scores, feed_dict=feed_dict)
+        anchors_ = sess.run(anchors, feed_dict=feed_dict)
+        anchor_delta_ = sess.run(anchor_delta, feed_dict=feed_dict)
+        anchor_delta_clipped_ = sess.run(anchor_delta_clipped, feed_dict=feed_dict)
+        proposals_ = sess.run(p_graph['proposals'], feed_dict=feed_dict)
+        
+        print('bbox_delta_ ', bbox_delta_.shape, bbox_delta_)
         print('')
-        print(ancd_)
+        print('ix_', ix_.shape, ix_)
+        print('')
+        print('scores_ ', scores_.shape, scores_)
+        print('')
+        print('anchors_ ', anchors_.shape, anchors_)
+        print('')
+        print('anchor_delta_ ', anchor_delta_.shape, anchor_delta_)
+        print('')
+        print('anchor_delta_clipped_ ', anchor_delta_clipped_.shape, anchor_delta_clipped_)
         print ('')
-        print(p_)
-
+        print('proposals_ ', proposals_.shape, proposals_)
 
 # debugg()
-
-
-
-
-'''
-ix = [array([[0, 3, 2, 1, 4],
-       [1, 2, 0, 4, 3],
-       [4, 0, 2, 3, 1]], dtype=int32)]
-
-sc_ = [array([[ 0.98104852,  0.79038447,  0.76019788,  0.68306577],
-       [ 0.95836937,  0.92400974,  0.55117744,  0.54641497],
-       [ 0.92985797,  0.9152084 ,  0.90162092,  0.88823181]], dtype=float32)]
-       
-dt_ = [array([[[  6.08330965e-02,   6.71194121e-02,   9.41824615e-02,
-           1.71722159e-01],
-        [  3.85359898e-02,   9.32771638e-02,   6.52525723e-02,
-           1.92653507e-01],
-        [  6.77995607e-02,   6.24737255e-02,   1.89149845e-02,
-           1.74794272e-02],
-        [  8.25559869e-02,   4.15760539e-02,   1.90824702e-01,
-           7.37159774e-02]],
-
-       [[  1.43593876e-02,   1.00482712e-02,   5.03815077e-02,
-           3.92356282e-03],
-        [  7.38601610e-02,   2.49234634e-03,   1.27579302e-01,
-           6.00859821e-02],
-        [  5.37443422e-02,   3.63819599e-02,   1.18435375e-01,
-           7.35748857e-02],
-        [  5.09575866e-02,   8.80408734e-02,   1.45163164e-01,
-           1.63295969e-01]],
-
-       [[  9.55238715e-02,   1.13850981e-02,   1.28908351e-01,
-           2.66324226e-02],
-        [  7.86226615e-02,   9.94997323e-02,   1.70552894e-01,
-           7.04915524e-02],
-        [  9.70137939e-02,   7.02699199e-02,   1.12953506e-01,
-           4.68629441e-05],
-        [  1.20924581e-02,   2.32591256e-02,   1.77218363e-01,
-           1.01405002e-01]]], dtype=float32)]
-           
-pnmsa_ = [array([[[ 0.66516078,  0.7107172 ,  0.104709  ,  0.41347158],
-        [ 0.4026624 ,  0.00647369,  0.97270262,  0.70907563],
-        [ 0.36219054,  0.18682894,  0.75377899,  0.75660789],
-        [ 0.0971365 ,  0.30265555,  0.30198509,  0.8906796 ]],
-
-       [[ 0.51335049,  0.67271036,  0.55130559,  0.13511348],
-        [ 0.45991206,  0.69495296,  0.141526  ,  0.19375683],
-        [ 0.71754569,  0.79186046,  0.89333463,  0.11504316],
-        [ 0.17198341,  0.0888403 ,  0.83701622,  0.88303244]],
-
-       [[ 0.40544087,  0.96145767,  0.37492931,  0.86902213],
-        [ 0.63724017,  0.69959635,  0.14438523,  0.45761779],
-        [ 0.50528699,  0.13827209,  0.50424409,  0.81720257],
-        [ 0.2975572 ,  0.38713291,  0.40366048,  0.97275996]]], dtype=float32)]
-        
-anchor_delta = [array([[[ 0.65874195,  0.71861047,  0.04293984,  0.36567649],
-        [ 0.40541095, -0.00262791,  1.01388812,  0.84925073],
-        [ 0.38500136,  0.21740168,  0.78406721,  0.79722756],
-        [ 0.09251355,  0.30461103,  0.34043097,  0.93761951]],
-
-       [[ 0.5129149 ,  0.66836518,  0.55283123,  0.12865484],
-        [ 0.45805818,  0.70922279,  0.09634772,  0.17698866],
-        [ 0.71594203,  0.79307377,  0.91383362,  0.06458205],
-        [ 0.15392342,  0.08832273,  0.92285311,  1.02339268]],
-
-       [[ 0.40462527,  0.96165276,  0.36991575,  0.86672235],
-        [ 0.64431632,  0.68435603,  0.05980986,  0.42470446],
-        [ 0.50524819,  0.18596455,  0.50408059,  0.86492682],
-        [ 0.28855395,  0.36950359,  0.41522977,  1.01763153]]], dtype=float32)]
-        
-[array([[[ 0.65874195,  0.71861047,  0.04293984,  0.36567649],
-        [ 0.40541095,  0.        ,  1.        ,  0.84925073],
-        [ 0.38500136,  0.21740168,  0.78406721,  0.79722756],
-        [ 0.09251355,  0.30461103,  0.34043097,  0.93761951]],
-
-       [[ 0.5129149 ,  0.66836518,  0.55283123,  0.12865484],
-        [ 0.45805818,  0.70922279,  0.09634772,  0.17698866],
-        [ 0.71594203,  0.79307377,  0.91383362,  0.06458205],
-        [ 0.15392342,  0.08832273,  0.92285311,  1.        ]],
-
-       [[ 0.40462527,  0.96165276,  0.36991575,  0.86672235],
-        [ 0.64431632,  0.68435603,  0.05980986,  0.42470446],
-        [ 0.50524819,  0.18596455,  0.50408059,  0.86492682],
-        [ 0.28855395,  0.36950359,  0.41522977,  1.        ]]], dtype=float32)]
-'''
 

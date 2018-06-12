@@ -61,7 +61,9 @@ class RPN():
         # Do a softmax classificaion to get output probabilities
         self.rpn_class_probs = tf.nn.softmax(self.rpn_class_logits, name='rpn_class_xxx')
         logging.info('rpn_class_probs: %s', self.rpn_class_probs.get_shape().as_list())
-        
+
+        print('(RPN) Class Logits (shape) ', self.rpn_class_logits.shape)
+        print('(RPN) Class Probs (shape) ', self.rpn_class_probs.shape)
 
     def get_bounding_box(self, x, anchor_stride, anchor_per_location):
         '''
@@ -98,6 +100,7 @@ class RPN():
         self.rpn_bbox = tf.reshape(x, [tf.shape(x)[0], -1, 4])
         # self.rpn_bbox = tf.reshape(x, [x.get_shape().as_list()[0], -1, 4])
         logging.info('rpn_bbox: %s', self.rpn_bbox.get_shape().as_list())
+        print('(RPN) Bbox (shape) ', self.rpn_bbox.shape)
         
     def get_rpn_class_logits(self):
         return self.rpn_class_logits

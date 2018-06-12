@@ -178,6 +178,12 @@ class FPN():
             self.C5 = x
         else:
             self.C5 = None
+            
+        print('(FPN) C1: (shape) ', self.C1.shape)
+        print('(FPN) C2: (shape) ', self.C2.shape)
+        print('(FPN) C3: (shape) ', self.C3.shape)
+        print('(FPN) C4: (shape) ', self.C4.shape)
+        print('(FPN) C5: (shape) ', self.C5.shape)
         
     def fpn_top_down_graph(self):
         '''
@@ -222,6 +228,11 @@ class FPN():
         logging.info('FPN - P2 = %s, P3 = %s, P4 = %s, P5 = %s:',
                      str(self.P2.get_shape().as_list()), str(self.P3.get_shape().as_list()),
                      str(self.P4.get_shape().as_list()), str(self.P5.get_shape().as_list()))
+
+        print('(FPN) P2: (shape) ', self.P2.shape)
+        print('(FPN) P3: (shape) ', self.P3.shape)
+        print('(FPN) P4: (shape) ', self.P4.shape)
+        print('(FPN) P5: (shape) ', self.P5.shape)
         
     def get_fpn_graph(self):
         return dict(fpn_c2=self.C2, fpn_c3=self.C3, fpn_c4=self.C4, fpn_c5=self.C5,

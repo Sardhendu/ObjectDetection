@@ -57,15 +57,25 @@ FPN: https://medium.com/@jonathan_hui/understanding-feature-pyramid-networks-for
  
  
 #### ABOUT THE WHOLE MODULE in short:
+1. Preprocess (Preprocessing the image to be feed into the network):
+    1. Resize the image with proper scale (aspect ratio):
+        * Use a scale to resize (resize done using bilinear interpolation or normal resize) 
+        * If the image < [1024, 1024] then perform bilinear interpolation to resize image to [1024, 1024]
+        * If the image > [1024, 1024] then perform normal resize operation to form [1024, 1024]
+        * In case if the image_height != image_weight perform zero padding to the smaller dimension
+        
+    2. Normalize the image with pretrained means
+    
+    3. Generate anchors (Note anchors are in pixel scale)
 
-1. FPN(Feature pyramid network): This step is basically used to generate feature maps at different scales.
+2. FPN(Feature pyramid network): This step is basically used to generate feature maps at different scales.
     We generate 4 different scale feature maps each with a depth of 256
         *   P2=[num_batches, 256, 256, 256], total pixels
         *   P3=[num_batches, 128, 128, 256], 
         *   P4=[num_batches, 64, 64, 256], 
         *   P5=[num_batches, 32, 32, 256]
         
-2. RPN (Region Proposal Networks): Performs two steps.
+3. RPN (Region Proposal Networks): Performs two steps.
     Assumption:
         * anchor_stride=1 and anchor_per_pixel = 3, this means that at every pixel in the feature map we generate 3 anchors. 
         
@@ -82,5 +92,18 @@ FPN: https://medium.com/@jonathan_hui/understanding-feature-pyramid-networks-for
         * For feature map 256x256 (P5): [num_batch, 32x32x3, 4], 3-> (dy, dx, log(dh), log(dw))
         
 3. Proposals ()
+    Required 3 inputs
+    1. rpn_class_probs
+    2. rpn_bbox
+    3. input_anchors: [num_batches, num_anhcors, 4]
+        * The anchor generation depends on how many feature maps are produces by FPN and the anchor strides.
+        * Say, if the feature_map is [256x256] and anchor_stride = 1, If anchors per pixel position is 3 then the total number of anchors = 256x256c3 = 196608.
+        * If using an FPN model then we calculate the anchors for each feature map and append anchors generated from each feature map.
+        * Normalized Anchors:
+            * We noralize the anchors in the scale od 0-1, since we make the bounding box prediction in nornalized scale
+            * Say image_shape = [1024,1024,3] and we have an anchor (box) at coordnates [212,212,712,712] then we normalize it to [212/1023, 212/1023, (712-1)/1023, (712)/1023]
+        
+    Output:
+    1. proposals
               
      

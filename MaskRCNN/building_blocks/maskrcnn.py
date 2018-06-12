@@ -316,13 +316,10 @@ def debugg():
     # Proposal Layer
     obj_p = Proposals(conf, inference_batch_size=num_batches)
     p_graph = obj_p.get_proposal_graph()
-    
-    print(p_graph)
-    print('')
 
     # Mask RCNN : ROI Pooling
     obj_MRCNN = MaskRCNN(image_shape=[800, 1024], pool_shape=[7, 7], num_classes=81, levels=[2, 3, 4, 5],
-                         proposals=p_graph['proposals'], feature_maps=feature_maps, type='tf', DEBUG=True)
+                         proposals=p_graph['proposals'], feature_maps=feature_maps, type='keras', DEBUG=True)
     pooled_rois = obj_MRCNN.get_rois()
     mrcnn_class_probs = obj_MRCNN.get_mrcnn_class_probs()
     mrcnn_bbox = obj_MRCNN.get_mrcnn_bbox()

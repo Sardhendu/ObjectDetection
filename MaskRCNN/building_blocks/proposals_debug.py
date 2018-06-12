@@ -111,6 +111,7 @@ class ProposalLayer():
         self.proposal_count = proposal_count
         self.nms_threshold = nms_threshold
         self.batch_size = 3
+        self.num_box_before_nms = 5
         self.rpn_class_probs = tf.placeholder(dtype=tf.float32,
                                               shape=[None, None, 2],
                                               name="rpn_prob")
@@ -146,7 +147,7 @@ class ProposalLayer():
         # Improve performance by trimming to top anchors by score
         # and doing the rest on the smaller subset.
         logging.info('tf.shape(anchors)[1] = %s', tf.shape(anchors)[1])
-        pre_nms_limit = tf.minimum(4, tf.shape(anchors)[1])
+        pre_nms_limit = tf.minimum(self.num_box_before_nms, tf.shape(anchors)[1])
         logging.info('Shape pre_nms_limit : %s', pre_nms_limit.get_shape().as_list())
         
         ix = tf.nn.top_k(scores, pre_nms_limit, sorted=True,
@@ -158,25 +159,25 @@ class ProposalLayer():
         
         deltas = batch_slice([deltas, ix], lambda x, y: tf.gather(x, y), self.batch_size)
         logging.info('Shape deltas after batch_slice: %s', deltas.get_shape().as_list())
-        
-        pre_nms_anchors = batch_slice([anchors, ix], lambda a, x: tf.gather(a, x), self.batch_size,
+
+        anchors = batch_slice([anchors, ix], lambda a, x: tf.gather(a, x), self.batch_size,
                                             names=["pre_nms_anchors"])
-        logging.info('Shape pre_nms_anchors after batch_slice: %s', pre_nms_anchors.get_shape().as_list())
+        logging.info('Shape anchors after batch_slice: %s', anchors.get_shape().as_list())
         
         # Apply deltas to anchors to get refined anchors.
         # [batch, N, (y1, x1, y2, x2)]
-        boxess = batch_slice([pre_nms_anchors, deltas],
+        anchor_delta = batch_slice([anchors, deltas],
                                   lambda x, y: apply_box_deltas_graph(x, y), self.batch_size,
                                   names=["refined_anchors"])
-        logging.info('Shape boxes after batch_slice: %s', boxess.get_shape().as_list())
+        logging.info('Shape boxes after batch_slice: %s', anchor_delta.get_shape().as_list())
         
         # Clip to image boundaries. Since we're in normalized coordinates,
         # clip to 0..1 range. [batch, N, (y1, x1, y2, x2)]
         window = np.array([0, 0, 1, 1], dtype=np.float32)
-        boxes = batch_slice(boxess,
+        anchor_delta_clipped = batch_slice(anchor_delta,
                                   lambda x: clip_boxes_graph(x, window), self.batch_size,
                                   names=["refined_anchors_clipped"])
-        logging.info('Clipped Boxes after batch_slice: %s', boxes.get_shape().as_list())
+        logging.info('Clipped Boxes after batch_slice: %s', anchor_delta_clipped.get_shape().as_list())
         
         # Filter out small boxes
         # According to Xinlei Chen's paper, this reduces detection accuracy
@@ -193,12 +194,12 @@ class ProposalLayer():
             padding = tf.maximum(self.proposal_count - tf.shape(proposals)[0], 0)
             proposals = tf.pad(proposals, [(0, padding), (0, 0)])
             return proposals
-        proposals = batch_slice([boxes, scores], nms, self.batch_size)
+        proposals = batch_slice([anchor_delta_clipped, scores], nms, self.batch_size)
         
         logging.info('Proposal shape after batch_slice: %s', proposals.get_shape().as_list())
         
         return (self.rpn_class_probs, self.rpn_bbox, self.input_anchors, proposals,
-                dict(ix=ix, scores=scores, deltas=deltas, pre_nms_anchors=pre_nms_anchors, boxess=boxess, boxes=boxes))
+                dict(ix=ix, scores=scores, bbox_delta_=deltas, anchors=anchors, anchor_delta=anchor_delta, anchor_delta_clipped=anchor_delta_clipped))
     
     def compute_output_shape(self, input_shape):
         logging.info('IN THE compute_output_shape function OF ProposalLayer')
@@ -210,42 +211,43 @@ class ProposalLayer():
 
 from MaskRCNN.config import config
 np.random.seed(325)
-num_batches = 2
-proposal_count = 2
+num_batches = 3
+proposal_count = 4
 nms_threshold = np.float32(0.3)
 
-a = np.array(np.random.random((3,5,2)), dtype='float32')
+a = np.array(np.random.random((3, 5, 2)), dtype='float32')
 b = np.array(np.random.random((3, 5, 4)), dtype='float32')
 c = np.array(np.random.random((3, 5, 4)), dtype='float32')
 
-rpn_class_probs, rpn_bbox, input_anchors, proposals, others = ProposalLayer(proposal_count, nms_threshold,
-                                                                            config).call()
+rpn_class_probs, rpn_bbox, input_anchors, proposals, others = \
+    ProposalLayer(proposal_count, nms_threshold, config).call()
 # print(proposals)
 feed_dict={rpn_class_probs: a, rpn_bbox: b, input_anchors: c}
 with tf.Session() as sess:
     sess.run(tf.global_variables_initializer())
-    
-    ix_ = sess.run([others['ix']], feed_dict = feed_dict)
-    sc_ = sess.run([others['scores']], feed_dict=feed_dict)
-    dt_ = sess.run([others['deltas']], feed_dict=feed_dict)
-    pnmsa_ = sess.run([others['pre_nms_anchors']], feed_dict=feed_dict)
-    boxess_ = sess.run([others['boxess']], feed_dict=feed_dict)
-    boxes_ = sess.run([others['boxes']], feed_dict=feed_dict)
-    p_ = sess.run([proposals], feed_dict=feed_dict)
-    
-    print(ix_)
-    print ('')
-    print(sc_)
+
+    bbox_delta_ = sess.run(others['bbox_delta_'], feed_dict=feed_dict)
+    ix_ = sess.run(others['ix'], feed_dict = feed_dict)
+    scores_ = sess.run(others['scores'], feed_dict=feed_dict)
+    anchors_ = sess.run(others['anchors'], feed_dict=feed_dict)
+    anchor_delta_ = sess.run(others['anchor_delta'], feed_dict=feed_dict)
+    anchor_delta_clipped_ = sess.run(others['anchor_delta_clipped'], feed_dict=feed_dict)
+    proposals_ = sess.run(proposals, feed_dict=feed_dict)
+
+    print('bbox_delta_ ', bbox_delta_.shape, bbox_delta_)
     print('')
-    print(dt_)
+    print('ix_', ix_.shape, ix_)
     print('')
-    print(pnmsa_)
+    print('scores_ ', scores_.shape, scores_)
     print('')
-    print(boxess_)
+    print('anchors_ ', anchors_.shape, anchors_)
     print('')
-    print(boxes_)
+    print('anchor_delta_ ', anchor_delta_.shape, anchor_delta_)
     print('')
-    print(p_)
+    print('anchor_delta_clipped_ ', anchor_delta_clipped_.shape, anchor_delta_clipped_)
+    print('')
+    print('proposals_ ', proposals_.shape, proposals_)
+    print('')
 
 
 
