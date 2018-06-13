@@ -16,14 +16,14 @@ def conv_layer(X, k_shape, stride=1, padding='SAME', w_init='tn', w_decay=None, 
                 dtype=tf.float32,
                 shape=k_shape,
                 initializer=wght_init,
-                name="w",
+                name="kernel",
                 trainable=True
         )
         bias = tf.get_variable(
                 dtype=tf.float32,
                 shape=[k_shape[-1]],
                 initializer=tf.constant_initializer(1),
-                name='b',
+                name='bias',
                 trainable=True
         )
     
@@ -66,14 +66,14 @@ def conv2D_transposed_strided(X, k_shape, stride=2, padding='SAME', w_init='tn',
                 dtype=tf.float32,
                 shape=[hght, wdth, out_ch, in_ch],  # Note : We swap the in_out_channels
                 initializer=wght_init,
-                name="w",
+                name="kernel",
                 trainable=True
         )
         bias = tf.get_variable(
                 dtype=tf.float32,
                 shape=out_ch,  # k_shape[-1],
                 initializer=tf.constant_initializer(1),
-                name='b',
+                name='bias',
                 trainable=True
         )
     
@@ -134,14 +134,14 @@ def batch_norm(X, axis=[0, 1, 2], scope_name=None):
                 dtype='float32',
                 shape=[numOUT],
                 initializer=tf.constant_initializer(0.0),
-                name="m",  # offset (bias)
+                name="moving_mean",  # offset (bias)
                 trainable=False)
         
         expBatchVar_avg = tf.get_variable(
                 dtype='float32',
                 shape=[numOUT],
                 initializer=tf.constant_initializer(1.0),
-                name="v",  # scale(weight)
+                name="moving_variance",  # scale(weight)
                 trainable=False)
         
         batchMean, batchVar = tf.nn.moments(X, axes=axis, name="moments")
@@ -175,13 +175,13 @@ def fc_layers(X, k_shape, w_init='tn', scope_name='fc_layer', add_smry=False):
         weight = tf.get_variable(dtype=tf.float32,
                                  shape=k_shape,
                                  initializer=wght_init,
-                                 name='w',
+                                 name='kernel',
                                  trainable=True
                                  )
         bias = tf.get_variable(dtype=tf.float32,
                                shape=[k_shape[-1]],
                                initializer=tf.constant_initializer(1.0),
-                               name='b',
+                               name='bias',
                                trainable=True)
     
     

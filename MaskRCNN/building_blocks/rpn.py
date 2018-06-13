@@ -32,12 +32,10 @@ class RPN():
         logging.info('RPN - Shared_conv: %s', str(shared.get_shape().as_list()))
         
         ## Classification Output: Binary classification, # Get the pixel wise Classification
-        with tf.variable_scope('rpn_class_probss'):
-            self.get_pixel_fb_classification(shared, self.rpn_anchor_stride, len(self.rpn_anchor_ratios))
+        self.get_pixel_fb_classification(shared, self.rpn_anchor_stride, len(self.rpn_anchor_ratios))
 
         ## Bounding Box Output: Get the coordinates , height and width of bounding box
-        with tf.variable_scope('rpn_bbox'):
-            self.get_bounding_box(shared, self.rpn_anchor_stride, len(self.rpn_anchor_ratios))
+        self.get_bounding_box(shared, self.rpn_anchor_stride, len(self.rpn_anchor_ratios))
             
     def get_pixel_fb_classification(self, x, anchor_stride, anchor_per_location):
         '''

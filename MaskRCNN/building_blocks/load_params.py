@@ -67,19 +67,19 @@ def set_pretrained_weights(sess, weights_path):
             else:
                 pretrained_var_name = pretrained_weights[scope_name][scope_name]
 
-            if graph_var_name == 'w:0':
+            if graph_var_name == 'kernel:0':
                 val = pretrained_var_name['kernel:0']
                 logging.info('w:0, scope_name = %s, pre-trained.shape = %s, variable.shape = %s', str(scope_name), str(val.value.shape), str(var.shape))
 
-            elif graph_var_name == 'b:0':
+            elif graph_var_name == 'bias:0':
                 val = pretrained_var_name['bias:0']
                 logging.info('b:0, scope_name = %s, pre-trained.shape = %s, variable.shape = %s', str(scope_name), str(val.value.shape), str(var.shape))
 
-            elif graph_var_name == 'm:0':
+            elif graph_var_name == 'moving_mean:0':
                 val = pretrained_var_name['moving_mean:0']
                 logging.info('m:0, scope_name = %s, pre-trained.shape = %s, variable.shape = %s', str(scope_name), str(val.value.shape), str(var.shape))
 
-            elif graph_var_name == 'v:0':
+            elif graph_var_name == 'moving_variance:0':
                 val = pretrained_var_name['moving_variance:0']
                 logging.info('v:0, scope_name = %s, pre-trained.shape = %s, variable.shape = %s', str(scope_name), str(val.value.shape), str(var.shape))
 
