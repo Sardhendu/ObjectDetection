@@ -20,6 +20,81 @@ logging.basicConfig(level=logging.DEBUG, filename="logfile.log", filemode="w",
                     format="%(asctime)-15s %(levelname)-8s %(message)s")
 
 
+def apply_box_deltas(pre_nms_anchors, bbox_delta):
+    '''
+    Applying Box Deltas to Anchors
+
+    pre_nms_anchors = [num_batches, num_anchors, (y1, x1, y2, x2)]
+    self.bbox_delta = [num_batches, num_anchors, (d(c_y), d(c_x), log(h), log(w))]
+
+                _____________ (x2, y2)
+                |           |
+                |           |
+                |           |
+                |           |
+                |           |
+        (x1,y1) -------------
+
+    Since our predictions are normalized and are in the form of [d(c_y), d(c_x), log(h), log(w)],
+    we first convert our anchors to the form of [center_y, center_x, h, w] and then apply box deltas (to
+    normalize anchors that have un-normalized coordinate values). After this we convert the pre_nms_anchors back
+    to the
+    original shape of [num_batches, num_anchors, (y1, x1,y2, x2)]
+
+    :return:
+    '''
+    height = pre_nms_anchors[:, :, 2] - pre_nms_anchors[:, :, 0]
+    width = pre_nms_anchors[:, :, 3] - pre_nms_anchors[:, :, 1]
+    center_y = pre_nms_anchors[:, :, 0] + 0.5 * height
+    center_x = pre_nms_anchors[:, :, 1] + 0.5 * width
+
+    # Apply Box Delta (A)
+    center_y += bbox_delta[:, :, 0] * height
+    center_x += bbox_delta[:, :, 1] * width
+    height *= tf.exp(bbox_delta[:, :, 2])
+    width *= tf.exp(bbox_delta[:, :, 3])
+
+    # Convert back to (y1, x1, y2, x2)
+    y1 = center_y - 0.5 * height
+    x1 = center_x - 0.5 * width
+    y2 = y1 + height
+    x2 = x1 + width
+
+    out = tf.stack([y1, x1, y2, x2], axis=1, name="apply_box_deltas_out")
+    out = tf.transpose(out, [0, 2, 1])
+    return out
+
+def clip_boxes_to_01(anchor_delta, window):
+    """
+    Clips Boxes within the range 0,1
+
+    :param box_delta: The anchor per pixel position boxes for each batch with 4 pixel coordinates.
+    :param window: THe min and max coordinates of window (We use this because our predictions should lie i 0,
+    1 range)
+    :return:
+
+    The idea is pretty basic here:
+        1. We split the coordinates.
+        2. Check if they lie in the window range, if not make them lie
+        3. Then concat them back to the original shape
+    More over bring the box coordinate prediction to the range of [0,1] also helps us performing the next
+    step i.e
+    non-max suppression
+    """
+
+    # Window: [0,0,1,1] # 0,0 represents the top left corner and 1,1 represents the bottom right corner
+    wy1, wx1, wy2, wx2 = tf.split(window, 4)
+    y1, x1, y2, x2 = tf.split(anchor_delta, 4, axis=2)
+
+    y1 = tf.maximum(tf.minimum(y1, wy2), wy1)
+    x1 = tf.maximum(tf.minimum(x1, wx2), wx1)
+    y2 = tf.maximum(tf.minimum(y2, wy2), wy1)
+    x2 = tf.maximum(tf.minimum(x2, wx2), wx1)
+
+    return tf.concat([y1, x1, y2, x2], axis=2, name="clipped_boxes")
+    
+    
+    
 class Proposals():
     '''
     The input to this network is:
@@ -49,11 +124,20 @@ class Proposals():
             self.input_anchors = np.array(input_anchors, dtype='float32')
 
         self.DEBUG = DEBUG
-        self.rpn_bbox_stddev = conf.RPN_BBOX_STDDEV
-        self.num_box_before_nms = conf.PRE_NMS_ROIS_INFERENCE # 5
-        self.num_boxes_after_nms = conf.POST_NMS_ROIS_INFERENCE # 4
-        self.iou_threshold = conf.RPN_NMS_THRESHOLD # 0.3
-        self.batch_size = batch_size
+        
+        if DEBUG:
+            self.rpn_bbox_stddev = conf.RPN_BBOX_STDDEV
+            self.num_box_before_nms =  5
+            self.num_boxes_after_nms =  4
+            self.iou_threshold =  0.3
+            self.batch_size = batch_size
+        else:
+            
+            self.rpn_bbox_stddev = conf.RPN_BBOX_STDDEV
+            self.num_box_before_nms = conf.PRE_NMS_ROIS_INFERENCE # 5
+            self.num_boxes_after_nms = conf.POST_NMS_ROIS_INFERENCE # 4
+            self.iou_threshold = conf.RPN_NMS_THRESHOLD # 0.3
+            self.batch_size = batch_size
         
         self.build()
         
@@ -100,12 +184,11 @@ class Proposals():
         scores, bbox_delta, anchors = self.gather_data_for_idx(ix, scores, bbox_delta, anchors)
 
         # return ixs, mesh, scores, boxes, anchors
-        anchor_delta = self.apply_box_deltas(anchors, bbox_delta)
+        anchor_delta = apply_box_deltas(anchors, bbox_delta)
     
         # The boxes can have values at the interval of 0,1
         window = np.array([0, 0, 1, 1], dtype=np.float32)
-        self.anchor_delta_clipped = self.clip_boxes_to_01(window=window,
-                                                          anchor_delta=anchor_delta)
+        self.anchor_delta_clipped = clip_boxes_to_01(anchor_delta=anchor_delta, window=window)
     
         # Perform Non-max suppression. Non max suppression is performed for one image at a time, so we loop over the
         #  images here and stack them at the end
@@ -130,48 +213,7 @@ class Proposals():
             self.anchors = anchors
             self.anchor_delta = anchor_delta
         
-    def apply_box_deltas(self, pre_nms_anchors, bbox_delta):
-        '''
-        Applying Box Deltas to Anchors
-        
-        pre_nms_anchors = [num_batches, num_anchors, (y1, x1, y2, x2)]
-        self.bbox_delta = [num_batches, num_anchors, (d(c_y), d(c_x), log(h), log(w))]
-        
-                    _____________ (x2, y2)
-                    |           |
-                    |           |
-                    |           |
-                    |           |
-                    |           |
-            (x1,y1) -------------
-        
-        Since our predictions are normalized and are in the form of [d(c_y), d(c_x), log(h), log(w)],
-        we first convert our anchors to the form of [center_y, center_x, h, w] and then apply box deltas (to
-        normalize anchors that have un-normalized coordinate values). After this we convert the pre_nms_anchors back to the
-        original shape of [num_batches, num_anchors, (y1, x1,y2, x2)]
-        
-        :return:
-        '''
-        height = pre_nms_anchors[:,:,2] - pre_nms_anchors[:,:,0]
-        width = pre_nms_anchors[:,:,3] - pre_nms_anchors[:,:,1]
-        center_y = pre_nms_anchors[:,:,0] + 0.5 * height
-        center_x = pre_nms_anchors[:,:,1] + 0.5 * width
-        
-        # Apply Box Delta (A)
-        center_y += bbox_delta[:,:,0] * height
-        center_x += bbox_delta[:,:,1] * width
-        height *= tf.exp(bbox_delta[:,:,2])
-        width *= tf.exp(bbox_delta[:,:,3])
-        
-        # Convert back to (y1, x1, y2, x2)
-        y1 = center_y - 0.5 * height
-        x1 = center_x - 0.5 * width
-        y2 = y1 + height
-        x2 = x1 + width
-
-        out = tf.stack([y1, x1, y2, x2], axis=1, name="apply_box_deltas_out")
-        out = tf.transpose(out, [0, 2, 1])
-        return out
+   
 
     def non_max_suppression(self, scores, proposals, max_boxes=2, iou_threshold=0.7):
         """
@@ -203,34 +245,6 @@ class Proposals():
         padding = tf.maximum(self.num_boxes_after_nms - tf.shape(proposals)[0], 0)
         proposals = tf.pad(proposals, [(0, padding), (0, 0)])
         return proposals
-
-    def clip_boxes_to_01(self, window, anchor_delta):
-        """
-        Clips Boxes within the range 0,1
-
-        :param box_delta: The anchor per pixel position boxes for each batch with 4 pixel coordinates.
-        :param window: THe min and max coordinates of window (We use this because our predictions should lie i 0,
-        1 range)
-        :return:
-
-        The idea is pretty basic here:
-            1. We split the coordinates.
-            2. Check if they lie in the window range, if not make them lie
-            3. Then concat them back to the original shape
-        More over bring the box coordinate prediction to the range of [0,1] also helps us performing the next step i.e
-        non-max suppression
-        """
-    
-        # Window: [0,0,1,1] # 0,0 represents the top left corner and 1,1 represents the bottom right corner
-        wy1, wx1, wy2, wx2 = tf.split(window, 4)
-        y1, x1, y2, x2 = tf.split(anchor_delta, 4, axis=2)
-    
-        y1 = tf.maximum(tf.minimum(y1, wy2), wy1)
-        x1 = tf.maximum(tf.minimum(x1, wx2), wx1)
-        y2 = tf.maximum(tf.minimum(y2, wy2), wy1)
-        x2 = tf.maximum(tf.minimum(x2, wx2), wx1)
-    
-        return tf.concat([y1, x1, y2, x2], axis=2, name="clipped_boxes")
 
     def gather_data_for_idx(self, ix, scores, bbox_delta, anchors):
         '''
@@ -316,10 +330,10 @@ def debugg():
     from MaskRCNN.config import config as conf
 
     np.random.seed(325)
-
-    a = np.array(np.random.random((3, 5, 2)), dtype='float32')
-    b = np.array(np.random.random((3, 5, 4)), dtype='float32')
-    c = np.array(np.random.random((3, 24, 4)), dtype='float32')
+    batch_size = 3
+    a = np.array(np.random.random((batch_size, 5, 2)), dtype='float32')
+    b = np.array(np.random.random((batch_size, 5, 4)), dtype='float32')
+    c = np.array(np.random.random((batch_size, 5, 4)), dtype='float32')
 
     obj_p = Proposals(conf, batch_size=3, DEBUG = True)
     p_graph = obj_p.get_proposal_graph()
@@ -355,3 +369,17 @@ def debugg():
 
 # debugg()
 
+# proposals_  (3, 4, 4) [[[ 0.65874195  0.71861047  0.04293984  0.36567649]
+#   [ 0.40541095  0.          1.          0.84925073]
+#   [ 0.47202766  0.35921511  0.86547446  0.11702123]
+#   [ 0.          0.          0.          0.        ]]
+#
+#  [[ 0.43931955  0.66850889  0.88011879  0.01756686]
+#   [ 0.65295255  0.29388487  0.98575372  0.38062903]
+#   [ 0.12912896  0.89148813  1.          0.29394001]
+#   [ 0.20838489  0.83945799  0.4669776   0.18857485]]
+#
+#  [[ 0.70058942  0.12562102  0.49498993  0.64621913]
+#   [ 0.62934375  0.90083236  0.43767858  0.28720659]
+#   [ 0.14262199  0.79275632  0.66619712  0.93800408]
+#   [ 0.56844062  0.66239381  0.56434339  0.89735448]]]

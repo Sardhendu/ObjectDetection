@@ -69,6 +69,7 @@ def main(pretrained_weights_path):
     transformed_images, image_metas, image_windows, anchors = preprocess.process_images(list_of_images, list_of_image_ids)
     image_shape = transformed_images.shape[1:]
     print ('Shape of input image batch: ', image_shape)
+    print(image_metas)
     
     # Built the computation graph
     # image_shape = transformed_images[0].shape#[1024,1024,3]
@@ -79,7 +80,7 @@ def main(pretrained_weights_path):
     init = tf.global_variables_initializer()
     
     
-    DEBUG = False
+    DEBUG = True
     with tf.Session() as sess:
         sess.run(init)
 

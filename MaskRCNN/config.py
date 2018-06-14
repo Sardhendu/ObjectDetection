@@ -41,6 +41,9 @@ class config(object):
     # Non-max suppression threshold to filter RPN proposals.
     # This can be increase during training to generate more proposals.
     RPN_NMS_THRESHOLD = 0.7
+    DETECTION_MIN_THRESHOLD = 0.7
+    DETECTION_NMS_THRESHOLD = 0.3
+    DETECTION_MAX_INSTANCES = 100
     
     
 

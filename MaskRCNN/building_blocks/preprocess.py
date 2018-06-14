@@ -102,7 +102,7 @@ def process_images(list_of_images, list_of_image_ids):
 
 
 def debug():
-    list_of_images = [np.random.random((5,5,3)), np.random.random((5,5,3))]
+    list_of_images = [np.random.random((800,1024,3)), np.random.random((800,1024,3))]
     list_of_image_ids = [1,2]
     process_images(list_of_images, list_of_image_ids)
     
