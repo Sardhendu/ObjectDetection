@@ -14,7 +14,9 @@ from MaskRCNN.building_blocks.fpn import FPN
 from MaskRCNN.building_blocks.rpn import RPN
 from MaskRCNN.building_blocks.proposals_tf import Proposals
 from MaskRCNN.building_blocks.maskrcnn import MaskRCNN
+from MaskRCNN.building_blocks.detection import DetectionLayer
 from MaskRCNN.building_blocks import utils
+
 
 logging.basicConfig(level=logging.DEBUG, filename="logfile.log", filemode="w",
                     format="%(asctime)-15s %(levelname)-8s %(message)s")
@@ -28,7 +30,7 @@ def get_trainable_variable_name(sess):
 
 # https://github.com/CharlesShang/FastMaskRCNN
 
-def inference(image_shape, inference_batch_size):
+def inference(image_shape, inference_batch_size, image_meta):
     xIN = tf.placeholder(dtype=tf.float32,
                          shape=[None] + conf.IMAGE_SHAPE,
                          name='input_image')
@@ -47,12 +49,15 @@ def inference(image_shape, inference_batch_size):
     
     # CREATE THE MRCNN GRAPH
     mrcnn_graph = MaskRCNN(image_shape=image_shape, pool_shape=[7, 7], num_classes=81, levels=[2, 3, 4, 5],
-                         proposals=proposal_graph['proposals'], type='keras', DEBUG=True).get_mrcnn_graph()
+                         proposals=proposal_graph['proposals'], type='keras', DEBUG=False).get_mrcnn_graph()
     
-    # Here run the session for rpn_graph feed it with input P2, P3, P4 P5,
-    # Record the outputs in a numpy array and perform the proposals
-    
-    return input_comp_graph, fpn_graph, rpn_comp_graph, proposal_graph, mrcnn_graph
+    # DETECTION GRAPH
+    detections = DetectionLayer(conf, image_shape=[1024, 1024, 3], num_batches=inference_batch_size,
+                                window=np.array(image_meta[:,7:11], dtype='int32'),
+                                proposals=proposal_graph['proposals'],
+                                mrcnn_class_probs=mrcnn_graph['mrcnn_class_probs'],
+                                mrcnn_bbox=mrcnn_graph['mrcnn_bbox'], DEBUG=False).get_detections()
+    return input_comp_graph, fpn_graph, rpn_comp_graph, proposal_graph, mrcnn_graph, detections
 
 
 
@@ -74,13 +79,14 @@ def main(pretrained_weights_path):
     # Built the computation graph
     # image_shape = transformed_images[0].shape#[1024,1024,3]
     batch_size = transformed_images.shape[0]
-    input_comp_graph, fpn_comp_graph, rpn_comp_graph, proposal_graph, mrcnn_graph = inference(image_shape, batch_size)
+    input_comp_graph, fpn_comp_graph, rpn_comp_graph, proposal_graph, mrcnn_graph, detections = inference(image_shape,
+                                                                                                 batch_size, image_metas)
 
 
     init = tf.global_variables_initializer()
-    
-    
-    DEBUG = True
+
+
+    DEBUG = False
     with tf.Session() as sess:
         sess.run(init)
 
@@ -91,8 +97,8 @@ def main(pretrained_weights_path):
         else:
             # Get input Image:
             # Note setting the weight can take 1-2 min due to the deep network
-            # load_params.set_pretrained_weights(sess, pretrained_weights_path)
-    
+            load_params.set_pretrained_weights(sess, pretrained_weights_path)
+
             # RUN FPN GRAPH
             print ('RUNNING FPN ..............')
             feed_dict = {input_comp_graph['xIN']: transformed_images}#np.random.random((batch_size, 1024, 1024, 3))}
@@ -101,7 +107,7 @@ def main(pretrained_weights_path):
                                            fpn_comp_graph['fpn_p6']], feed_dict=feed_dict)
         #
             print('FPN P2=%s, P3=%s, P4=%s, P5=%s, P6=%s'%(str(p2.shape), str(p3.shape), str(p4.shape), str(p5.shape), str(p6.shape)))
-    
+
             # RUN RPN GRAPH
             # rpn_logits = []
             print('RUNNING RPN ..............')
@@ -119,14 +125,14 @@ def main(pretrained_weights_path):
                 # del rpn_logit
                 del rpn_prob
                 del rpn_bbox
-    
+
             # Concatenate with the second dimension
             # rpn_logits = np.concatenate(rpn_logits, axis=1)
             rpn_probs = np.concatenate(rpn_probs, axis=1)
             rpn_bboxes = np.concatenate(rpn_bboxes, axis=1)
             print('RPN Total(stacked): rpn_class_score=%s, rpn_bbox=%s ' % (str(rpn_probs.shape), str(rpn_bboxes.shape)))
-    
-            # RUN PROPOSAL GRAPH AND THE MASK-RCNN GRAPH TOGETHER
+
+            # RUN PROPOSAL GRAPH AND THE MASK-RCNN GRAPH AND DETECTION TOGETHER
             # Get Anchors
             print('GENERATING ANCHORS ..............')
             resnet_stage_shapes = utils.get_resnet_stage_shapes(conf, image_shape=image_shape)
@@ -136,11 +142,12 @@ def main(pretrained_weights_path):
                                   feature_map_shapes=resnet_stage_shapes,
                                   feature_map_strides=conf.RESNET_STRIDES,
                                   anchor_strides=conf.RPN_ANCHOR_STRIDE)
+            print ('(ANCHORS): ', anchors.shape)
 
             print('RUNNING PROPOSAL AND MRCNN ..............')
-            _, mrcnn_class_probs_, mrcnn_bbox_, proposals_ = sess.run(
-                    [mrcnn_graph['pooled_rois'], mrcnn_graph['mrcnn_class_probs'], mrcnn_graph['mrcnn_bbox'],
-                    proposal_graph['proposals']],
+            _, mrcnn_class_probs_, mrcnn_bbox_, proposals_, detections_ = sess.run(
+                    [mrcnn_graph['pooled_rois'], mrcnn_graph['mrcnn_class_probs'],
+                     mrcnn_graph['mrcnn_bbox'], proposal_graph['proposals'], detections],
                                    feed_dict={
                                        proposal_graph['rpn_probs']: rpn_probs,
                                        proposal_graph['rpn_bbox']: rpn_bboxes,
@@ -148,21 +155,11 @@ def main(pretrained_weights_path):
                                        mrcnn_graph['P2']: p2, mrcnn_graph['P3']: p3,
                                        mrcnn_graph['P4']: p4, mrcnn_graph['P5']: p5
                                     })
-    
+
             print('(PROPOSALS) Generated output shape: ', proposals_.shape)
-            print ('')
-            print(proposals_.shape)
-
-
-
-            # # MRCNN LAYER: Classify the object and get the bounding box
-            # feed_dict = feed_dict = {p_graph['rpn_probs']: a, p_graph['rpn_bbox']: b, p_graph['input_anchors']: c,
-            #      mrcnn_graph['P2']:P2, mrcnn_graph['P3']:P3, mrcnn_graph['P4']:P4, mrcnn_graph['P5']:P5 }
-            # mrcnn_class_probs_, mrcnn_bbox_ = sess.run(mrcnn_graph['pooled_rois'], mrcnn_graph['mrcnn_class_probs'],
-            #                                    mrcnn_graph['mrcnn_bbox'])
-
-            print ('(MRCNN) mrcnn_class_probs', mrcnn_class_probs_.shape)
-            print('(MRCNN) mrcnn_bbox', mrcnn_bbox_.shape)
+            print ('(MRCNN) mrcnn_class_probs: ', mrcnn_class_probs_.shape)
+            print('(MRCNN) mrcnn_bbox: ', mrcnn_bbox_.shape)
+            print('(DETECTION) detection: ', detections_.shape)
 
     # return p2, p3, p4, p5
 
@@ -173,3 +170,14 @@ main(filepath)
 
 # filepath = '/Users/sam/All-Program/App-DataSet/ObjectDetection/MaskRCNN/mask_rcnn_coco.h5'
 # load_weights(filepath, by_name=False, exclude=None)
+
+
+
+
+
+
+# # MRCNN LAYER: Classify the object and get the bounding box
+# feed_dict = feed_dict = {p_graph['rpn_probs']: a, p_graph['rpn_bbox']: b, p_graph['input_anchors']: c,
+#      mrcnn_graph['P2']:P2, mrcnn_graph['P3']:P3, mrcnn_graph['P4']:P4, mrcnn_graph['P5']:P5 }
+# mrcnn_class_probs_, mrcnn_bbox_ = sess.run(mrcnn_graph['pooled_rois'], mrcnn_graph['mrcnn_class_probs'],
+#                                    mrcnn_graph['mrcnn_bbox'])
