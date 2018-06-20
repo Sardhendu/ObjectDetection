@@ -188,7 +188,6 @@ class MaskRCNN():
 
         # Add the batch Dimension
         self.pooled_rois = tf.expand_dims(pooled_rois, 0)
-        # return pooled_rois
 
     def classifier_with_fpn_tf(self):
         print (self.pooled_rois.shape)

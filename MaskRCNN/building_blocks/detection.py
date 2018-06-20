@@ -72,7 +72,10 @@ class DetectionLayer():
         mrcnn_class_probs = tf.cast(mrcnn_class_probs, dtype=tf.float32)
         mrcnn_bbox = tf.cast(mrcnn_bbox, dtype=tf.float32)
         
-        self.detections = self.build(window, proposals, mrcnn_class_probs, mrcnn_bbox)
+        # self.detections = self.build(window, proposals, mrcnn_class_probs, mrcnn_bbox)
+        from MaskRCNN.building_blocks.detection2 import DetectionLayer2
+        self.detections = DetectionLayer2(conf, [1024, 1024, 3], window, proposals, mrcnn_class_probs,
+                                     mrcnn_bbox).get_detections()
 
     def build(self, window, proposals, mrcnn_class_probs, mrcnn_bbox):
         ''' What's going on:

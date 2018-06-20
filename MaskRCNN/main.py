@@ -145,28 +145,8 @@ class Inference():
         
         if self.save:
             self.save_feature_maps_and_proposals()
-
-    def save_feature_maps_and_proposals(self):
-        
-        with open(os.path.join(self.save_dir, 'feature_maps_n_proposals.pickle'), "wb") as f:
-            fullData = {
-                'feature_maps': self.feature_maps,
-                'proposals': self.proposals,
-                'image_metas': self.image_metas
-            }
-            pickle.dump(fullData, f, pickle.HIGHEST_PROTOCOL)
-
-    def get_feature_maps_and_proposals(self):
-        if len(self.feature_maps) > 0 and len(self.proposals) > 0:
-            return self.feature_maps, self.proposals, self.image_metas
-        else:
-            with open(os.path.join(self.save_dir, 'feature_maps_n_proposals.pickle'), "rb") as f:
-                data = pickle.load(f)
-                feature_maps = data['feature_maps']
-                proposals = data['proposals']
-                image_metas = data['image_metas']
-            return feature_maps, proposals, image_metas
-    
+            
+            
     def run_mrcnn_detection(self):
         feature_maps, proposals, image_metas = self.get_feature_maps_and_proposals()
         print ('Max and Min Proposals, ', np.amax(proposals), np.amin(proposals))
@@ -231,7 +211,28 @@ class Inference():
         
         if self.save:
             self.save_mrcnn_prob_bbox_and_detections()
-                    
+
+    def save_feature_maps_and_proposals(self):
+    
+        with open(os.path.join(self.save_dir, 'feature_maps_n_proposals.pickle'), "wb") as f:
+            fullData = {
+                'feature_maps': self.feature_maps,
+                'proposals': self.proposals,
+                'image_metas': self.image_metas
+            }
+            pickle.dump(fullData, f, pickle.HIGHEST_PROTOCOL)
+
+    def get_feature_maps_and_proposals(self):
+        if len(self.feature_maps) > 0 and len(self.proposals) > 0:
+            return self.feature_maps, self.proposals, self.image_metas
+        else:
+            with open(os.path.join(self.save_dir, 'feature_maps_n_proposals.pickle'), "rb") as f:
+                data = pickle.load(f)
+                feature_maps = data['feature_maps']
+                proposals = data['proposals']
+                image_metas = data['image_metas']
+            return feature_maps, proposals, image_metas
+
     def save_mrcnn_prob_bbox_and_detections(self):
         with open(os.path.join(self.save_dir, 'mrcnn_prob_bbox_detection.pickle'), "wb") as f:
             fullData = {
@@ -254,16 +255,49 @@ class Inference():
         
         
         
-# pretrained_weights_path = '/Users/sam/All-Program/App-DataSet/ObjectDetection/MaskRCNN/mask_rcnn_coco.h5'
-# save_dir = '/Users/sam/All-Program/App-DataSet/ObjectDetection/MaskRCNN/'
-#
-#
+pretrained_weights_path = '/Users/sam/All-Program/App-DataSet/ObjectDetection/MaskRCNN/mask_rcnn_coco.h5'
+save_dir = '/Users/sam/All-Program/App-DataSet/ObjectDetection/MaskRCNN/'
+
+##### PRINT PRETRAINED WEIGHTS
+# from MaskRCNN.building_blocks.load_params import print_pretrained_weights
+# print_pretrained_weights(weights_path=pretrained_weights_path, search_key='mrcnn')
+
+
+
+####### RUN FPN AND RPN
 # obj_inference = Inference(pretrained_weights_path, run='fpn_rcn_proposals', save=True, save_dir=save_dir, DEBUG=False)
 # feature_maps, proposals, image_metas = obj_inference.get_feature_maps_and_proposals()
 # print ('len(feature_maps), proposal.shape ',len(feature_maps), proposals.shape)
 # print('image_metas ', image_metas)
 
 
+####### RUN MRCNN AND DETECTION
 # obj_inference = Inference(pretrained_weights_path, run='mrcnn_detection', save=True, save_dir=save_dir, DEBUG=False)
 # mrcnn_class_probs, mrcnn_bbox, detections, detection_unmold = obj_inference.get_mrcnn_prob_bbox_and_detections()
 # print (detection_unmold)
+
+
+
+
+# mrcnn_bbox_fc
+# bias:0
+# kernel:0
+# mrcnn_class_bn1
+# beta:0
+# gamma:0
+# moving_mean:0
+# moving_variance:0
+# mrcnn_class_bn2
+# beta:0
+# gamma:0
+# moving_mean:0
+# moving_variance:0
+# mrcnn_class_conv1
+# bias:0
+# kernel:0
+# mrcnn_class_conv2
+# bias:0
+# kernel:0
+# mrcnn_class_logits
+# bias:0
+# kernel:0

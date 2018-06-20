@@ -383,12 +383,11 @@ save_dir = '/Users/sam/All-Program/App-DataSet/ObjectDetection/MaskRCNN/debug_ou
 
 
 ####### DNORM DETECTION AT PIXEL LEVEL
-image_metas = Inference.get_image_metas(save_dir)
-proposal_normed = Inference.get_proposals(save_dir)
-print (proposal_normed.shape)
-proposal_normed = np.expand_dims(np.column_stack((proposal_normed[0], np.array(np.ones((1000,2)), dtype='int32'))), axis=0)
-# print (proposal_normed)
-detections_dnormed, class_ids, scores = Inference.get_detection_dnormed(image_metas, proposal_normed)
-print ('detections_dnormed ',detections_dnormed[0])
+# image_metas = Inference.get_image_metas(save_dir)
+# proposal_normed = Inference.get_proposals(save_dir)
+# print (proposal_normed.shape)
+# proposal_normed = np.expand_dims(np.column_stack((proposal_normed[0], np.array(np.ones((1000,2)), dtype='int32'))), axis=0)
+# detections_dnormed, class_ids, scores = Inference.get_detection_dnormed(image_metas, proposal_normed)
+# print ('detections_dnormed ',detections_dnormed[0])
 # print ('class_ids ',class_ids[0])
 # print ('scores ',scores[0])

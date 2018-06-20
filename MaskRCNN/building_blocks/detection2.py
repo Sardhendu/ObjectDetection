@@ -204,7 +204,7 @@ def refine_detections_graph(rois, probs, deltas, window, config):
     detections = tf.pad(detections, [(0, gap), (0, 0)], "CONSTANT")
     return detections
 
-class DetectionLayer():
+class DetectionLayer2():
     """Takes classified proposal boxes and their bounding box deltas and
     returns the final detection boxes.
 
@@ -213,16 +213,15 @@ class DetectionLayer():
     coordinates are normalized.
     """
     
-    def __init__(self, config, image_shape, image_window):
+    def __init__(self, config, image_shape, image_window, proposals, mrcnn_class_probs, mrcnn_bbox):
         self.config = config
         self.image_shape = image_shape
         self.image_window = image_window
         print('RUNNING DetectionLayer ......................')
-    
-    def call(self, inputs):
-        rois = inputs[0]
-        mrcnn_class = inputs[1]
-        mrcnn_bbox = inputs[2]
+        
+        self.detections = self.call(proposals, mrcnn_class_probs, mrcnn_bbox)
+        
+    def call(self, rois, mrcnn_class, mrcnn_bbox,):
         
         # Get windows of images in normalized coordinates. Windows are the area
         # in the image that excludes the padding.
@@ -242,6 +241,9 @@ class DetectionLayer():
         return tf.reshape(
                 detections_batch,
                 [1, self.config.DETECTION_POST_NMS_INSTANCES, 6])
+    
+    def get_detections(self):
+        return self.detections
 
 
 
@@ -264,9 +266,8 @@ def debug():
     print('')
     print('mrcnn_bbox ', mrcnn_bbox)
     print('')
-    
-    obj_D = DetectionLayer(conf, [1024, 1024, 3], window)
-    detections = obj_D.call([proposals, mrcnn_class_probs, mrcnn_bbox])
+
+    detections = DetectionLayer2(conf, [1024, 1024, 3], window, proposals, mrcnn_class_probs, mrcnn_bbox).get_detections()
     # (class_ids, indices, mesh, ixs, class_scores, bbox_delta, refined_proposals, class_id_idx, score_id_idx,
     #  keep_idx, pre_nms_class_ids, pre_nms_scores, pre_nms_porposals, unique_pre_nms_class_ids, class_nms_idx,
     #  post_nms_keep_idx, post_nms_scores, post_nms_topk_keep_idx, detection_per_batch) = obj_D.debug_outputs()
@@ -319,4 +320,4 @@ def debug():
         print('detections_ ', detections_.shape, detections_)
 
 
-debug()
+# debug()

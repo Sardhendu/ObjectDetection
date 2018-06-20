@@ -52,6 +52,20 @@ def set_value(sess, tensor_variable, value):
     return sess.run(assign_op, feed_dict={assign_placeholder: value})
 
 
+def print_pretrained_weights(weights_path, search_key=None):
+    pretrained_weights = h5py.File(weights_path, mode='r')
+    
+    if h5py is None:
+        raise ImportError('load_weights requires h5py.')
+    
+    for k, v in pretrained_weights.items():
+        if search_key:
+            if search_key in k:
+                for k1, v1 in v.items():
+                    print (k1)
+                    for k2, v2 in v1.items():
+                        print (k2)
+
 def set_pretrained_weights(sess, weights_path):
     pretrained_weights = h5py.File(weights_path, mode='r')
 
