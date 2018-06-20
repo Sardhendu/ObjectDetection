@@ -125,7 +125,7 @@ def refine_detections_graph(rois, probs, deltas, window, config):
     # Class IDs per ROI
     class_ids = tf.argmax(probs, axis=1, output_type=tf.int32)
     # Class probability of the top class of each ROI
-    indices = tf.stack([tf.range(probs.shape[0]), class_ids], axis=1)
+    indices = tf.stack([tf.range(tf.shape(probs)[0]), class_ids], axis=1)
     class_scores = tf.gather_nd(probs, indices)
     # Class-specific bounding box deltas
     deltas_specific = tf.gather_nd(deltas, indices)
@@ -218,10 +218,15 @@ class DetectionLayer2():
         self.image_shape = image_shape
         self.image_window = image_window
         print('RUNNING DetectionLayer ......................')
+
+        self.image_window = tf.cast(self.image_window , dtype=tf.float32)
+        proposals = tf.cast(proposals, dtype=tf.float32)
+        mrcnn_class_probs = tf.cast(mrcnn_class_probs, dtype=tf.float32)
+        mrcnn_bbox = tf.cast(mrcnn_bbox, dtype=tf.float32)
         
         self.detections = self.call(proposals, mrcnn_class_probs, mrcnn_bbox)
         
-    def call(self, rois, mrcnn_class, mrcnn_bbox,):
+    def call(self, rois, mrcnn_class, mrcnn_bbox):
         
         # Get windows of images in normalized coordinates. Windows are the area
         # in the image that excludes the padding.
@@ -257,7 +262,7 @@ def debug():
     mrcnn_class_probs = np.array(np.random.random((1, 8, 4)), dtype='float32')  # [num_batch, num_top_proposal,
     # num_classes]
     mrcnn_bbox = np.array(np.random.random((1, 8, 4, 4)), dtype='float32')
-    window = np.array([[131, 0, 893, 1155]], dtype='int32')  # image without zeropad [y1, x1, y2,
+    window = np.array([[131, 0, 893, 1024]], dtype='int32')  # image without zeropad [y1, x1, y2,
     # #  x2]
     
     # window = np.array([131, 0, 893, 1155], dtype='int32')

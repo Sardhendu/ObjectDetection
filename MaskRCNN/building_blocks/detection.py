@@ -72,10 +72,10 @@ class DetectionLayer():
         mrcnn_class_probs = tf.cast(mrcnn_class_probs, dtype=tf.float32)
         mrcnn_bbox = tf.cast(mrcnn_bbox, dtype=tf.float32)
         
-        # self.detections = self.build(window, proposals, mrcnn_class_probs, mrcnn_bbox)
-        from MaskRCNN.building_blocks.detection2 import DetectionLayer2
-        self.detections = DetectionLayer2(conf, [1024, 1024, 3], window, proposals, mrcnn_class_probs,
-                                     mrcnn_bbox).get_detections()
+        self.detections = self.build(window, proposals, mrcnn_class_probs, mrcnn_bbox)
+        # from MaskRCNN.building_blocks.detection2 import DetectionLayer2
+        # self.detections = DetectionLayer2(conf, [1024, 1024, 3], window, proposals, mrcnn_class_probs,
+        #                              mrcnn_bbox).get_detections()
 
     def build(self, window, proposals, mrcnn_class_probs, mrcnn_bbox):
         ''' What's going on:
@@ -134,6 +134,11 @@ class DetectionLayer():
         
         # LOOP FOR EACH BATCH : An Expensive Operation
         detections = []
+        if self.DEBUG:
+            pre_nms_proposals_list = []
+            pre_nms_class_ids_list = []
+            pre_nms_scores_list = []
+        
         for i in range(0,self.num_batches):
             # Clip image to image window, this time we dont do it on the total normed image coordinate, because our
             # original image may actually be zero padded.
@@ -154,7 +159,13 @@ class DetectionLayer():
             pre_nms_class_ids = tf.gather_nd(tf.squeeze(class_ids[i]), keep_idx)
             pre_nms_scores = tf.gather_nd(tf.squeeze(class_scores[i]), keep_idx)
             pre_nms_proposals = tf.gather_nd(tf.squeeze(clipped_proposals), keep_idx)
+            
             unique_pre_nms_class_ids = tf.unique(pre_nms_class_ids)[0]
+
+            if self.DEBUG:
+                pre_nms_proposals_list.append(pre_nms_proposals)
+                pre_nms_class_ids_list.append(pre_nms_class_ids)
+                pre_nms_scores_list.append(pre_nms_scores)
             
             # GET THE PROPOSAL INDEX FOR EACH CLASS
             def get_post_nms_proposal_ids_for_a_class(class_id):
@@ -231,18 +242,17 @@ class DetectionLayer():
             self.class_scores = class_scores
             self.bbox_delta = bbox_delta
             self.refined_proposals = refined_proposals
-            self.class_id_idx = class_id_idx
-            self.score_id_idx = score_id_idx
-            self.keep_idx = keep_idx
-            self.pre_nms_class_ids = pre_nms_class_ids
-            self.pre_nms_scores = pre_nms_scores
-            self.pre_nms_porposals = pre_nms_proposals
-            self.unique_pre_nms_class_ids = unique_pre_nms_class_ids
-            self.class_nms_idx = []
-            self.post_nms_keep_idx = post_nms_keep_idx
-            self.post_nms_scores = post_nms_scores
-            self.post_nms_topk_keep_idx = post_nms_topk_keep_idx
-            self.detection_per_batch = detection_per_batch
+            # self.class_id_idx = class_id_idx
+            # self.score_id_idx = score_id_idx
+            # self.keep_idx = keep_idx
+            self.pre_nms_class_ids_list = pre_nms_class_ids_list
+            self.pre_nms_scores_list = pre_nms_scores_list
+            self.pre_nms_proposals_list = pre_nms_proposals_list
+            # self.unique_pre_nms_class_ids = unique_pre_nms_class_ids
+            # self.post_nms_keep_idx = post_nms_keep_idx
+            # self.post_nms_scores = post_nms_scores
+            # self.post_nms_topk_keep_idx = post_nms_topk_keep_idx
+            # self.detection_per_batch = detection_per_batch
     
         return detections
 
@@ -259,18 +269,9 @@ class DetectionLayer():
                 self.class_scores,
                 self.bbox_delta,
                 self.refined_proposals,
-                self.class_id_idx,
-                self.score_id_idx,
-                self.keep_idx,
-                self.pre_nms_class_ids,
-                self.pre_nms_scores,
-                self.pre_nms_porposals,
-                self.unique_pre_nms_class_ids,
-                self.class_nms_idx,
-                self.post_nms_keep_idx,
-                self.post_nms_scores,
-                self.post_nms_topk_keep_idx,
-                self.detection_per_batch,
+                self.pre_nms_class_ids_list,
+                self.pre_nms_scores_list,
+                self.pre_nms_proposals_list,
                 )
 
 
@@ -309,26 +310,15 @@ def debug(proposals=[], mrcnn_class_probs=[], mrcnn_bbox=[], image_window=[], im
     print (image_shape)
     
     obj_D = DetectionLayer(conf, image_shape, num_batches, image_window, proposals, mrcnn_class_probs, mrcnn_bbox, DEBUG=True)
-    (class_ids, indices, mesh, ixs, class_scores, bbox_delta, refined_proposals, class_id_idx, score_id_idx,
-     keep_idx, pre_nms_class_ids, pre_nms_scores, pre_nms_porposals, unique_pre_nms_class_ids, class_nms_idx,
-     post_nms_keep_idx, post_nms_scores, post_nms_topk_keep_idx, detection_per_batch )= obj_D.debug_outputs()
+    (class_ids, indices, mesh, ixs, class_scores, bbox_delta, refined_proposals, pre_nms_class_ids_list, pre_nms_scores_list, pre_nms_proposals_list )= obj_D.debug_outputs()
     
     detections = obj_D.get_detections()
     
     with tf.Session() as sess:
         sess.run(tf.global_variables_initializer())
-        (class_ids_, indices_, mesh_, ixs_, class_scores_, bbox_delta_, refined_proposals_, class_id_idx_,
-         score_id_idx_, keep_idx_, pre_nms_class_ids_, pre_nms_scores_, pre_nms_porposals_,
-         unique_pre_nms_class_ids_, class_nms_idx_, post_nms_keep_idx_, post_nms_scores_, post_nms_topk_keep_idx_,
-         detection_per_batch_, detections_)= \
-            sess. \
-            run(
-                    [class_ids, indices, mesh, ixs, class_scores, bbox_delta, refined_proposals,
-                     class_id_idx, score_id_idx,
-                     keep_idx, pre_nms_class_ids, pre_nms_scores, pre_nms_porposals,
-                     unique_pre_nms_class_ids, class_nms_idx,
-                     post_nms_keep_idx, post_nms_scores, post_nms_topk_keep_idx, detection_per_batch, detections]
-            )
+        (class_ids_, indices_, mesh_, ixs_, class_scores_, bbox_delta_, refined_proposals_, pre_nms_class_ids_list_, pre_nms_scores_list_, pre_nms_proposals_list_, detections_)=  sess.run(
+                [class_ids, indices, mesh, ixs, class_scores, bbox_delta, refined_proposals, pre_nms_class_ids_list, pre_nms_scores_list, pre_nms_proposals_list, detections]
+        )
 
 
         print('class_ids_ ', class_ids_.shape, class_ids_)
@@ -345,29 +335,11 @@ def debug(proposals=[], mrcnn_class_probs=[], mrcnn_bbox=[], image_window=[], im
         print('')
         print('refined_proposals_ ', refined_proposals_.shape, refined_proposals_)
         print('')
-        print('class_id_idx_ ', class_id_idx_)
+        print('pre_nms_class_ids_list_ ', len(pre_nms_class_ids_list_), pre_nms_class_ids_list_)
         print('')
-        print('score_id_idx_ ', score_id_idx_)
+        print('pre_nms_scores_list_ ', len(pre_nms_scores_list_), pre_nms_scores_list_)
         print('')
-        print('keep_idx_ ', keep_idx_)
-        print('')
-        print('pre_nms_class_ids_ ', pre_nms_class_ids_.shape, pre_nms_class_ids_)
-        print('')
-        print('pre_nms_scores_ ', pre_nms_scores_.shape, pre_nms_scores_)
-        print('')
-        print('pre_nms_porposals_ ', pre_nms_porposals_.shape, pre_nms_porposals_)
-        print('')
-        print('unique_pre_nms_class_ids_ ', unique_pre_nms_class_ids_.shape, unique_pre_nms_class_ids_)
-        print('')
-        print('class_nms_idx_ ', class_nms_idx_)
-        print('')
-        print('post_nms_keep_idx_ ', post_nms_keep_idx_.shape, post_nms_keep_idx_)
-        print('')
-        print('post_nms_scores_ ', post_nms_scores_.shape, post_nms_scores_)
-        print('')
-        print('post_nms_topk_keep_idx_ ', post_nms_topk_keep_idx_.shape, post_nms_topk_keep_idx_)
-        print('')
-        print('detection_per_batch_ ', detection_per_batch_.shape, detection_per_batch_)
+        print('pre_nms_proposals_list_ ', len(pre_nms_proposals_list_), pre_nms_proposals_list_)
         print('')
         print('detections_ ', detections_.shape, detections_)
 
