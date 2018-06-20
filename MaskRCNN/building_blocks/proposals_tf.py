@@ -100,44 +100,19 @@ class Proposals():
     The input to this network is:
     rpn_class_probs: [num_batches, anchor, [back_ground_probability, fore_ground_probability]]
     '''
-    def __init__(self, conf, batch_size, rpn_class_probs=[], rpn_bbox=[], input_anchors=[], DEBUG=False):
-        if  len(rpn_class_probs) ==0:
-            self.rpn_class_probs = tf.placeholder(dtype=tf.float32,
-                                                   shape=[None, None, 2],
-                                                   name="rpn_prob")
-        else:
-            self.rpn_class_probs = np.array(rpn_class_probs, dtype='float32')
-            
-        if len(rpn_bbox) == 0:
-            self.rpn_bbox = tf.placeholder(dtype=tf.float32,
-                                      shape=[None, None, 4],
-                                      name="rpn_bbox")
-        else:
-            self.rpn_bbox = np.array(rpn_bbox, dtype='float32')
-            
-            
-        if len(input_anchors) == 0:
-            self.input_anchors = tf.placeholder(dtype=tf.float32,
-                                           shape=[None, None, 4],
-                                           name="input_anchors")
-        else:
-            self.input_anchors = np.array(input_anchors, dtype='float32')
+    def __init__(self, conf, batch_size, DEBUG=False):
+        
+        self.rpn_class_probs = tf.placeholder(dtype=tf.float32, shape=[None, None, 2], name="rpn_class_prob")
+        self.rpn_bbox = tf.placeholder(dtype=tf.float32, shape=[None, None, 4], name="rpn_bbox")
+        self.input_anchors = tf.placeholder(dtype=tf.float32, shape=[None, None, 4], name="input_anchors")
 
         self.DEBUG = DEBUG
-        
-        if DEBUG:
-            self.rpn_bbox_stddev = conf.RPN_BBOX_STDDEV
-            self.num_box_before_nms =  5
-            self.num_boxes_after_nms =  4
-            self.iou_threshold =  0.3
-            self.batch_size = batch_size
-        else:
             
-            self.rpn_bbox_stddev = conf.RPN_BBOX_STDDEV
-            self.num_box_before_nms = conf.PRE_NMS_ROIS_INFERENCE # 5
-            self.num_boxes_after_nms = conf.POST_NMS_ROIS_INFERENCE # 4
-            self.iou_threshold = conf.RPN_NMS_THRESHOLD # 0.3
-            self.batch_size = batch_size
+        self.rpn_bbox_stddev = conf.RPN_BBOX_STDDEV
+        self.num_box_before_nms = conf.PRE_NMS_ROIS_INFERENCE     # 5
+        self.num_boxes_after_nms = conf.POST_NMS_ROIS_INFERENCE   # 4
+        self.iou_threshold = conf.RPN_NMS_THRESHOLD               # 0.3
+        self.batch_size = batch_size
         
         self.build()
         
@@ -314,7 +289,7 @@ class Proposals():
     
     
     def get_proposal_graph(self):
-        return dict(rpn_probs=self.rpn_class_probs, rpn_bbox=self.rpn_bbox,
+        return dict(rpn_class_probs=self.rpn_class_probs, rpn_bbox=self.rpn_bbox,
                     input_anchors=self.input_anchors, proposals=self.proposals)
     
     def get_anchors_delta_clipped(self):
@@ -326,22 +301,28 @@ class Proposals():
 
 
 
-def debugg():
-    from MaskRCNN.config import config as conf
+def debug(rpn_class_probs=[], rpn_bbox=[], input_anchors=[]):
+    from MaskRCNN_loop.config import config as conf
 
     np.random.seed(325)
-    batch_size = 3
-    a = np.array(np.random.random((batch_size, 5, 2)), dtype='float32')
-    b = np.array(np.random.random((batch_size, 5, 4)), dtype='float32')
-    c = np.array(np.random.random((batch_size, 5, 4)), dtype='float32')
 
-    obj_p = Proposals(conf, batch_size=3, DEBUG = True)
+    batch_size = 1
+    if len(rpn_class_probs) == 0:
+        rpn_class_probs = np.array(np.random.random((batch_size, 5, 2)), dtype='float32')
+        batch_size = len(rpn_class_probs)
+    if len(rpn_bbox) == 0:
+        rpn_bbox = np.array(np.random.random((batch_size, 5, 4)), dtype='float32')
+    if len(input_anchors) == 0:
+        input_anchors = np.array(np.random.random((batch_size, 5, 4)), dtype='float32')
+
+    obj_p = Proposals(conf, batch_size=batch_size, DEBUG = True)
     p_graph = obj_p.get_proposal_graph()
     anchor_delta_clipped = obj_p.get_anchors_delta_clipped()
     bbox_delta, ix, scores, anchors, anchor_delta = obj_p.debug_outputs()
    
     # print(proposals)
-    feed_dict = {p_graph['rpn_probs']: a, p_graph['rpn_bbox']: b, p_graph['input_anchors']: c}
+    feed_dict = {p_graph['rpn_class_probs']: rpn_class_probs, p_graph['rpn_bbox']: rpn_bbox,
+                 p_graph['input_anchors']: input_anchors}
     with tf.Session() as sess:
         sess.run(tf.global_variables_initializer())
 
@@ -367,7 +348,7 @@ def debugg():
         print ('')
         print('proposals_ ', proposals_.shape, proposals_)
 
-# debugg()
+# debug()
 
 # proposals_  (3, 4, 4) [[[ 0.65874195  0.71861047  0.04293984  0.36567649]
 #   [ 0.40541095  0.          1.          0.84925073]

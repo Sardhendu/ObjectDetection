@@ -1,5 +1,5 @@
 import tensorflow as tf
-from MaskRCNN.config import config as conf
+from MaskRCNN_loop.config import config as conf
 
 def conv_layer(X, k_shape, stride=1, padding='SAME', w_init='tn', w_decay=None, scope_name='conv_layer',
                add_smry=False):

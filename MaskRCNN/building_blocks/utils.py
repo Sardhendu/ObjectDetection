@@ -2,11 +2,15 @@
 
 
 import numpy as np
+
 from skimage import transform
 import logging
 
+
+
 logging.basicConfig(level=logging.DEBUG, filename="logfile.log", filemode="w",
                     format="%(asctime)-15s %(levelname)-8s %(message)s")
+
 
 
 def normalize_image(images, mean_pixels):
@@ -60,7 +64,7 @@ def resize_image(image, min_dim, max_dim, min_scale, mode='square'):
     
     padding = [(top_pad, bottom_pad), (left_pad, right_pad), (0, 0)]
     image = np.pad(image, padding, mode='constant', constant_values=0)
-    image_window = (top_pad, left_pad, h + top_pad, w + bottom_pad)
+    image_window = (top_pad, left_pad, h + top_pad, w + left_pad)
     
     return image.astype(image.dtype), image_window, scale, padding
 
@@ -105,6 +109,24 @@ def norm_boxes(anchors, shape):
     scale = np.array([h - 1, w - 1, h - 1, w - 1])
     shift = np.array([0, 0, 1, 1])
     return np.divide((anchors - shift), scale).astype(np.float32)
+
+def denorm_boxes(boxes, shape):
+    """Converts boxes from normalized coordinates to pixel coordinates.
+    boxes: [N, (y1, x1, y2, x2)] in normalized coordinates
+    shape: [..., (height, width)] in pixels
+
+    Note: In pixel coordinates (y2, x2) is outside the box. But in normalized
+    coordinates it's inside the box.
+
+    Returns:
+        [N, (y1, x1, y2, x2)] in pixel coordinates
+    """
+    print('RUNNING utils (denorm_boxes)......................')
+    h, w = shape
+    scale = np.array([h - 1, w - 1, h - 1, w - 1])
+    shift = np.array([0, 0, 1, 1])
+    return np.around(np.multiply(boxes, scale) + shift).astype(np.int32)
+
 
 def generate_anchors_for_feature_map(scales, ratios, feature_map_shapes, feature_map_strides, anchor_strides):
     """
@@ -232,9 +254,6 @@ def gen_anchors(image_shape, batch_size, scales, ratios, feature_map_shapes, fea
     anchors = norm_boxes(anchors, shape=image_shape[:2])
     return anchors
     
-    
-    
-
 
 
    
@@ -247,7 +266,7 @@ def debug_resize_image():
     print (image_resized.shape)
     
 def debug_gen_anchors():
-    from MaskRCNN.config import config as conf
+    from MaskRCNN_loop.config import config as conf
     resnet_stage_shapes = get_resnet_stage_shapes(conf, image_shape=[1024,1024,3])
     # print(resnet_stage_shapes)
 

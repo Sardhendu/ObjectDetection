@@ -155,4 +155,4 @@ def debugg():
     #     sess.run(tf.global_variables_initializer())
     #     set_pretrained_weights(sess, weights_path=weight_path)
         
-debugg()
+# debugg()

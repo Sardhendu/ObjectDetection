@@ -144,7 +144,7 @@ class FPN():
         logging.info('Conv2D: %s', str(x.get_shape().as_list()))
         x = tf.layers.max_pooling2d(x, pool_size=3, strides=2, padding="SAME")
         logging.info('MaxPool2d: %s', str(x.get_shape().as_list()))
-        self.C1 = x
+        # self.C1 = x
        
         # STAGE 2
         logging.info('STAGE 2 ...........................')
@@ -179,7 +179,7 @@ class FPN():
         else:
             self.C5 = None
             
-        print('(FPN) C1: (shape) ', self.C1.shape)
+        # print('(FPN) C1: (shape) ', self.C1.shape)
         print('(FPN) C2: (shape) ', self.C2.shape)
         print('(FPN) C3: (shape) ', self.C3.shape)
         print('(FPN) C4: (shape) ', self.C4.shape)

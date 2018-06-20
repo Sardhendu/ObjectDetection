@@ -209,7 +209,7 @@ class ProposalLayer():
 
 
 
-from MaskRCNN.config import config
+from MaskRCNN_loop.config import config
 np.random.seed(325)
 num_batches = 3
 proposal_count = 4

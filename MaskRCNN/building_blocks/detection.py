@@ -1,17 +1,61 @@
 
 import numpy as np
 import tensorflow as tf
-from MaskRCNN.building_blocks.utils import norm_boxes
+from MaskRCNN.building_blocks.utils import norm_boxes, denorm_boxes
 from MaskRCNN.building_blocks.proposals_tf import apply_box_deltas, clip_boxes_to_01
 
 
+def unmold_detection(original_image_shape, image_shape, detections, image_window):
+    '''
+    :param detections: [batch_size, num_proposals, (y1, x1, y2, x2, class_id, class_score)]
+    :return:`
+    '''
+    print('image_shape ', image_shape)
+    print('original_image_shape ', original_image_shape)
+    print('image_window ', image_window)
 
-def unmold_detection(detections, mrcnn_mask, image_shape, molded_image_shape, image_window):
-    pass
+    image_window = norm_boxes(image_window, image_shape[:2])
+    print ('image_window_normeed: ', image_window)
+    
+    print (detections.shape)
+    zero_ix = np.where(detections[:, 4] == 0)[0]
+    print (zero_ix)
+    N = zero_ix[0] if zero_ix.shape[0] > 0 else detections.shape[0]
+    print (N)
+    
+    # Extract boxes, class_ids, scores, and class-specific masks
+    boxes = detections[:N, :4]
+    class_ids = detections[:N, 4].astype(np.int32)
+    scores = detections[:N, 5]
+
+    # Convert the Normalized coordinates to Pixel coordinates
+    wy1, wx1, wy2, wx2 = image_window
+    shift = np.array([wy1, wx1, wy1, wx1])
+    wh = wy2 - wy1  # window height
+    ww = wx2 - wx1  # window width
+    scale = np.array([wh, ww, wh, ww])
+    print ('Shift scale: ', shift, scale)
+    # Convert boxes to normalized coordinates on the window
+    boxes = np.divide(boxes - shift, scale)
+    print ('boxes ', boxes)
+    # Convert boxes to pixel coordinates on the original image
+    boxes = denorm_boxes(boxes, original_image_shape[:2])
+
+    # Filter out detections with zero area. Happens in early training when
+    # network weights are still random
+    exclude_ix = np.where(
+            (boxes[:, 2] - boxes[:, 0]) * (boxes[:, 3] - boxes[:, 1]) <= 0)[0]
+    if exclude_ix.shape[0] > 0:
+        boxes = np.delete(boxes, exclude_ix, axis=0)
+        class_ids = np.delete(class_ids, exclude_ix, axis=0)
+        scores = np.delete(scores, exclude_ix, axis=0)
+
+    return boxes, class_ids, scores
 
 
 class DetectionLayer():
     def __init__(self, conf, image_shape, num_batches, window, proposals, mrcnn_class_probs, mrcnn_bbox, DEBUG=False):
+        self.image_shape = image_shape
         self.num_batches = num_batches
         self.bbox_stddev = conf.BBOX_STD_DEV
         self.detection_post_nms_instances = conf.DETECTION_POST_NMS_INSTANCES
@@ -28,9 +72,8 @@ class DetectionLayer():
         mrcnn_class_probs = tf.cast(mrcnn_class_probs, dtype=tf.float32)
         mrcnn_bbox = tf.cast(mrcnn_bbox, dtype=tf.float32)
         
-        self.build(window, proposals, mrcnn_class_probs, mrcnn_bbox)
-    
-    
+        self.detections = self.build(window, proposals, mrcnn_class_probs, mrcnn_bbox)
+
     def build(self, window, proposals, mrcnn_class_probs, mrcnn_bbox):
         ''' What's going on:
 
@@ -175,7 +218,7 @@ class DetectionLayer():
             num_instances_to_add = self.detection_post_nms_instances - tf.shape(detection_per_batch)[0]
             detections.append(tf.pad(detection_per_batch, [(0, num_instances_to_add), (0, 0)], "CONSTANT"))
 
-        self.detections = tf.stack(detections, axis=0)
+        detections = tf.stack(detections, axis=0)
         
         if self.DEBUG:
             self.class_ids = class_ids
@@ -197,6 +240,10 @@ class DetectionLayer():
             self.post_nms_scores = post_nms_scores
             self.post_nms_topk_keep_idx = post_nms_topk_keep_idx
             self.detection_per_batch = detection_per_batch
+    
+        return detections
+
+        
     
     def get_detections(self):
         return self.detections
@@ -227,25 +274,38 @@ class DetectionLayer():
 
 
 
-def debug():
+def debug(proposals=[], mrcnn_class_probs=[], mrcnn_bbox=[], image_window=[], image_shape=[]):
     from MaskRCNN.config import config as conf
     np.random.seed(863)
-    proposals = np.array(np.random.random((2 ,8 ,4)), dtype='float32')
-    mrcnn_class_probs = np.array(np.random.random((2 ,8 ,4)), dtype='float32')  # [num_batch, num_top_proposal,
-    # num_classes]
-    mrcnn_bbox = np.array(np.random.random((2 ,8 ,4 ,4)), dtype='float32')
-    window = np.array([[131, 0, 893, 1155],
-                       [131, 0, 893, 1155]], dtype='int32')  # image without zeropad [y1, x1, y2,
-    # #  x2]
-
-    # window = np.array([131, 0, 893, 1155], dtype='int32')
     
+    num_batches = 1
+    if len(image_window) == 0:
+        image_window = np.array([[131, 0, 893, 1024]], dtype='int32')
+    
+    if len(image_shape) == 0:
+        image_shape = [1024, 1024, 3]
+    
+    
+    if len(proposals) == 0:
+        proposals = np.array(np.random.random((1 ,8 ,4)), dtype='float32')
+        num_batches = len(proposals)
+        
+    if len(mrcnn_class_probs) == 0:
+        mrcnn_class_probs = np.array(np.random.random((1 ,8 ,4)), dtype='float32')  # [num_batch, num_top_proposal,
+    # num_classes]
+    
+    if len(mrcnn_bbox) == 0:
+        mrcnn_bbox = np.array(np.random.random((1 ,8 ,4 ,4)), dtype='float32')
+
     print('mrcnn_class_probs ', mrcnn_class_probs.shape, mrcnn_class_probs)
     print ('')
     print('mrcnn_bbox ', mrcnn_bbox)
     print('')
     
-    obj_D = DetectionLayer(conf, [1024, 1024, 3], 2, window, proposals, mrcnn_class_probs, mrcnn_bbox, DEBUG=True)
+    print (image_window)
+    print (image_shape)
+    
+    obj_D = DetectionLayer(conf, image_shape, num_batches, image_window, proposals, mrcnn_class_probs, mrcnn_bbox, DEBUG=True)
     (class_ids, indices, mesh, ixs, class_scores, bbox_delta, refined_proposals, class_id_idx, score_id_idx,
      keep_idx, pre_nms_class_ids, pre_nms_scores, pre_nms_porposals, unique_pre_nms_class_ids, class_nms_idx,
      post_nms_keep_idx, post_nms_scores, post_nms_topk_keep_idx, detection_per_batch )= obj_D.debug_outputs()
@@ -265,9 +325,9 @@ def debug():
                      keep_idx, pre_nms_class_ids, pre_nms_scores, pre_nms_porposals,
                      unique_pre_nms_class_ids, class_nms_idx,
                      post_nms_keep_idx, post_nms_scores, post_nms_topk_keep_idx, detection_per_batch, detections]
-            )  # ,
-        # class_scores,
-        #  bbox])
+            )
+
+
         print('class_ids_ ', class_ids_.shape, class_ids_)
         print ('')
         print('indices_ ', indices_)
