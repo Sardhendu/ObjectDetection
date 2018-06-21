@@ -11,9 +11,10 @@ from matplotlib.patches import Polygon
 
 
 class Visualize():
-    def __init__(self, image_path, rows=1, cols=1, figsize=(16, 16)):
-        self.image_path = image_path
-        self.image = ndimage.imread(image_path, mode='RGB')
+    def __init__(self, image_path=None, rows=1, cols=1, figsize=(16, 16)):
+        if image_path:
+            self.image_path = image_path
+            self.image = ndimage.imread(image_path, mode='RGB')
         
         
         _, self.axs = plt.subplots(nrows=rows, ncols=cols, figsize=figsize, facecolor='y', edgecolor='k')
@@ -34,7 +35,7 @@ class Visualize():
         random.shuffle(colors)
         return colors
 
-    def vizualize_image(self, imageArray, title_arr=[], data_type='unit8'):
+    def visualize_image_2d(self, imageArray, title_arr=[], data_type='uint8'):
         
         for no, image in enumerate(imageArray):
             self.axs[no].imshow(np.array(image.reshape(image.shape[0], image.shape[1]), dtype=data_type))

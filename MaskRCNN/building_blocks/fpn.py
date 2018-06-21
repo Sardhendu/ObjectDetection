@@ -17,6 +17,24 @@ from MaskRCNN.config import config as conf
 
 
 
+class BatchNorm(KL.BatchNormalization):
+    """Extends the Keras BatchNormalization class to allow a central place
+    to make changes if needed.
+
+    Batch normalization has a negative effect on training if batches are small
+    so this layer is often frozen (via setting in Config class) and functions
+    as linear layer.
+    """
+    def call(self, inputs, training=None):
+        """
+        Note about training values:
+            None: Train BN layers. This is the normal mode
+            False: Freeze BN layers. Good when batch size is small
+            True: (don't use). Set layer in training mode even when inferencing
+        """
+        return super(self.__class__, self).call(inputs, training=training)
+
+
 
 class FPN():
     def __init__(self, input_image, resnet_model, stage_5=True):
@@ -45,21 +63,24 @@ class FPN():
         ## BRANCH 2a
         x = ops.conv_layer(x_in, [1, 1, x_shape[-1], f1], stride=1, padding='SAME',
                            scope_name=conv_name + '2a')
-        x = ops.batch_norm(x, axis=[0, 1, 2], scope_name=bn_name + '2a')
+        # x = ops.batch_norm(x, axis=[0, 1, 2], scope_name=bn_name + '2a')
+        x = BatchNorm(name=bn_name + '2a')(x, training=False)
         x = ops.activation(x, 'relu', relu_name + '2a')
         logging.info('%s: %s', str(conv_name + '2a'), str(x.get_shape().as_list()))
     
         ## BRANCH 2b
         x = ops.conv_layer(x, [3, 3, f1, f2], stride=1, padding='SAME',
                            scope_name=conv_name + '2b')
-        x = ops.batch_norm(x, axis=[0, 1, 2], scope_name=bn_name + '2b')
+        # x = ops.batch_norm(x, axis=[0, 1, 2], scope_name=bn_name + '2b')
+        x = BatchNorm(name=bn_name + '2b')(x, training=False)
         x = ops.activation(x, 'relu', relu_name + '2b')
         logging.info('%s: %s', str(conv_name + '2b'), str(x.get_shape().as_list()))
     
         ## BRANCH 2c
         x = ops.conv_layer(x, [1, 1, f2, f3], stride=1, padding='SAME',
                            scope_name=conv_name + '2c')
-        x = ops.batch_norm(x, axis=[0, 1, 2], scope_name=bn_name + '2c')
+        # x = ops.batch_norm(x, axis=[0, 1, 2], scope_name=bn_name + '2c')
+        x = BatchNorm(name=bn_name + '2c')(x, training=False)
         logging.info('%s: %s', str(conv_name + '2c'), str(x.get_shape().as_list()))
     
         ## Add
@@ -84,27 +105,31 @@ class FPN():
         ## SHORTCUT (Skip Connection)
         shortcut = ops.conv_layer(x_in, [1, 1, x_shape[-1], f3], stride=strides, padding='SAME',
                            scope_name = conv_name + '1')
-        shortcut = ops.batch_norm(shortcut, axis=[0, 1, 2], scope_name=bn_name + '1')
+        # shortcut = ops.batch_norm(shortcut, axis=[0, 1, 2], scope_name=bn_name + '1')
+        shortcut = BatchNorm(name=bn_name + '1')(shortcut, training=False)
         logging.info('%s: %s', str(conv_name + '1'), str(shortcut.get_shape().as_list()))
     
         ## BRANCH 2a
         x = ops.conv_layer(x_in, [1, 1, x_shape[-1], f1], stride=strides, padding='SAME',
                            scope_name = conv_name + '2a')
-        x = ops.batch_norm(x, axis=[0, 1, 2], scope_name=bn_name + '2a')
+        # x = ops.batch_norm(x, axis=[0, 1, 2], scope_name=bn_name + '2a')
+        x = BatchNorm(name=bn_name + '2a')(x, training=False)
         x = ops.activation(x, 'relu', relu_name + '2a')
         logging.info('%s: %s', str(conv_name + '2a'), str(x.get_shape().as_list()))
     
         ## BRANCH 2b
         x = ops.conv_layer(x, [3, 3, f1, f2], stride=1, padding='SAME',
                            scope_name = conv_name + '2b')
-        x = ops.batch_norm(x, axis=[0, 1, 2], scope_name=bn_name + '2b')
+        # x = ops.batch_norm(x, axis=[0, 1, 2], scope_name=bn_name + '2b')
+        x = BatchNorm(name=bn_name + '2b')(x, training=False)
         x = ops.activation(x, 'relu', relu_name + '2b')
         logging.info('%s: %s', str(conv_name + '2b'), str(x.get_shape().as_list()))
     
         ## BRANCH 2c
         x = ops.conv_layer(x, [1, 1, f2, f3], stride=1, padding='SAME',
                            scope_name=conv_name + '2c')
-        x = ops.batch_norm(x, axis=[0, 1, 2], scope_name=bn_name + '2c')
+        # x = ops.batch_norm(x, axis=[0, 1, 2], scope_name=bn_name + '2c')
+        x = BatchNorm(name=bn_name + '2c')(x, training=False)
         logging.info('%s: %s', str(conv_name + '2c'), str(x.get_shape().as_list()))
         
         ## Add
@@ -115,8 +140,8 @@ class FPN():
         
     def fpn_bottom_up_graph(self):
         '''
-        Here we implement a Resnet50 model, and make sure that at every stage we capture the feature map to be used by
-        the top-down FPN network. This is required in assistance to predict the feature map.
+        Here we implement a Resnet101 model, and make sure that at every stage we capture the feature map to be used by
+        the top-down FPN network. This is required in assistance to further work on the feature map.
         
         :param input_image:
         :param stage_5:
@@ -139,7 +164,8 @@ class FPN():
         # STAGE 1
         logging.info('STAGE 1 ...........................')
         x = ops.conv_layer(x, [7,7,3,64], stride=2, padding='VALID', scope_name='conv1')
-        x = ops.batch_norm(x, axis=[0, 1, 2], scope_name='bn_conv1')
+        x = BatchNorm(name='bn_conv1')(x, training=False)
+        # x = ops.batch_norm(x, axis=[0, 1, 2], scope_name='bn_conv1')
         x = ops.activation(x, 'relu', 'relu_conv1')
         logging.info('Conv2D: %s', str(x.get_shape().as_list()))
         x = tf.layers.max_pooling2d(x, pool_size=3, strides=2, padding="SAME")
