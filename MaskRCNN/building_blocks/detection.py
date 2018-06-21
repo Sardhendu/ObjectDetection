@@ -15,13 +15,13 @@ def unmold_detection(original_image_shape, image_shape, detections, image_window
     print('image_window ', image_window)
 
     image_window = norm_boxes(image_window, image_shape[:2])
-    print ('image_window_normeed: ', image_window)
+    # print ('image_window_normeed: ', image_window)
     
-    print (detections.shape)
+    # print (detections.shape)
     zero_ix = np.where(detections[:, 4] == 0)[0]
-    print (zero_ix)
+    # print (zero_ix)
     N = zero_ix[0] if zero_ix.shape[0] > 0 else detections.shape[0]
-    print (N)
+    # print (N)
     
     # Extract boxes, class_ids, scores, and class-specific masks
     boxes = detections[:N, :4]
@@ -34,10 +34,10 @@ def unmold_detection(original_image_shape, image_shape, detections, image_window
     wh = wy2 - wy1  # window height
     ww = wx2 - wx1  # window width
     scale = np.array([wh, ww, wh, ww])
-    print ('Shift scale: ', shift, scale)
+    # print ('Shift scale: ', shift, scale)
     # Convert boxes to normalized coordinates on the window
     boxes = np.divide(boxes - shift, scale)
-    print ('boxes ', boxes)
+    # print ('boxes ', boxes)
     # Convert boxes to pixel coordinates on the original image
     boxes = denorm_boxes(boxes, original_image_shape[:2])
 
@@ -138,6 +138,7 @@ class DetectionLayer():
             pre_nms_proposals_list = []
             pre_nms_class_ids_list = []
             pre_nms_scores_list = []
+            clipped_proposals_list = []
         
         for i in range(0,self.num_batches):
             # Clip image to image window, this time we dont do it on the total normed image coordinate, because our
@@ -163,6 +164,8 @@ class DetectionLayer():
             unique_pre_nms_class_ids = tf.unique(pre_nms_class_ids)[0]
 
             if self.DEBUG:
+                
+                clipped_proposals_list.append(clipped_proposals)
                 pre_nms_proposals_list.append(pre_nms_proposals)
                 pre_nms_class_ids_list.append(pre_nms_class_ids)
                 pre_nms_scores_list.append(pre_nms_scores)
@@ -245,6 +248,7 @@ class DetectionLayer():
             # self.class_id_idx = class_id_idx
             # self.score_id_idx = score_id_idx
             # self.keep_idx = keep_idx
+            self.clipped_proposals_list = clipped_proposals_list
             self.pre_nms_class_ids_list = pre_nms_class_ids_list
             self.pre_nms_scores_list = pre_nms_scores_list
             self.pre_nms_proposals_list = pre_nms_proposals_list
@@ -269,6 +273,7 @@ class DetectionLayer():
                 self.class_scores,
                 self.bbox_delta,
                 self.refined_proposals,
+                self.clipped_proposals_list,
                 self.pre_nms_class_ids_list,
                 self.pre_nms_scores_list,
                 self.pre_nms_proposals_list,
@@ -310,7 +315,7 @@ def debug(proposals=[], mrcnn_class_probs=[], mrcnn_bbox=[], image_window=[], im
     print (image_shape)
     
     obj_D = DetectionLayer(conf, image_shape, num_batches, image_window, proposals, mrcnn_class_probs, mrcnn_bbox, DEBUG=True)
-    (class_ids, indices, mesh, ixs, class_scores, bbox_delta, refined_proposals, pre_nms_class_ids_list, pre_nms_scores_list, pre_nms_proposals_list )= obj_D.debug_outputs()
+    (class_ids, indices, mesh, ixs, class_scores, bbox_delta, refined_proposals, clipped_proposals_list, pre_nms_class_ids_list, pre_nms_scores_list, pre_nms_proposals_list )= obj_D.debug_outputs()
     
     detections = obj_D.get_detections()
     

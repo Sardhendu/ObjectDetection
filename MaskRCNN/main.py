@@ -272,7 +272,7 @@ save_dir = '/Users/sam/All-Program/App-DataSet/ObjectDetection/MaskRCNN/'
 
 
 ####### RUN MRCNN AND DETECTION
-obj_inference = Inference(pretrained_weights_path, run='mrcnn_detection', save=True, save_dir=save_dir, DEBUG=False)
+# obj_inference = Inference(pretrained_weights_path, run='mrcnn_detection', save=True, save_dir=save_dir, DEBUG=False)
 # mrcnn_class_probs, mrcnn_bbox, detections, detection_unmold = obj_inference.get_mrcnn_prob_bbox_and_detections()
 # print (detection_unmold)
 

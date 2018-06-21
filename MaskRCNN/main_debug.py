@@ -54,7 +54,7 @@ class Inference():
         elif self.run == 'mrcnn':
             self.run_mrcnn()
         elif self.run == 'detections':
-            self.run_detection()
+            self.run_detections()
         else:
             raise ValueError('Provide a valid value for argument "run"')
     
@@ -136,7 +136,7 @@ class Inference():
             self.save_image_metas()
             
     def run_proposals(self, anchors):
-        rpn_class_probs, rpn_bboxes = self.get_rpn_probs_bbox()
+        rpn_class_probs, rpn_bboxes = Inference.get_rpn_probs_bbox(self.save_dir)
         
         # CREATE THE PROPOSAL GRAPH
         if self.DEBUG:
@@ -160,9 +160,9 @@ class Inference():
                 self.save_proposals()
     
     def run_mrcnn(self):
-        image_metas = self.get_image_metas()
-        feature_maps = self.get_feature_maps()
-        proposals = self.get_proposals()
+        image_metas = Inference.get_image_metas(self.save_dir)
+        feature_maps = Inference.get_feature_maps(self.save_dir)
+        proposals = Inference.get_proposals(self.save_dir)
 
         image_shape = np.array(image_metas[:, 4:7], dtype='int32')
         print('Max and Min Proposals, ', np.amax(proposals), np.amin(proposals))
@@ -176,25 +176,30 @@ class Inference():
             from MaskRCNN.building_blocks.maskrcnn import debug
             debug(feature_maps=feature_maps, proposals=proposals, image_metas=image_metas)
         else:
-            mrcnn_graph = MaskRCNN(image_shape=image_shape[0], pool_shape=[7, 7], num_classes=81,
+            obj_mrcnn = MaskRCNN(image_shape=image_shape[0], pool_shape=[7, 7], num_classes=81,
                                    levels=[2, 3, 4, 5], proposals=proposals, feature_maps=feature_maps,
-                                   type='keras', DEBUG=False).get_mrcnn_graph()
+                                   type='keras', DEBUG=False)
+                
+            mrcnn_graph = obj_mrcnn.get_mrcnn_graph()
+            pooled_rois = obj_mrcnn.get_pooled_rois()
             
             with tf.Session() as sess:
                 sess.run(tf.global_variables_initializer())
                 load_params.set_pretrained_weights(sess, self.pretrained_weights_path)
-                self.mrcnn_class_probs, self.mrcnn_bboxes = sess.run([mrcnn_graph['mrcnn_class_probs'],
-                                                                    mrcnn_graph['mrcnn_bbox']])
+                self.mrcnn_class_probs, self.mrcnn_bboxes, self.pooled_rois = sess.run(
+                        [mrcnn_graph['mrcnn_class_probs'], mrcnn_graph['mrcnn_bbox'], pooled_rois]
+                )
                 print('(MASK RCNN) mrcnn_class_probs (shape)', self.mrcnn_class_probs.shape)
                 print('(MASK RCNN) mrcnn_bbox (shape)', self.mrcnn_bboxes.shape)
+                print('(MASK RCNN) pooled rois (shape)', self.pooled_rois.shape)
                 
             if self.save:
                 self.save_mrcnn_probs_bbox()
         
-    def run_detection(self):
-        image_metas = self.get_image_metas()
-        proposals = self.get_proposals()
-        mrcnn_class_probs, mrcnn_bboxes = self.get_mrcnn_probs_bbox()
+    def run_detections(self):
+        image_metas = Inference.get_image_metas(self.save_dir)
+        proposals = Inference.get_proposals(self.save_dir)
+        mrcnn_class_probs, mrcnn_bboxes, pooled_rois = Inference.get_mrcnn_probs_bbox(self.save_dir)
     
         # JUST FOR 1 IMAGE
         batch_size = len(image_metas)
@@ -211,13 +216,17 @@ class Inference():
             debug(proposals=proposals, mrcnn_class_probs=mrcnn_class_probs, mrcnn_bbox=mrcnn_bboxes,
                   image_window=image_window, image_shape=image_shape[0])
         else:
-            detections = DetectionLayer(
-                                    conf,
+            obj_D = DetectionLayer( conf,
                                     image_shape=image_shape[0],  # All images in a batch should be of same shape
                                     num_batches=batch_size,
                                     window=image_window,
-                                    proposals=proposals, mrcnn_class_probs=mrcnn_class_probs,
-                                    mrcnn_bbox=mrcnn_bboxes, DEBUG=False).get_detections()
+                                    proposals=proposals,
+                                    mrcnn_class_probs=mrcnn_class_probs,
+                                    mrcnn_bbox=mrcnn_bboxes, DEBUG=True)
+
+            (class_ids, indices, mesh, ixs, class_scores, bbox_delta, refined_proposals, clipped_proposals_list, pre_nms_class_ids_list,
+             pre_nms_scores_list, pre_nms_proposals_list) = obj_D.debug_outputs()
+            detections = obj_D.get_detections()
             
             with tf.Session() as sess:
                 sess.run(tf.global_variables_initializer())
@@ -226,7 +235,10 @@ class Inference():
                 # Note setting the weight can take 1-2 min due to the deep network
                 load_params.set_pretrained_weights(sess, self.pretrained_weights_path)
                 
-                self.detections_normed = sess.run(detections)
+                (self.class_ids, self.class_scores, self.clipped_proposals_list, self.pre_nms_class_ids_list, self.pre_nms_scores_list, self.pre_nms_proposals_list, self.detections_normed) = sess.run(
+                        [class_ids, class_scores, clipped_proposals_list, pre_nms_class_ids_list, pre_nms_scores_list,
+                         pre_nms_proposals_list, detections]
+                )
                 print('(DETECTION) detections (shape)', self.detections_normed.shape)
         
             if self.save:
@@ -265,14 +277,21 @@ class Inference():
         with open(os.path.join(self.save_dir, 'mrcnn_probs_bboxes.pickle'), "wb") as f:
             fullData = {
                 'mrcnn_class_probs': self.mrcnn_class_probs,
-                'mrcnn_bboxes': self.mrcnn_bboxes
+                'mrcnn_bboxes': self.mrcnn_bboxes,
+                'pooled_rois': self.pooled_rois
             }
             pickle.dump(fullData, f, pickle.HIGHEST_PROTOCOL)
 
     def save_detections(self):
         with open(os.path.join(self.save_dir, 'detections.pickle'), "wb") as f:
             fullData = {
-                'detections_normed': self.detections_normed
+                'detections_normed': self.detections_normed,
+                'class_ids_pre_bg_filter' : self.class_ids,
+                'class_scores_pre_bg_filter': self.class_scores,
+                'proposals_pre_bg_filter_list' : self.clipped_proposals_list,
+                'class_ids_pre_nms_post_bg_filter_list' : self.pre_nms_class_ids_list,
+                'class_scores_pre_nms_post_bg_filter_list': self.pre_nms_scores_list,
+                'proposals_pre_nms_post_bg_filter_list': self.pre_nms_proposals_list
             }
             pickle.dump(fullData, f, pickle.HIGHEST_PROTOCOL)
 
@@ -311,14 +330,22 @@ class Inference():
             data = pickle.load(f)
             mrcnn_class_probs = data['mrcnn_class_probs']
             mrcnn_bboxes = data['mrcnn_bboxes']
-        return mrcnn_class_probs, mrcnn_bboxes
+            pooled_rois = data['pooled_rois']
+        return mrcnn_class_probs, mrcnn_bboxes, pooled_rois
 
     @staticmethod
     def get_detections(save_dir):
         with open(os.path.join(save_dir, 'detections.pickle'), "rb") as f:
             data = pickle.load(f)
             detections_normed = data['detections_normed']
-        return detections_normed
+            class_ids_pre_bg_filter = data['class_ids_pre_bg_filter'],
+            class_scores_pre_bg_filter = data['class_scores_pre_bg_filter']
+            proposals_pre_bg_filter_list = data['proposals_pre_bg_filter_list']
+            class_ids_pre_nms_post_bg_filter_list = data['class_ids_pre_nms_post_bg_filter_list']
+            class_scores_pre_nms_post_bg_filter_list = data['class_scores_pre_nms_post_bg_filter_list']
+            proposals_pre_nms_post_bg_filter_list = data['proposals_pre_nms_post_bg_filter_list']
+        
+        return detections_normed, class_ids_pre_bg_filter, class_scores_pre_bg_filter, proposals_pre_bg_filter_list, class_ids_pre_nms_post_bg_filter_list, class_scores_pre_nms_post_bg_filter_list, proposals_pre_nms_post_bg_filter_list
 
     @staticmethod
     def get_detection_dnormed(image_metas, detections_normed):
@@ -369,9 +396,10 @@ save_dir = '/Users/sam/All-Program/App-DataSet/ObjectDetection/MaskRCNN/debug_ou
 ####### RUN THE MRCNN MODULE
 # obj_inference = Inference(pretrained_weights_path, run='mrcnn', save=True, save_dir=save_dir,
 # DEBUG=True)
-# mrcnn_class_probs, mrcnn_bboxes = Inference.get_mrcnn_probs_bbox(save_dir)
+# mrcnn_class_probs, mrcnn_bboxes, pooled_rois = Inference.get_mrcnn_probs_bbox(save_dir)
 # print ('mrcnn_class_probs ',mrcnn_class_probs.shape)
 # print ('mrcnn_bboxes ',mrcnn_bboxes.shape)
+# print ('pooled_rois', pooled_rois.shape)
 
 
 ####### RUN THE DETECTION MODULE

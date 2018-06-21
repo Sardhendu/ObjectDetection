@@ -113,8 +113,7 @@ class MaskRCNN():
 
         # Use shape of first image. Images in a batch must have the same size.
         # Equation 1 in the Feature Pyramid Networks paper.  # Note: The formula has an extra multiplication by
-        # tf.sqrt(image_area). We do this becasue the y1, x1, y2, x2 cordinates are in normalized form which makes w and
-        # h in normalized coordinates. Since we want to interpolate the feature map proposals to the image we have to first de-normalize it.
+        # tf.sqrt(image_area). We do this becasue the y1, x1, y2, x2 cordinates are in normalized form which makes w and h in normalized coordinates. Since we want to interpolate the feature map proposals to the image we have to first de-normalize it.
         # e.g. a 224x224 ROI (in pixels) maps to P4
         # Shape (roi_level) : [num_batch, num_proposals] : Indicates the feature_map level (2,3,4,5) to which the
         # proposal belongs
@@ -151,7 +150,7 @@ class MaskRCNN():
             # which is how it's done in tf.crop_and_resize()
             # Result: [batch * num_boxes, pool_height, pool_width, channels]
 
-            # Basically this says the bounding box to crop from the image(feature_map) and then
+            # Basically this says the bounding box to crop from the image(feature_map) and then resize it to the pool shape
             pooled_rois.append(tf.image.crop_and_resize(
                     feature_maps[i], level_boxes, box_indices, pool_shape,
                     method="bilinear"))
@@ -190,7 +189,6 @@ class MaskRCNN():
         self.pooled_rois = tf.expand_dims(pooled_rois, 0)
 
     def classifier_with_fpn_tf(self):
-        print (self.pooled_rois.shape)
 
         rois_shape = self.pooled_rois.get_shape().as_list()
 
@@ -294,7 +292,7 @@ class MaskRCNN():
         self.mrcnn_bbox = KL.Reshape((s[1], self.num_classes, 4), name="mrcnn_bbox")(x)
 
 
-    def get_rois(self):
+    def get_pooled_rois(self):
         return self.pooled_rois
 
     def get_mrcnn_class_probs(self):
@@ -333,7 +331,7 @@ def debug(feature_maps=[], proposals=[], image_metas=[]):
     # Mask RCNN : ROI Pooling
     obj_MRCNN = MaskRCNN(image_shape=image_shape, pool_shape=[7, 7], num_classes=81, levels=[2, 3, 4, 5],
                          proposals=proposals, feature_maps=feature_maps, type='keras', DEBUG=True)
-    pooled_rois = obj_MRCNN.get_rois()
+    pooled_rois = obj_MRCNN.get_pooled_rois()
     mrcnn_graph = obj_MRCNN.get_mrcnn_graph()
     roi_level, box_to_level, sorting_tensor, ix, FC1, FC2, shared = obj_MRCNN.debug_outputs()
 
