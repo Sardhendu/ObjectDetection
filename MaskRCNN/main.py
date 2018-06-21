@@ -198,7 +198,7 @@ class Inference():
                 print('(MASK RCNN) mrcnn_class_probs (shape)', self.mrcnn_class_probs.shape)
                 print('(MASK RCNN) mrcnn_bbox (shape)', self.mrcnn_bbox.shape)
                 print('(DETECTION) detections (shape)', self.detections_.shape)
-                print (self.detections_)
+                
                 self.detection_boxes = []
                 for i in range(0, len(self.detections_)):
                     detections_unmold, class_ids, scores = unmold_detection(

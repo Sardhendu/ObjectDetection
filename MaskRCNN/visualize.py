@@ -16,7 +16,10 @@ class Visualize():
         self.image = ndimage.imread(image_path, mode='RGB')
         
         
-        _, self.axs = plt.subplots(nrows=rows, ncols=cols, figsize=figsize)
+        _, self.axs = plt.subplots(nrows=rows, ncols=cols, figsize=figsize, facecolor='y', edgecolor='k')
+        if cols > 1:
+            self.axs = self.axs.ravel()
+            
         self.auto_show = True
     
     def gen_random_colors(self, N, bright=True):
@@ -30,10 +33,14 @@ class Visualize():
         colors = list(map(lambda c: colorsys.hsv_to_rgb(*c), hsv))
         random.shuffle(colors)
         return colors
-    
-    def vizualize_image(self, image_path):
-        plt.imshow(self.image.astype(np.uint8))
-        plt.show()
+
+    def vizualize_image(self, imageArray, title_arr=[], data_type='unit8'):
+        
+        for no, image in enumerate(imageArray):
+            self.axs[no].imshow(np.array(image.reshape(image.shape[0], image.shape[1]), dtype=data_type))
+            
+        if self.auto_show:
+            plt.show()
     
     def visualize_boxes(self, boxes, class_ids=None, class_names=None,
                           scores=None, title="",

@@ -127,8 +127,8 @@ class Inference():
                 # Concatenate with the second dimension
                 self.rpn_class_probs = np.concatenate(rpn_class_probs, axis=1)
                 self.rpn_bboxes = np.concatenate(rpn_bboxes, axis=1)
-                print('(RPN) Total(stacked): rpn_class_score=%s, rpn_bbox=%s ' % (str(self.rpn_class_probs.shape),
-                                                                                  str(self.rpn_bboxes.shape)))
+                print('(RPN) Total(stacked): rpn_class_score=%s, rpn_bbox=%s ' % (str(
+                        self.rpn_class_probs.shape), str(self.rpn_bboxes.shape)))
                 
         if self.save:
             self.save_feature_map()
@@ -143,14 +143,15 @@ class Inference():
             from MaskRCNN.building_blocks.proposals_tf import debug
             debug(rpn_class_probs=rpn_class_probs, rpn_bbox=rpn_bboxes, input_anchors=anchors)
         else:
-            proposal_graph = Proposals(conf, batch_size=self.batch_size).get_proposal_graph()
-    
+            obj_p = Proposals(conf, batch_size=self.batch_size)
+            proposal_graph = obj_p.get_proposal_graph()
+            _, _, scores, _, _ = obj_p.debug_outputs()
             init = tf.global_variables_initializer()
     
             with tf.Session() as sess:
                 sess.run(init)
                 load_params.set_pretrained_weights(sess, self.pretrained_weights_path)
-                self.proposals = sess.run(proposal_graph['proposals'],
+                self.proposals, self.scores_ = sess.run([proposal_graph['proposals'], scores],
                                           feed_dict={proposal_graph['rpn_class_probs']: rpn_class_probs,
                                                      proposal_graph['rpn_bbox']: rpn_bboxes,
                                                      proposal_graph['input_anchors']: anchors})
