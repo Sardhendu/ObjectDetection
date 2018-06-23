@@ -9,6 +9,7 @@ class Dataset():
     def __init__(self, num_images, height, width, num_classes):
         self.image_meta = {}
         self.num_classes = num_classes
+        self.class_names = dict(square=0, triangle=1, circle=2)
         
         for i in range(0, num_images):
             self.image_meta[i] = self.build_images_meta(height, width)
@@ -18,7 +19,7 @@ class Dataset():
         bg_image = np.ones([height, width, 3]) * np.array(bg_, dtype=np.uint8)
         return bg_image
     
-    def draw_object_shape(self, image, object_info):
+    def draw_object_shape(self, image, object_, color, dims):
         ''' WHY THE WEIRDNESS IN FORMULA
 
         :param bg_image:
@@ -28,20 +29,20 @@ class Dataset():
         Important Note: When you look at the formulas, it might seem weird or rather oposite to what we are
         accustomed to use with numpy. This is because, we use OpenCV.
 
-        Numpy          0,10 ------------ 10,10
+        Numpy          0,10 ____________ 10,10
                             |          |
                             |          |
                             |          |
                        0,0  |__________| 10,0
 
-        OpenCV         0,0  ------------ 10,0
+        OpenCV         0,0  ____________ 10,0
                             |          |
                             |          |
                             |          |
                        0,10 |__________| 10,10
 
         '''
-        object_, (color), (c_y, c_x, size) = object_info
+        c_y, c_x, size = dims
         if object_ == 'square':
             cv2.rectangle(image, (c_x - size, c_y - size), (c_x + size, c_y + size), color, -1)
         elif object_ == 'circle':
@@ -109,22 +110,63 @@ class Dataset():
         image_info['bg_color'] = bg_color
         return image_info
     
+    def get_object_mask(self, image_id):
+        """Generate instance masks for shapes of the given image ID. 
+
+        Its the same shape as that of the image, however only the object part is colored white
+        output_shape = [height, width, num_objects], where 
+
+        """
+        image_info = self.image_meta[image_id]
+        object_info = image_info['object_info']
+        object_cnt = len(object_info)
+        mask = np.zeros([image_info['height'], image_info['width'], object_cnt], dtype=np.uint8)
+        for i, (object_, _, dims) in enumerate(object_info):
+            mask[:, :, i:i + 1] = self.draw_object_shape(mask[:, :, i:i + 1].copy(), object_, 1, dims)
+        
+        # Handle occlusions, when two objects intersect, we should ensure that the intersection mask is
+        # given to only only object.
+        occlusion = np.logical_not(mask[:, :, -1]).astype(np.uint8)
+        # print(occlusion)
+    
+        for i in range(object_cnt-2, -1, -1):
+            mask[:, :, i] = mask[:, :, i] * occlusion
+            occlusion = np.logical_and(occlusion, np.logical_not(mask[:, :, i]))
+        # Map class names to class IDs.
+        return mask.astype(np.bool)
+
+    def get_class_labels(self, image_id):
+        object_info = self.image_meta[image_id]["object_info"]
+        # Map class names to class IDs.
+        class_ids = np.array([self.class_names[s[0]] for s in object_info])
+        return class_ids.astype(np.int32)
+
     def get_images(self, image_id):
         image_info = self.image_meta[image_id]
-        objects_info = image_info['object_info']
+        object_info = image_info['object_info']
         bg_color = image_info['bg_color']
         height = image_info['height']
         width = image_info['width']
         image = self.draw_bg_image(height, width, bg_color)
-        print(objects_info)
-        num_objects = len(objects_info)
+        # print(object_info)
+        num_objects = len(object_info)
         
         for i in np.arange(num_objects):
-            image = self.draw_object_shape(image, objects_info[i])
+            object_, color, dims = object_info[i]
+            image = self.draw_object_shape(image, object_, color, dims)
         return image
+    
+    
+data = Dataset(num_images=5, height=128, width=128, num_classes=4)
+image_ids = data.image_meta.keys()
 
-
-data = Dataset(num_images=2, height=128, width=128, num_classes=4)
-# print (data.image_meta)
-data.get_images(image_id=0)
-# data.build_image_meta(height=128, width=128)
+images = []
+masks = []
+class_ids = []
+for ids in image_ids:
+    images.append(data.get_images(image_id=ids))
+    masks.append(data.get_object_mask(image_id=ids))
+    class_ids.append(data.get_class_labels(image_id=ids))
+    
+    print(class_ids)
+    break
