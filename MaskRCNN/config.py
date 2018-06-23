@@ -3,7 +3,9 @@
 import numpy as np
 
 class config(object):
-
+    # Config name
+    NAME = 'test_run'
+    
     IMAGE_SHAPE = [1024, 1024, 3]
     NUM_CLASSES = 1
     
@@ -21,6 +23,7 @@ class config(object):
     # are based on a Resnet101 backbone.
     RESNET_STRIDES = [4, 8, 16, 32, 64]
     
+    #### RPN MODULE
     # 0.5 indicates the horizontal axis of the anchor is twice the vertical axis
     # 1 indicates the horizontal axis of the anchor is equal to the vertical axis
     # 2 indicates the horizontal axis of the anchor is half the vertical axis
@@ -28,7 +31,6 @@ class config(object):
     RPN_ANCHOR_RATIOS = [0.5, 1, 2]
     RPN_ANCHOR_SCALES = (32, 64, 128, 256, 512)
     RPN_NMS_THRESHOLD = 0.7
-
     # Bounding box refinement standard deviation for RPN and final detections.
     RPN_BBOX_STDDEV = np.array([0.1, 0.1, 0.2, 0.2])
     BBOX_STD_DEV = np.array([0.1, 0.1, 0.2, 0.2])
@@ -45,7 +47,20 @@ class config(object):
     DETECTION_NMS_THRESHOLD = 0.3
     DETECTION_POST_NMS_INSTANCES = 100
     
+    def __init__(self):
+        pass
     
-
     
+    def display(self):
+        """Display Configuration values."""
+        print("\nConfigurations:")
+        for a in dir(self):
+            if not a.startswith("__") and not callable(getattr(self, a)):
+                print("{:40} {}".format(a, getattr(self, a)))
+        print("\n")
+    
+    
+# conf = config()
+# conf.display()
+#
 

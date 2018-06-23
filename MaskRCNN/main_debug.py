@@ -82,10 +82,10 @@ class Inference():
                              name='input_image')
         
         # CRATE THE FPN GRAPH
-        fpn_graph = FPN(xIN, 'resnet101').get_fpn_graph()  # Basically the Resnet architecture.
+        fpn_graph = FPN(conf, xIN, 'resnet101').get_fpn_graph()  # Basically the Resnet architecture.
         
         # CREATE THE RPN GRAPH
-        rpn_graph = RPN(depth=256).get_rpn_graph()
+        rpn_graph = RPN(conf, depth=256).get_rpn_graph()
         
         init = tf.global_variables_initializer()
         

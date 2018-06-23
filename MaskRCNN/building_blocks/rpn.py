@@ -10,13 +10,12 @@ As discussed in the notes section, RPN will have two outputs,
 import logging
 import tensorflow as tf
 from MaskRCNN.building_blocks import ops
-from MaskRCNN.config import config as conf
 
 logging.basicConfig(level=logging.DEBUG, filename="logfile.log", filemode="w",
                     format="%(asctime)-15s %(levelname)-8s %(message)s")
 
 class RPN():
-    def __init__(self, depth):
+    def __init__(self, conf, depth):
         self.rpn_anchor_stride = conf.RPN_ANCHOR_STRIDE
         self.rpn_anchor_ratios = conf.RPN_ANCHOR_RATIOS
         self.xrpn = tf.placeholder(dtype=tf.float32, shape=[None, None, None, depth],
@@ -26,7 +25,7 @@ class RPN():
     
     def build(self):
         shared = ops.conv_layer(self.xrpn, k_shape=[3, 3, self.xrpn.get_shape().as_list()[-1], 512],
-                                     stride=conf.RPN_ANCHOR_STRIDE,
+                                     stride=self.rpn_anchor_stride,
                                      padding='SAME', scope_name='rpn_conv_shared')
         shared = ops.activation(shared, 'relu', scope_name='rpn_relu_shared')
         logging.info('RPN - Shared_conv: %s', str(shared.get_shape().as_list()))

@@ -63,7 +63,7 @@ class Inference():
         list_of_images = [image]
         list_of_image_ids = [image_id]
         transformed_images, self.image_metas, self.image_windows, anchors = preprocess.process_images(
-                list_of_images, list_of_image_ids
+                conf, list_of_images, list_of_image_ids
         )
         self.image_shape = transformed_images.shape[1:]
         self.batch_size = transformed_images.shape[0]
@@ -77,10 +77,10 @@ class Inference():
                              name='input_image')
         
         # CRATE THE FPN GRAPH
-        fpn_graph = FPN(xIN, 'resnet101').get_fpn_graph()  # Basically the Resnet architecture.
+        fpn_graph = FPN(conf, xIN, 'resnet101').get_fpn_graph()  # Basically the Resnet architecture.
         
         # CREATE THE RPN GRAPH
-        rpn_graph = RPN(depth=256).get_rpn_graph()
+        rpn_graph = RPN(conf, depth=256).get_rpn_graph()
         
         # CREATE THE PROPOSAL GRAPH
         proposal_graph = Proposals(conf, batch_size=self.batch_size).get_proposal_graph()

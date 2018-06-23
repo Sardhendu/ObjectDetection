@@ -6,7 +6,6 @@ The RCNN module takes input as a certain format. For instance the
 
 from skimage.transform import resize
 import numpy as np
-from MaskRCNN.config import config as conf
 from MaskRCNN.building_blocks import utils
 
 
@@ -38,7 +37,7 @@ def compose_image_meta(image_id, original_image_shape, image_shape,
 
 
 
-def process_images(list_of_images, list_of_image_ids):
+def process_images(conf, list_of_images, list_of_image_ids):
     '''
     :param list_of_images:
     :param list_of_image_ids:
@@ -102,9 +101,10 @@ def process_images(list_of_images, list_of_image_ids):
 
 
 def debug():
+    from MaskRCNN.config import config as conf
     list_of_images = [np.random.random((800,1024,3)), np.random.random((800,1024,3))]
     list_of_image_ids = [1,2]
-    process_images(list_of_images, list_of_image_ids)
+    process_images(conf, list_of_images, list_of_image_ids)
     
 # debug()
 

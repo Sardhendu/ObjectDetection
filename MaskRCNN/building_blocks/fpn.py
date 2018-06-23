@@ -13,7 +13,6 @@ import tensorflow as tf
 import keras.layers as KL
 import logging
 from MaskRCNN.building_blocks import ops
-from MaskRCNN.config import config as conf
 
 
 
@@ -37,7 +36,8 @@ class BatchNorm(KL.BatchNormalization):
 
 
 class FPN():
-    def __init__(self, input_image, resnet_model, stage_5=True):
+    def __init__(self, conf, input_image, resnet_model, stage_5=True):
+        self.conf = conf
         self.input_image = input_image
         self.resnet_model = resnet_model
         self.stage_5 = stage_5
@@ -149,7 +149,7 @@ class FPN():
         '''
         assert self.resnet_model in ["resnet50", "resnet101"]
         
-        h, w = conf.IMAGE_SHAPE[:2]
+        h, w = self.conf.IMAGE_SHAPE[:2]
         logging.info('Image height = %s, width = %s ................', str(h), str(w))
         if h / 2 ** 6 != int(h / 2 ** 6) or w / 2 ** 6 != int(w / 2 ** 6):
             raise Exception("Image size must be dividable by 2 at least 6 times "
