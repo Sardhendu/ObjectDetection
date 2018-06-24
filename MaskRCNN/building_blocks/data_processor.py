@@ -6,6 +6,7 @@ The RCNN module takes input as a certain format. For instance the
 
 from skimage.transform import resize
 import numpy as np
+import math
 from MaskRCNN.building_blocks import utils
 
 
@@ -35,10 +36,9 @@ def compose_image_meta(image_id, original_image_shape, image_shape,
     return meta
 
 
-
-
 def process_images(conf, list_of_images, list_of_image_ids):
-    '''
+    ''' Prepare Test Data
+    
     :param list_of_images:
     :param list_of_image_ids:
     
@@ -98,6 +98,65 @@ def process_images(conf, list_of_images, list_of_image_ids):
 
     return transformed_images, image_metas, image_windows, anchors
 
+
+class PreprareTrainData():
+    def __init__(self, conf):
+        self.image_min_dim = conf.IMAGE_MIN_DIM
+        self.image_max_dim = conf.IMAGE_MAX_DIM
+        self.min_scale = conf.IMAGE_MIN_SCALE
+        self.resize_mode = conf.IMAGE_RESIZE_MODE
+    
+    def extract_bboxes(self, mask):
+        '''
+        :param mask: [height, width, num_objects]
+        :return:     Given a mask outputs a bounding box with "lower left" and "upper right" coordinites
+        '''
+        bboxes = np.zeros([mask.shape[-1], 4], dtype=np.int32)
+        shift = [0, 0, 1, 1]
+        for i in range(0, mask.shape[-1]):
+            msk = mask[:, :, i]
+            horizontal_coord = np.where(np.any(msk, axis=0))[0]
+            vertical_coord = np.where(np.any(msk, axis=1))[0]
+            
+            if len(horizontal_coord) >= 0 and len(horizontal_coord) >= 0:
+                x1, x2 = horizontal_coord[[0, -1]]
+                y1, y2 = vertical_coord[[0, -1]]
+                
+                bbox = np.array([y1, x1, y2, x2]) + shift
+            else:
+                bbox = [0, 0, 0, 0]
+            bboxes[i] = bbox
+        return bboxes.astype(np.int32)
+    
+    def get_ground_truth_data(self, dataset, image_ids):
+        images = []
+        gt_masks = []
+        gt_class_ids = []
+        gt_bboxes = []
+        image_meta = []
+        for ids in image_ids:
+            image = dataset.get_image(image_id=ids)
+            mask = dataset.get_object_mask(image_id=ids)
+            class_ids = dataset.get_class_labels(image_id=ids)
+            active_class_ids = np.zeros(dataset.num_classes)
+            active_class_ids[class_ids] = 1
+            original_image_shape = image.shape
+            
+            image, image_window, scale, padding = utils.resize_image(image, min_dim=self.image_min_dim,
+                                                                     max_dim=self.image_max_dim,
+                                                                     min_scale=self.min_scale,
+                                                                     mode=self.resize_mode)
+            mask = utils.resize_mask(mask, scale, padding)
+            bboxes = self.extract_bboxes(mask)
+            image_meta.append(compose_image_meta(ids, original_image_shape, image.shape,
+                                                 image_window, scale, active_class_ids))
+            images.append(image)
+            gt_masks.append(mask)
+            gt_class_ids.append(class_ids)
+            gt_bboxes.append(bboxes)
+        
+        images = np.stack(images, axis=0)
+        return images, gt_masks, gt_class_ids, gt_bboxes, image_meta
 
 
 def debug():

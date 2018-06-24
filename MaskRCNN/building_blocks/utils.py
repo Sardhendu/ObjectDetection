@@ -4,6 +4,7 @@
 import numpy as np
 
 from skimage import transform
+import scipy
 import logging
 
 
@@ -74,9 +75,7 @@ def resize_image(image, min_dim, max_dim, min_scale, mode='square'):
     :param min_scale:   0
     :param mode:        square [h = w]
     :return:
-
     '''
-    
     h, w = image.shape[0:2]
     
     # Scale up not down, based on the min dimension of the image
@@ -107,6 +106,18 @@ def resize_image(image, min_dim, max_dim, min_scale, mode='square'):
     
     return image.astype(image.dtype), image_window, scale, padding
 
+
+def resize_mask(mask, scale, padding):
+    '''
+    :param mask:        [height, width, num_objects]
+    :param scale:       float value
+    :param padding:     [(),(),(),()]
+    :return:            Zoom, minimize or pad based on the scale and padding values
+    '''
+    mask = scipy.ndimage.zoom(mask, zoom=[scale, scale, 1], order=0)
+    mask = np.pad(mask, padding, mode='constant', constant_values=0)
+    return mask
+
 def get_resnet_stage_shapes(conf, image_shape):
     '''
     Getting RESNET Pyramid Stage Shapes
@@ -133,8 +144,9 @@ def get_resnet_stage_shapes(conf, image_shape):
              for stride in conf.RESNET_STRIDES])
 
 
-def norm_boxes(anchors, shape):
+def norm_boxes(box, shape):
     """Converts boxes from pixel coordinates to normalized coordinates.
+    
     boxes: [N, (y1, x1, y2, x2)] in pixel coordinates
     shape: [..., (height, width)] in pixels
 
@@ -146,8 +158,8 @@ def norm_boxes(anchors, shape):
     """
     h, w = shape
     scale = np.array([h - 1, w - 1, h - 1, w - 1])
-    shift = np.array([0, 0, 1, 1])
-    return np.divide((anchors - shift), scale).astype(np.float32)
+    shift = np.array([0, 0, 1, 1])  # [y1, x1, y2, x2]
+    return np.divide((box - shift), scale).astype(np.float32)
 
 def denorm_boxes(boxes, shape):
     """Converts boxes from normalized coordinates to pixel coordinates.
@@ -282,8 +294,7 @@ def gen_anchors(image_shape, batch_size, scales, ratios, feature_map_shapes, fea
             # print ('running for ', scales[i], feature_map_shapes[i], feature_map_strides[i])
         logging.info('Anchors: running for..... scales=%s, feature_map_shapes=%s, feature_map_strides=%s',
                      str(scales[i]), str(feature_map_shapes[i]), str(feature_map_strides[i]))
-        anchors.append(generate_anchors_for_feature_map(scales[i], ratios, feature_map_shapes[i], feature_map_strides[i],
-                                                     anchor_strides))
+        anchors.append(generate_anchors_for_feature_map(scales[i], ratios, feature_map_shapes[i], feature_map_strides[i], anchor_strides))
     anchors = np.concatenate(anchors, axis=0)
     logging.info('Anchors: concatenated for each stage: shape = %s', str(anchors.shape))
     anchors = np.broadcast_to(anchors, (batch_size,) + anchors.shape)
