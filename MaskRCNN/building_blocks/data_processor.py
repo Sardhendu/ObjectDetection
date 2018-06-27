@@ -100,11 +100,16 @@ def process_images(conf, list_of_images, list_of_image_ids):
 
 
 class PreprareTrainData():
-    def __init__(self, conf):
+    def __init__(self, conf, dataset):
         self.image_min_dim = conf.IMAGE_MIN_DIM
         self.image_max_dim = conf.IMAGE_MAX_DIM
         self.min_scale = conf.IMAGE_MIN_SCALE
         self.resize_mode = conf.IMAGE_RESIZE_MODE
+        
+        self.conf = conf
+        # print (self.image_min_dim, self.image_max_dim, self.min_scale, self.resize_mode)
+        
+        self.dataset = dataset
     
     def extract_bboxes(self, mask):
         '''
@@ -128,35 +133,68 @@ class PreprareTrainData():
             bboxes[i] = bbox
         return bboxes.astype(np.int32)
     
-    def get_ground_truth_data(self, dataset, image_ids):
-        images = []
-        gt_masks = []
-        gt_class_ids = []
-        gt_bboxes = []
-        image_meta = []
-        for ids in image_ids:
-            image = dataset.get_image(image_id=ids)
-            mask = dataset.get_object_mask(image_id=ids)
-            class_ids = dataset.get_class_labels(image_id=ids)
-            active_class_ids = np.zeros(dataset.num_classes)
-            active_class_ids[class_ids] = 1
-            original_image_shape = image.shape
-            
-            image, image_window, scale, padding = utils.resize_image(image, min_dim=self.image_min_dim,
-                                                                     max_dim=self.image_max_dim,
-                                                                     min_scale=self.min_scale,
-                                                                     mode=self.resize_mode)
-            mask = utils.resize_mask(mask, scale, padding)
-            bboxes = self.extract_bboxes(mask)
-            image_meta.append(compose_image_meta(ids, original_image_shape, image.shape,
-                                                 image_window, scale, active_class_ids))
-            images.append(image)
-            gt_masks.append(mask)
-            gt_class_ids.append(class_ids)
-            gt_bboxes.append(bboxes)
+    def get_ground_truth_data(self, image_id):
+        image = self.dataset.get_image(image_id=image_id)
+        gt_mask = self.dataset.get_object_mask(image_id=image_id)
+        gt_class_ids = self.dataset.get_class_labels(image_id=image_id)
+        active_class_ids = np.zeros(self.dataset.num_classes, dtype=np.int32)
+        active_class_ids[gt_class_ids] = 1
+        original_image_shape = image.shape
         
-        images = np.stack(images, axis=0)
-        return images, gt_masks, gt_class_ids, gt_bboxes, image_meta
+        image, image_window, scale, padding = utils.resize_image(image, min_dim=self.image_min_dim,
+                                                                 max_dim=self.image_max_dim,
+                                                                 min_scale=self.min_scale,
+                                                                 mode=self.resize_mode)
+        gt_mask = utils.resize_mask(gt_mask, scale, padding)
+        gt_bboxes = self.extract_bboxes(gt_mask)
+        image_metas = compose_image_meta(image_id, original_image_shape, image.shape,
+                                             image_window, scale, active_class_ids)
+        return image, gt_mask, gt_class_ids, gt_bboxes, image_metas
+
+    def build_rpn_targets(self, batch_size):
+        ''' Building RPN target for classification
+        
+        RPN produces two outputs 1) rpn_bboxes, 2) rpn_class_probs. The rpn_bboxes
+        
+        Suppose we have a feature_maps: [32,32], [16,16], [8,8], [4,4], [2,2] and num_anchors_per_pixel=3
+        then, Anchor shape = [32x32x3 + 16x16x3 + .....+ 2*2*3, 4] = [4092, 4],
+        then, we need to find which anchors have <0.3 iou and >0.7 iou with the bounding box.
+        this is required because only then we can know which anchors are -ve and which are positive.
+        becasue RPN would output a rpn_bbox of shape [4092, 4] and we need to build a
+        loss function for RPN module
+        
+        :return:
+        '''
+        pass
+        
+    def get_data(self, image_ids):
+        batch_images = []
+        batch_gt_masks = []
+        batch_gt_class_ids = []
+        batch_gt_bboxes = []
+        batch_image_metas = []
+
+        # Get Anchors to compute overlap between anchors and groundtruth boxes
+        feature_shapes = utils.get_resnet_stage_shapes(self.conf, self.conf.IMAGE_SHAPE)
+        anchors = utils.gen_anchors_fot_train(self.conf.RPN_ANCHOR_SCALES,
+                                              self.conf.RPN_ANCHOR_RATIOS,
+                                              feature_shapes,
+                                              self.conf.RESNET_STRIDES,
+                                              self.conf.RPN_ANCHOR_STRIDE)
+        print(feature_shapes)
+        print(anchors.shape)
+
+        for img_id in image_ids:
+            image, gt_mask, gt_class_id, gt_bbox, image_meta = self.get_ground_truth_data(img_id)
+
+            batch_images.append(image)
+            batch_gt_masks.append(gt_mask)
+            batch_gt_class_ids.append(batch_gt_class_ids)
+            batch_gt_bboxes.append(gt_bbox)
+
+        batch_images = np.stack(batch_images, axis=0)
+        return (batch_images, batch_gt_masks, batch_gt_class_ids, batch_gt_bboxes,
+                np.array(batch_image_metas).astype(np.int32))
 
 
 def debug():

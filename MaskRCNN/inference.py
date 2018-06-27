@@ -9,7 +9,7 @@ from scipy import misc
 import tensorflow as tf
 
 from MaskRCNN.config import config as conf
-from MaskRCNN.building_blocks import preprocess
+from MaskRCNN.building_blocks import data_processor
 from MaskRCNN.building_blocks import load_params
 from MaskRCNN.building_blocks.fpn import FPN
 from MaskRCNN.building_blocks.rpn import RPN
@@ -62,7 +62,7 @@ class Inference():
         ## Process Images:
         list_of_images = [image]
         list_of_image_ids = [image_id]
-        transformed_images, self.image_metas, self.image_windows, anchors = preprocess.process_images(
+        transformed_images, self.image_metas, self.image_windows, anchors = data_processor.process_images(
                 conf, list_of_images, list_of_image_ids
         )
         self.image_shape = transformed_images.shape[1:]

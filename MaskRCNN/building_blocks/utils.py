@@ -257,6 +257,8 @@ def generate_anchors_for_feature_map(scales, ratios, feature_map_shapes, feature
     widths = scales * np.sqrt(ratios)
     
     # # Enumerate shifts in feature space
+    print ('asdasdsad ', anchor_strides, feature_map_shapes[0])
+    print(np.arange(0, feature_map_shapes[0], anchor_strides))
     shifts_y = np.arange(0, feature_map_shapes[0], anchor_strides) * feature_map_strides
     shifts_x = np.arange(0, feature_map_shapes[1], anchor_strides) * feature_map_strides
     shifts_x, shifts_y = np.meshgrid(shifts_x, shifts_y)
@@ -302,6 +304,22 @@ def gen_anchors(image_shape, batch_size, scales, ratios, feature_map_shapes, fea
 
     # Normalize Anchors
     anchors = norm_boxes(anchors, shape=image_shape[:2])
+    return anchors
+
+
+
+def gen_anchors_fot_train(scales, ratios, feature_map_shapes, feature_map_strides, anchor_strides):
+    """
+    Create anchor boxes for each feature_map of pyramid stage and concat them
+    """
+    anchors = []
+    for i in range(0,len(scales)):
+            # print ('running for ', scales[i], feature_map_shapes[i], feature_map_strides[i])
+        logging.info('Anchors: running for..... scales=%s, feature_map_shapes=%s, feature_map_strides=%s',
+                     str(scales[i]), str(feature_map_shapes[i]), str(feature_map_strides[i]))
+        anchors.append(generate_anchors_for_feature_map(scales[i], ratios, feature_map_shapes[i], feature_map_strides[i], anchor_strides))
+    anchors = np.concatenate(anchors, axis=0)
+    logging.info('Anchors: concatenated for each stage: shape = %s', str(anchors.shape))
     return anchors
     
 
