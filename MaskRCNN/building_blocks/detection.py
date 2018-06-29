@@ -164,7 +164,6 @@ class DetectionLayer():
             unique_pre_nms_class_ids = tf.unique(pre_nms_class_ids)[0]
 
             if self.DEBUG:
-                
                 clipped_proposals_list.append(clipped_proposals)
                 pre_nms_proposals_list.append(pre_nms_proposals)
                 pre_nms_class_ids_list.append(pre_nms_class_ids)
