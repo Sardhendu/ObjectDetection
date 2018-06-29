@@ -211,7 +211,7 @@ image_ids = data.image_meta.keys()
 # # Get data attributes
 # Get Data for 1 batch
 obj_ptd = PreprareTrainData(conf, data)
-# obj_ptd.get_data(image_ids)
+obj_ptd.get_data(image_ids)
 
 # (batch_images, batch_gt_masks, batch_gt_class_ids, batch_gt_bboxes, batch_image_metas) = obj_ptd.get_data(image_ids)
 # print(batch_images.shape)

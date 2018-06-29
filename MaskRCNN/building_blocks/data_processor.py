@@ -167,6 +167,7 @@ class PreprareTrainData():
         
         # print(feature_shapes)
         print('Anchors Max Min length: ', np.max(self.anchors), np.min(self.anchors))
+        print ('Anchor shape: ', self.anchors)
         
         self.anchor_area = (self.anchors[:,2] - self.anchors[:,0]) * (self.anchors[:,3] - self.anchors[:,1])
         print ('Achor Area: ', self.anchor_area.shape)
@@ -225,15 +226,24 @@ class PreprareTrainData():
         
         :return:
         '''
-        overlaps = np.zeros(shape=(len(batch_gt_boxes), self.anchors.shape[0]))
-        for i, boxes in enumerate(batch_gt_boxes):
-            print (boxes)
-            box_area = (boxes[2] - boxes[0]) * (boxes[3] - boxes[1])
-            overlaps[i,:] = compute_iou(
-                    boxes, self.anchors, box_area, self.anchor_area
+        rpn_target_class = np.zeros([self.anchors.shape[0]], dtype='int32' )
+        # rpn_target_bboxes = np.zeros([self.anchors.shaoe[0]])
+        
+        print (batch_gt_boxes.shape)
+        batch_gt_area = (batch_gt_boxes[:,2] - batch_gt_boxes[:,0]) * (batch_gt_boxes[:,3] - batch_gt_boxes[:,1])
+        print (batch_gt_area.shape)
+        overlaps = np.zeros(shape=(batch_gt_boxes.shape[0], self.anchors.shape[0]))
+        
+        print ('')
+        
+        for i in range(0, overlaps.shape[0]):
+            overlaps[i, :] = utils.intersection_over_union(
+                    batch_gt_boxes[i], self.anchors, batch_gt_area[i], self.anchor_area
             )
-            print(np.max(overlaps[i,:]))
-            
+        overlaps = overlaps.T
+        print(overlaps.shape, np.max(overlaps), np.min(overlaps))
+        print(overlaps)
+    
         # Apply conditions,
         # When bounding_box iou anchor > 0.7 class 1
         # When bounding_box iou anchor < 0.3 class 0
@@ -244,14 +254,23 @@ class PreprareTrainData():
         # object 2 will disqualify anchor1. Therefore we should first select negative anchors.
         # Moreover, if anchor1 iou with object 1 is 0.7 and object2 is 0.9 then we must choose the top score
         # for the anchor.
-        print (overlaps.shape)
         anchor_iou_max_idx = np.argmax(overlaps, axis=1)  # Choose the highest score per anchor
-        print (len(anchor_iou_max_idx), anchor_iou_max_idx)
+        print (anchor_iou_max_idx.shape, anchor_iou_max_idx)
         anchor_iou_max_score = overlaps[np.arange(len(overlaps)), anchor_iou_max_idx]
         print(len(anchor_iou_max_score), anchor_iou_max_score)
-        # anchor_iou_idx = overlaps[np.arange(overlaps.shape[0]), anchor_iou_idx]
         # print ('')
-        # print(len(anchor_iou_idx), anchor_iou_idx)
+        
+        # Set rpn_target_class to -1 where the iou is < 0.3
+        rpn_target_class[(anchor_iou_max_score < 0.3)] = -1
+        print (rpn_target_class)
+        
+        # TODO: Handle the condition when multiple anchors can have the same IOU
+        
+        # Set rpn_target_class = 1 where the iou is > 0.7
+        rpn_target_class[(anchor_iou_max_score > 0.7)] = 1
+        print(rpn_target_class)
+        
+        
         
     def get_data(self, image_ids):
         batch_images = []
