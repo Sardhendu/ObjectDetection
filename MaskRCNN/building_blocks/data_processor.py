@@ -107,6 +107,7 @@ class PreprareTrainData():
         self.resize_mode = conf.IMAGE_RESIZE_MODE
         self.max_rpn_targets = conf.RPN_TRAIN_ANCHORS_PER_IMAGE
         self.bbox_std_dev = conf.RPN_BBOX_STDDEV
+        self.max_gt_objects_per_image = conf.MAX_GT_OBJECTS
         
         self.conf = conf
         # print (self.image_min_dim, self.image_max_dim, self.min_scale, self.resize_mode)
@@ -292,39 +293,62 @@ class PreprareTrainData():
         :param proposals:
         :return:
         '''
-        
-        # Select
-        
-        
-        
-        
+        # TODO: This module is only required if we plan to train the model without training the RPN Head.
+    
         
     def get_data(self, image_ids):
-        batch_images = []
-        batch_gt_masks = []
-        batch_gt_class_ids = []
-        batch_gt_bboxes = []
-        batch_image_metas = []
-
-        for img_id in image_ids:
+        batch_size = len(image_ids)
+        
+        for num, img_id in enumerate(image_ids):
             image, gt_mask, gt_class_id, gt_bbox, image_meta = self.get_ground_truth_data(img_id)
-
+            print ('asdffwefewfewf ',image.shape, gt_mask.shape, gt_class_id.shape, gt_bbox.shape,
+                   image_meta.shape)
             # GET RPN TARGETS
             rpn_target_class, rpn_target_bbox = self.build_rpn_targets(gt_bbox)
-            
-            batch_images.append(image)
-            batch_gt_masks.append(gt_mask)
-            batch_gt_class_ids.append(gt_class_id)
-            batch_gt_bboxes.append(gt_bbox)
-            
-            
-            print ('jashdjkashdahs ', self.dataset.num_classes, batch_gt_class_ids)
-            break
-            
 
-        # batch_images = np.stack(batch_images, axis=0)
-        # return (batch_images, batch_gt_masks, batch_gt_class_ids, batch_gt_bboxes,
-        #         np.array(batch_image_metas).astype(np.int32))
+            # TODO: If gt_box exceeds the number of maximum allowed then select the top best
+
+            # We preinitialize each nd_array such that we save compute by not appending for every image
+            if num == 0:
+                batch_images = np.zeros((batch_size,) + tuple(image.shape), dtype=np.float32)
+                
+                # Note gt_masks, gt_class_id and gt_boxes count may differ for each image so
+                # We handle them seperately
+                batch_gt_masks = np.zeros((batch_size, gt_mask.shape[0], gt_mask.shape[0], self.max_gt_objects_per_image), dtype=gt_mask.dtype)
+                batch_gt_class_ids = np.zeros((batch_size, self.max_gt_objects_per_image),dtype=gt_class_id.dtype)
+                batch_gt_bboxes = np.zeros((batch_size, self.max_gt_objects_per_image, 4), dtype=gt_bbox.dtype)
+                
+                batch_image_metas = np.zeros((batch_size,) + tuple(image_meta.shape), dtype=image_meta.dtype)
+                batch_rpn_target_class = np.zeros((batch_size,) + tuple(rpn_target_class.shape), dtype=rpn_target_class.dtype)
+                batch_rpn_target_bbox = np.zeros((batch_size,) + tuple(rpn_target_bbox.shape), dtype=rpn_target_bbox.dtype)
+
+            # print('batch_images ', batch_images.shape)
+            # print('batch_gt_masks ', batch_gt_masks.shape)
+            # print('batch_gt_class_ids ', batch_gt_class_ids.shape)
+            # print('batch_gt_bboxes ', batch_gt_bboxes.shape)
+            # print('batch_image_metas ', batch_image_metas.shape)
+            # print('batch_rpn_target_class ', batch_rpn_target_class.shape)
+            # print('batch_rpn_target_bbox ', batch_rpn_target_bbox.shape)
+            
+            
+            batch_images[num] = image
+            batch_gt_masks[num,:,:, :gt_mask.shape[-1]] = gt_mask
+            batch_gt_class_ids[num, :gt_class_id.shape[0]] = gt_class_id
+            batch_gt_bboxes[num, :gt_bbox.shape[0]] = gt_bbox
+            batch_image_metas[num] = image_meta
+            batch_rpn_target_class[num] = rpn_target_class
+            batch_rpn_target_bbox[num] = rpn_target_bbox
+            
+        print('batch_images ', batch_images.shape)
+        print('batch_gt_masks ', batch_gt_masks.shape)
+        print('batch_gt_class_ids ', batch_gt_class_ids.shape)
+        print('batch_gt_bboxes ', batch_gt_bboxes.shape)
+        print('batch_image_metas ', batch_image_metas.shape)
+        print('batch_rpn_target_class ', batch_rpn_target_class.shape)
+        print('batch_rpn_target_bbox ', batch_rpn_target_bbox.shape)
+        
+        return (batch_images, batch_gt_masks, batch_gt_class_ids, batch_gt_bboxes,
+                batch_image_metas, batch_rpn_target_class, batch_rpn_target_bbox)
 
 
 def debug():

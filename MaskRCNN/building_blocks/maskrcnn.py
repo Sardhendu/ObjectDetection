@@ -370,7 +370,7 @@ def debug(feature_maps=[], proposals=[], image_metas=[]):
         print('mrcnn_bbox_ ', mrcnn_bbox_.shape, mrcnn_bbox_)
         print('')
 
-debug()
+# debug()
 
 
 

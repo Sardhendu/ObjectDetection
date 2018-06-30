@@ -329,7 +329,7 @@ def gen_random_mrcnn_boxes():
     MRCNN module is very similar to the the RPN module, Just like we needed anchors in RPN module, we would
     have to generate boxes here such that we can aid in performing regression and classification loss.
     
-    The mrcnn_box outputs tensor of (1, 2000, 81, 4), 
+    The mrcnn_box outputs tensor of (1, 2000, 81, 4),
     :return:
     '''
     
