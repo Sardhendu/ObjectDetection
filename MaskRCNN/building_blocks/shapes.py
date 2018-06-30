@@ -49,6 +49,8 @@ class Dataset():
     def __init__(self, num_images, height, width, num_classes):
         self.image_meta = {}
         self.num_classes = num_classes
+        
+        # print('sadasdsads ', self.num_classes)
         self.class_names = dict(square=0, triangle=1, circle=2)
         
         for i in range(0, num_images):

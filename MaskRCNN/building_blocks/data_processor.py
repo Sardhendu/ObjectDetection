@@ -99,56 +99,14 @@ def process_images(conf, list_of_images, list_of_image_ids):
     return transformed_images, image_metas, image_windows, anchors
 
 
-
-
-
-
-
-def compute_overlaps(boxes1, boxes2):
-    """Computes IoU overlaps between two sets of boxes.
-    boxes1, boxes2: [N, (y1, x1, y2, x2)].
-
-    For better performance, pass the largest set first and the smaller second.
-    """
-    # Areas of anchors and GT boxes
-    area1 = (boxes1[:, 2] - boxes1[:, 0]) * (boxes1[:, 3] - boxes1[:, 1])
-    area2 = (boxes2[:, 2] - boxes2[:, 0]) * (boxes2[:, 3] - boxes2[:, 1])
-
-    # Compute overlaps to generate matrix [boxes1 count, boxes2 count]
-    # Each cell contains the IoU value.
-    overlaps = np.zeros((boxes1.shape[0], boxes2.shape[0]))
-    for i in range(overlaps.shape[1]):
-        box2 = boxes2[i]
-        overlaps[:, i] = compute_iou(box2, boxes1, area2[i], area1)
-    return overlaps
-
-
-def compute_iou(box, boxes, box_area, boxes_area):
-    """Calculates IoU of the given box with the array of the given boxes.
-    box: 1D vector [y1, x1, y2, x2]
-    boxes: [boxes_count, (y1, x1, y2, x2)]
-    box_area: float. the area of 'box'
-    boxes_area: array of length boxes_count.
-
-    Note: the areas are passed in rather than calculated here for
-          efficency. Calculate once in the caller to avoid duplicate work.
-    """
-    # Calculate intersection areas
-    y1 = np.maximum(box[0], boxes[:, 0])
-    y2 = np.minimum(box[2], boxes[:, 2])
-    x1 = np.maximum(box[1], boxes[:, 1])
-    x2 = np.minimum(box[3], boxes[:, 3])
-    intersection = np.maximum(x2 - x1, 0) * np.maximum(y2 - y1, 0)
-    union = box_area + boxes_area[:] - intersection[:]
-    iou = intersection / union
-    return iou
-
 class PreprareTrainData():
     def __init__(self, conf, dataset):
         self.image_min_dim = conf.IMAGE_MIN_DIM
         self.image_max_dim = conf.IMAGE_MAX_DIM
         self.min_scale = conf.IMAGE_MIN_SCALE
         self.resize_mode = conf.IMAGE_RESIZE_MODE
+        self.max_rpn_targets = conf.RPN_TRAIN_ANCHORS_PER_IMAGE
+        self.bbox_std_dev = conf.RPN_BBOX_STDDEV
         
         self.conf = conf
         # print (self.image_min_dim, self.image_max_dim, self.min_scale, self.resize_mode)
@@ -159,7 +117,7 @@ class PreprareTrainData():
         # Also compute the area of the anchors, so that we dont have to compute the both the anchors and the
         # area in every batch iteration
         feature_shapes = utils.get_resnet_stage_shapes(self.conf, self.conf.IMAGE_SHAPE)
-        self.anchors = utils.gen_anchors_fot_train(self.conf.RPN_ANCHOR_SCALES,
+        self.anchors = utils.gen_anchors_for_train(self.conf.RPN_ANCHOR_SCALES,
                                               self.conf.RPN_ANCHOR_RATIOS,
                                               feature_shapes,
                                               self.conf.RESNET_STRIDES,
@@ -212,6 +170,7 @@ class PreprareTrainData():
                                              image_window, scale, active_class_ids)
         return image, gt_mask, gt_class_ids, gt_bboxes, image_metas
 
+
     def build_rpn_targets(self, batch_gt_boxes):
         ''' Building RPN target for classification
         
@@ -221,13 +180,17 @@ class PreprareTrainData():
         then, Anchor shape = [32x32x3 + 16x16x3 + .....+ 2*2*3, 4] = [4092, 4],
         then, we need to find which anchors have <0.3 iou and >0.7 iou with the bounding box.
         this is required because only then we can know which anchors are -ve and which are positive.
-        becasue RPN would output a rpn_bbox of shape [4092, 4] and we need to build a
-        loss function for RPN module
+        Also, RPN would output a rpn_bbox of shape [4092, 4] and we need to build a
+        loss function for RPN module. RPN produces two outputs, therefore we would have two losses.
+        
+        1. Classification loss, penalize if the model does bad at scoring the bounding boxes
+        2. Regression loss: penalizes is the classified bbox has bad [c_x, c_y, log(h), log(w)]
         
         :return:
         '''
+        
+        ##### CLASSIFICATION PART
         rpn_target_class = np.zeros([self.anchors.shape[0]], dtype='int32' )
-        # rpn_target_bboxes = np.zeros([self.anchors.shaoe[0]])
         
         print (batch_gt_boxes.shape)
         batch_gt_area = (batch_gt_boxes[:,2] - batch_gt_boxes[:,0]) * (batch_gt_boxes[:,3] - batch_gt_boxes[:,1])
@@ -260,15 +223,79 @@ class PreprareTrainData():
         print(len(anchor_iou_max_score), anchor_iou_max_score)
         # print ('')
         
-        # Set rpn_target_class to -1 where the iou is < 0.3
+        # COND 1: Set rpn_target_class to -1 where the iou is < 0.3
         rpn_target_class[(anchor_iou_max_score < 0.3)] = -1
         print (rpn_target_class)
         
-        # TODO: Handle the condition when multiple anchors can have the same IOU
+        # COND 2: When all anchors are <0.7 to ground truth, we still choose the best anchor to perform the training.
+        gt_iou_max_idx = np.argmax(overlaps, axis=0)
+        rpn_target_class[gt_iou_max_idx] = 1
         
-        # Set rpn_target_class = 1 where the iou is > 0.7
-        rpn_target_class[(anchor_iou_max_score > 0.7)] = 1
+        # COND 3: TODO: Handle the condition when multiple anchors can have the same IOU
+        
+        # COND 4: Set rpn_target_class = 1 where the iou is > 0.7
+        rpn_target_class[(anchor_iou_max_score >= 0.7)] = 1
         print(rpn_target_class)
+        
+        # The Positive and negative anchors should be balanced, otherwise the model may get biased.
+        idx = np.where(rpn_target_class == 1)[0]
+        print('pos_idx, ', len(idx))
+        extra = len(idx) - self.max_rpn_targets // 2
+        if (extra) > 0:
+            rpn_target_class[np.random.choice(idx, extra, replace=False)] = 0
+
+        idx = np.where(rpn_target_class == -1)[0]
+        print('neg_idx, ', len(idx))
+        extra = len(idx) - self.max_rpn_targets // 2
+        if (len(idx) - self.max_rpn_targets // 2) > 0:
+            rpn_target_class[np.random.choice(idx, extra, replace=False)] = 0
+        
+        # REGRESSION PART:
+        rpn_target_bbox = np.zeros((self.max_rpn_targets, 4))
+        pos_idx = np.where(rpn_target_class == 1)[0]
+        for i, (idx, anchor_box) in enumerate(zip(pos_idx, self.anchors[pos_idx])):
+            # Convert bbox to scalled and shifted version
+            gt_box = batch_gt_boxes[anchor_iou_max_idx[idx]] # Select class 1 from gt boxes with high iou score
+            # Get center, h, w of anchor boxes
+            ah = anchor_box[2] - anchor_box[0]
+            aw = anchor_box[3] - anchor_box[1]
+            ac_y = anchor_box[0] + 0.5*ah
+            ac_x = anchor_box[1] + 0.5*aw
+
+            # Get center, h, w of anchor boxes
+            gth = gt_box[2] - gt_box[0]
+            gtw = gt_box[3] - gt_box[1]
+            gtc_y = gt_box[0] + 0.5 * gth
+            gtc_x = gt_box[1] + 0.5 * gtw
+
+            rpn_target_bbox[i] = [
+                (gtc_y - ac_y) / ah,       # Distance between anchor bbox and gt_box
+                (gtc_x - ac_x) / aw,
+                np.log(gth / ah),
+                np.log(gtw / aw),
+            ]
+            
+            # Normalize
+            rpn_target_bbox[i] /= self.bbox_std_dev
+
+        return rpn_target_class, rpn_target_bbox
+        
+    def build_mrcnn_targets(self, batch_gt_boxes, batch_gt_class):
+        ''' What actually goes inside it
+        
+        The Mask RCNN module outputs 1) get_mrcnn_class_probs and 2) get_mrcnn_bbox.
+        So there are again two losses we need to consider
+        1) Classification loss : 81 classes including one for foreground, for shapes we have only 4 classes
+            We don't perform the classification loss here, but we use it to extract bounding boxes.
+        2) Regression loss: The bounding box loss just like we did in the rpn module
+        
+        :param proposals:
+        :return:
+        '''
+        
+        # Select
+        
+        
         
         
         
@@ -283,13 +310,15 @@ class PreprareTrainData():
             image, gt_mask, gt_class_id, gt_bbox, image_meta = self.get_ground_truth_data(img_id)
 
             # GET RPN TARGETS
-            self.build_rpn_targets(gt_bbox)
+            rpn_target_class, rpn_target_bbox = self.build_rpn_targets(gt_bbox)
             
             batch_images.append(image)
             batch_gt_masks.append(gt_mask)
-            batch_gt_class_ids.append(batch_gt_class_ids)
+            batch_gt_class_ids.append(gt_class_id)
             batch_gt_bboxes.append(gt_bbox)
             
+            
+            print ('jashdjkashdahs ', self.dataset.num_classes, batch_gt_class_ids)
             break
             
 

@@ -299,6 +299,9 @@ class MaskRCNN():
         return self.mrcnn_class_probs
 
     def get_mrcnn_bbox(self):
+        '''
+        :return: (1, 2000, 81, 4)  -> [num_images, num_rois, num_classes, (y1, x1, y2, x2)]
+        '''
         return self.mrcnn_bbox
 
     def get_mrcnn_graph(self):
@@ -367,7 +370,7 @@ def debug(feature_maps=[], proposals=[], image_metas=[]):
         print('mrcnn_bbox_ ', mrcnn_bbox_.shape, mrcnn_bbox_)
         print('')
 
-# debug()
+debug()
 
 
 

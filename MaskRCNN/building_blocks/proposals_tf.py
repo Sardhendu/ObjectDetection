@@ -153,7 +153,7 @@ class Proposals():
         ix = tf.nn.top_k(scores, max_anc_before_nms, sorted=True, name="top_anchors").indices
         logging.info('ix shape: %s', str(ix.get_shape().as_list()))
     
-        # Now that we have the idx of the top anchors we would want to only gather the data related pertaining to
+        # Now that we have the idx of the top anchors we would want to only gather the data pertaining to
         # those idx. We would wanna gather foreground_prob and boxes only for the selected anchors.
         # scores = tf.gather_nd(scores, ix)
         scores, bbox_delta, anchors = self.gather_data_for_idx(ix, scores, bbox_delta, anchors)

@@ -308,7 +308,7 @@ def gen_anchors(image_shape, batch_size, scales, ratios, feature_map_shapes, fea
 
 
 
-def gen_anchors_fot_train(scales, ratios, feature_map_shapes, feature_map_strides, anchor_strides):
+def gen_anchors_for_train(scales, ratios, feature_map_shapes, feature_map_strides, anchor_strides):
     """
     Create anchor boxes for each feature_map of pyramid stage and concat them
     """
@@ -323,6 +323,19 @@ def gen_anchors_fot_train(scales, ratios, feature_map_shapes, feature_map_stride
     return anchors
     
 
+
+def gen_random_mrcnn_boxes():
+    '''
+    MRCNN module is very similar to the the RPN module, Just like we needed anchors in RPN module, we would
+    have to generate boxes here such that we can aid in performing regression and classification loss.
+    
+    The mrcnn_box outputs tensor of (1, 2000, 81, 4), 
+    :return:
+    '''
+    
+    # TODO: This module is only required if we plan to train the model without training the RPN Head.
+    #
+    pass
 
 
 
