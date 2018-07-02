@@ -161,10 +161,12 @@ class PreprareTrainData():
         active_class_ids[gt_class_ids] = 1
         original_image_shape = image.shape
         
-        image, image_window, scale, padding = utils.resize_image(image, min_dim=self.image_min_dim,
-                                                                 max_dim=self.image_max_dim,
-                                                                 min_scale=self.min_scale,
-                                                                 mode=self.resize_mode)
+        image, image_window, scale, padding = utils.resize_image(
+                image, min_dim=self.image_min_dim,
+                max_dim=self.image_max_dim,
+                min_scale=self.min_scale,
+                mode=self.resize_mode
+        )
         gt_mask = utils.resize_mask(gt_mask, scale, padding)
         gt_bboxes = self.extract_bboxes(gt_mask)
         image_metas = compose_image_meta(image_id, original_image_shape, image.shape,
@@ -303,6 +305,10 @@ class PreprareTrainData():
             
             # GET RPN TARGETS
             rpn_target_class, rpn_target_bbox = self.build_rpn_targets(gt_bbox)
+            print('+ve class count ', len(np.where(rpn_target_class == 1)[0]))
+            print('-ve class count ', len(np.where(rpn_target_class == -1)[0]))
+            print('neutral class count ', len(np.where(rpn_target_class == 0)[0]))
+            # print ('rpn_target_classrpn_target_class ', rpn_target_class.shape)
 
             # TODO: If gt_box exceeds the number of maximum allowed then select the top best
 
@@ -317,7 +323,7 @@ class PreprareTrainData():
                 batch_gt_bboxes = np.zeros((batch_size, self.max_gt_objects_per_image, 4), dtype=gt_bbox.dtype)
                 
                 batch_image_metas = np.zeros((batch_size,) + tuple(image_meta.shape), dtype=image_meta.dtype)
-                batch_rpn_target_class = np.zeros((batch_size,) + tuple(rpn_target_class.shape), dtype=rpn_target_class.dtype)
+                batch_rpn_target_class = np.zeros([batch_size, self.anchors.shape[0], 1], dtype=rpn_target_class.dtype)
                 batch_rpn_target_bbox = np.zeros((batch_size,) + tuple(rpn_target_bbox.shape), dtype=rpn_target_bbox.dtype)
             
             batch_images[num] = image
@@ -325,7 +331,7 @@ class PreprareTrainData():
             batch_gt_class_ids[num, :gt_class_id.shape[0]] = gt_class_id
             batch_gt_bboxes[num, :gt_bbox.shape[0]] = gt_bbox
             batch_image_metas[num] = image_meta
-            batch_rpn_target_class[num] = rpn_target_class
+            batch_rpn_target_class[num] = rpn_target_class[:, np.newaxis]
             batch_rpn_target_bbox[num] = rpn_target_bbox
             
         print('batch_images ', batch_images.shape)
