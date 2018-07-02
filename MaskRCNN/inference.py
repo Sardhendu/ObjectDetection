@@ -91,7 +91,7 @@ class Inference():
             sess.run(init)
             
             if self.DEBUG:
-                # PRINT ALL THE TRAINABLE VARIALES
+                # PRINT ALL THE TRAINABLE VARIABLES
                 get_trainable_variable_name(sess)
                 load_params.set_pretrained_weights(sess, self.pretrained_weights_path)
             else:

@@ -257,8 +257,6 @@ def generate_anchors_for_feature_map(scales, ratios, feature_map_shapes, feature
     widths = scales * np.sqrt(ratios)
     
     # # Enumerate shifts in feature space
-    print ('asdasdsad ', anchor_strides, feature_map_shapes[0])
-    print(np.arange(0, feature_map_shapes[0], anchor_strides))
     shifts_y = np.arange(0, feature_map_shapes[0], anchor_strides) * feature_map_strides
     shifts_x = np.arange(0, feature_map_shapes[1], anchor_strides) * feature_map_strides
     shifts_x, shifts_y = np.meshgrid(shifts_x, shifts_y)

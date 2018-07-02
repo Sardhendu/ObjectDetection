@@ -100,11 +100,22 @@ class Proposals():
     The input to this network is:
     rpn_class_probs: [num_batches, anchor, [back_ground_probability, fore_ground_probability]]
     '''
-    def __init__(self, conf, batch_size, DEBUG=False):
+    def __init__(self, conf, batch_size, rpn_class_probs=None, rpn_bbox=None, inp_anchors=None, DEBUG=False):
         
-        self.rpn_class_probs = tf.placeholder(dtype=tf.float32, shape=[None, None, 2], name="rpn_class_prob")
-        self.rpn_bbox = tf.placeholder(dtype=tf.float32, shape=[None, None, 4], name="rpn_bbox")
-        self.input_anchors = tf.placeholder(dtype=tf.float32, shape=[None, None, 4], name="input_anchors")
+        if rpn_class_probs is not None:
+            self.rpn_class_probs = rpn_class_probs
+        else:
+            self.rpn_class_probs = tf.placeholder(dtype=tf.float32, shape=[None, None, 2], name="rpn_class_prob")
+        
+        if rpn_bbox is not None:
+            self.rpn_bbox = rpn_bbox
+        else:
+            self.rpn_bbox = tf.placeholder(dtype=tf.float32, shape=[None, None, 4], name="rpn_bbox")
+
+        if inp_anchors is not None:
+            self.input_anchors = inp_anchors
+        else:
+            self.input_anchors = tf.placeholder(dtype=tf.float32, shape=[None, None, 4], name="input_anchors")
 
         self.DEBUG = DEBUG
             
@@ -167,6 +178,7 @@ class Proposals():
     
         # Perform Non-max suppression. Non max suppression is performed for one image at a time, so we loop over the
         #  images here and stack them at the end
+        # TODO: WHY PROPOSALS AT RANDOM INITIALIZATION SOMETIMES CONTAINS NaN VALUES. It makes sense why, but deeper understanding is needed. However this works fine with pretrained weights.
         self.proposals = tf.concat([
             tf.stack([
                 self.non_max_suppression(scores[num],
@@ -182,6 +194,13 @@ class Proposals():
         print ('(Proposals) Proposals (shape) ', self.proposals.shape)
 
         if self.DEBUG:
+            print ('Proposal DEBUG ................')
+            # Sometimes due to random initialization the proposal can have NaN value
+            # For simplicity we replace those values with 0
+            self.proposals = tf.where(
+                    tf.is_nan(self.proposals),
+                    tf.zeros(shape=tf.shape(self.proposals), dtype=tf.float32),
+                    self.proposals)
             self.bbox_delta = bbox_delta
             self.ix = ix
             self.scores = scores
@@ -287,6 +306,8 @@ class Proposals():
 
         return scores, bbox_delta, anchors
     
+    def get_proposals(self):
+        return self.proposals
     
     def get_proposal_graph(self):
         return dict(rpn_class_probs=self.rpn_class_probs, rpn_bbox=self.rpn_bbox,
@@ -302,18 +323,18 @@ class Proposals():
 
 
 def debug(rpn_class_probs=[], rpn_bbox=[], input_anchors=[]):
-    from MaskRCNN_loop.config import config as conf
+    from MaskRCNN.config import config as conf
 
     np.random.seed(325)
 
     batch_size = 1
     if len(rpn_class_probs) == 0:
-        rpn_class_probs = np.array(np.random.random((batch_size, 5, 2)), dtype='float32')
+        rpn_class_probs = np.array(np.random.random((batch_size, 4092, 2)), dtype='float32')
         batch_size = len(rpn_class_probs)
     if len(rpn_bbox) == 0:
-        rpn_bbox = np.array(np.random.random((batch_size, 5, 4)), dtype='float32')
+        rpn_bbox = np.array(np.random.random((batch_size, 4092, 4)), dtype='float32')
     if len(input_anchors) == 0:
-        input_anchors = np.array(np.random.random((batch_size, 5, 4)), dtype='float32')
+        input_anchors = np.array(np.random.random((batch_size, 4092, 4)), dtype='float32')
 
     obj_p = Proposals(conf, batch_size=batch_size, DEBUG = True)
     p_graph = obj_p.get_proposal_graph()

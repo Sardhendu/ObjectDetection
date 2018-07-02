@@ -251,16 +251,17 @@ class FPN():
 
         self.P6 = tf.layers.max_pooling2d(self.P5, pool_size=1, strides=2, padding='SAME', name='fpn_p6')
     
-        logging.info('FPN - P2 = %s, P3 = %s, P4 = %s, P5 = %s:',
+        logging.info('FPN - P2 = %s, P3 = %s, P4 = %s, P5 = %s, P6 = %s:',
                      str(self.P2.get_shape().as_list()), str(self.P3.get_shape().as_list()),
-                     str(self.P4.get_shape().as_list()), str(self.P5.get_shape().as_list()))
+                     str(self.P4.get_shape().as_list()), str(self.P5.get_shape().as_list()),
+                     str(self.P6.get_shape().as_list()))
 
         print('(FPN) P2: (shape) ', self.P2.shape)
         print('(FPN) P3: (shape) ', self.P3.shape)
         print('(FPN) P4: (shape) ', self.P4.shape)
         print('(FPN) P5: (shape) ', self.P5.shape)
+        print('(FPN) P6: (shape) ', self.P6.shape)
         
     def get_fpn_graph(self):
-        return dict(fpn_c2=self.C2, fpn_c3=self.C3, fpn_c4=self.C4, fpn_c5=self.C5,
-                    fpn_p2=self.P2, fpn_p3=self.P3, fpn_p4=self.P4, fpn_p5=self.P5, fpn_p6=self.P6)
+        return dict(fpn_p2=self.P2, fpn_p3=self.P3, fpn_p4=self.P4, fpn_p5=self.P5, fpn_p6=self.P6)
       

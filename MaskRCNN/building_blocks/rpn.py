@@ -8,45 +8,53 @@ As discussed in the notes section, RPN will have two outputs,
 
 
 import logging
+import numpy as np
 import tensorflow as tf
 from MaskRCNN.building_blocks import ops
 
 logging.basicConfig(level=logging.DEBUG, filename="logfile.log", filemode="w",
                     format="%(asctime)-15s %(levelname)-8s %(message)s")
 
+
 class RPN():
-    def __init__(self, conf, depth):
+    def __init__(self, conf, depth, feature_map=None):
         self.rpn_anchor_stride = conf.RPN_ANCHOR_STRIDE
         self.rpn_anchor_ratios = conf.RPN_ANCHOR_RATIOS
-        self.xrpn = tf.placeholder(dtype=tf.float32, shape=[None, None, None, depth],
+        
+        if feature_map is not None:
+            self.xrpn = feature_map
+        else:
+            self.xrpn = tf.placeholder(dtype=tf.float32, shape=[None, None, None, depth],
                               name='rpn_feature_map_inp')
         
+
         self.build()
-    
+
     def build(self):
-        shared = ops.conv_layer(self.xrpn, k_shape=[3, 3, self.xrpn.get_shape().as_list()[-1], 512],
-                                     stride=self.rpn_anchor_stride,
-                                     padding='SAME', scope_name='rpn_conv_shared')
+        shared = ops.conv_layer(self.xrpn,
+                                k_shape=[3, 3, self.xrpn.get_shape().as_list()[-1], 512],
+                                stride=self.rpn_anchor_stride,
+                                padding='SAME', scope_name='rpn_conv_shared')
         shared = ops.activation(shared, 'relu', scope_name='rpn_relu_shared')
         logging.info('RPN - Shared_conv: %s', str(shared.get_shape().as_list()))
-        
+
         ## Classification Output: Binary classification, # Get the pixel wise Classification
         self.get_pixel_fb_classification(shared, self.rpn_anchor_stride, len(self.rpn_anchor_ratios))
 
         ## Bounding Box Output: Get the coordinates , height and width of bounding box
         self.get_bounding_box(shared, self.rpn_anchor_stride, len(self.rpn_anchor_ratios))
-            
+
     def get_pixel_fb_classification(self, x, anchor_stride, anchor_per_location):
         '''
         Get the pixel classification of foreground and background
         :return:
         '''
         sh_in = x.get_shape().as_list()[-1]
-        
+
         # Here 2*anchor_per_location = 6, where 2 indicates the binary classification of Foreground and background and anchor_per_location = 3
         x = ops.conv_layer(x, k_shape=[1, 1, sh_in, 2 * anchor_per_location], stride=anchor_stride, padding='VALID', scope_name='rpn_class_raw')
         logging.info('RPN - Conv Class: %s', str(x.get_shape().as_list()))
-        
+
         # Here we convert {anchor_per_location = 3}
         # [batch_size, h, w, num_anchors] to [batch_size, h*w*anchor_per_location, 2]
         # For each image, at each pixel classify 3 anchors as foreground or background
@@ -65,7 +73,7 @@ class RPN():
     def get_bounding_box(self, x, anchor_stride, anchor_per_location):
         '''
         ALL ABOUT THIS MODULE
-        
+
         Input:
         anchor_stride: controls the number of anchors,
             for instance: if stride = 1, feature_map = 32x32, num_anchors = 9
@@ -73,8 +81,8 @@ class RPN():
                           if stride = 2, feature_map = 32x32, num_anchors = 9
                           then number of anchors = (32 x 32 x 9)/2
         anchor_per_location: How many anchors to build per location
-                          
-        
+
+
         Outputs:
         This module generates4 values
         self.rpn_bbox = [batch_size, h, w, (dy, dx, log(dh), log(dw))]
@@ -82,32 +90,32 @@ class RPN():
             2. dx = center x pixel
             3. log(dh) = height of bounding box
             4. log(dw) = width of bounding box
-            
+
         This is a linear classifier
         :param x:
         :return:
         '''
         sh_in = x.get_shape().as_list()[-1]
-    
+
         # Here 4*len(anchor_ratio) = 8, where 4 is the count of bounding box output
         x = ops.conv_layer(x, k_shape=[1, 1, sh_in, 4 * anchor_per_location], stride=anchor_stride, padding='VALID', scope_name='rpn_bbox_pred')
         logging.info('RPN - Conv Bbox: %s', str(x.get_shape().as_list()))
-    
+
         # The shape of rpn_bbox = [None, None, 4] =  Which says for each image for each pixel position of a feature map the output of box is 4 -> center_x, center_y, width and height. Since we do it in pixel basis, we would end up having many many bounding boxes overlapping and hence we use non-max suppression to overcome this situation.
         self.rpn_bbox = tf.reshape(x, [tf.shape(x)[0], -1, 4])
         # self.rpn_bbox = tf.reshape(x, [x.get_shape().as_list()[0], -1, 4])
         logging.info('rpn_bbox: %s', self.rpn_bbox.get_shape().as_list())
         print('(RPN) Bbox (shape) ', self.rpn_bbox.shape)
-        
+
     def get_rpn_class_logits(self):
         return self.rpn_class_logits
-    
+
     def get_rpn_class_probs(self):
         return self.rpn_class_probs
-    
+
     def get_rpn_bbox(self):
         return self.rpn_bbox
-    
+
     def get_rpn_graph(self):
         return dict(
                 xrpn=self.xrpn,
@@ -115,8 +123,34 @@ class RPN():
                 rpn_class_probs=self.rpn_class_probs,
                 rpn_bbox=self.rpn_bbox
         )
+
+
+
+def debug():
     
-    
-    
-# RPN(depth=256)
+    from MaskRCNN.config import config as conf
+    fpn_p2 = tf.constant(np.random.random((1, 32, 32, 256)), dtype=tf.float32)
+    fpn_p3 = tf.constant(np.random.random((1, 16, 16, 256)), dtype=tf.float32)
+    fpn_p4 = tf.constant(np.random.random((1, 8, 8, 256)), dtype=tf.float32)
+    fpn_p5 = tf.constant(np.random.random((1, 4, 4, 256)), dtype=tf.float32)
+
+    rpn_class_probs = []
+    rpn_bbox = []
+    for fmap in [fpn_p2,fpn_p3,fpn_p4,fpn_p5]:
+        rpn_obj = RPN(conf, depth=256, feature_map=fmap)
+        rpn_class_probs.append(rpn_obj.get_rpn_class_probs())
+        rpn_bbox.append(rpn_obj.get_rpn_bbox())
+
+    rpn_class_probs = tf.stack(rpn_class_probs, axis=0)
+    rpn_bbox = tf.stack(rpn_bbox, axis=0)
+    print(rpn_class_probs.shape)
+    print(rpn_bbox.shape)
+
+
+# debug()
+
+
+
+
+
 

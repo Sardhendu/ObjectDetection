@@ -126,7 +126,7 @@ class PreprareTrainData():
         
         # print(feature_shapes)
         print('Anchors Max Min length: ', np.max(self.anchors), np.min(self.anchors))
-        print ('Anchor shape: ', self.anchors)
+        print ('Anchor shape: ', self.anchors.shape)
         
         self.anchor_area = (self.anchors[:,2] - self.anchors[:,0]) * (self.anchors[:,3] - self.anchors[:,1])
         print ('Achor Area: ', self.anchor_area.shape)
@@ -193,20 +193,20 @@ class PreprareTrainData():
         ##### CLASSIFICATION PART
         rpn_target_class = np.zeros([self.anchors.shape[0]], dtype='int32' )
         
-        print (batch_gt_boxes.shape)
+        # print (batch_gt_boxes.shape)
         batch_gt_area = (batch_gt_boxes[:,2] - batch_gt_boxes[:,0]) * (batch_gt_boxes[:,3] - batch_gt_boxes[:,1])
-        print (batch_gt_area.shape)
+        # print (batch_gt_area.shape)
         overlaps = np.zeros(shape=(batch_gt_boxes.shape[0], self.anchors.shape[0]))
         
-        print ('')
+        # print ('')
         
         for i in range(0, overlaps.shape[0]):
             overlaps[i, :] = utils.intersection_over_union(
                     batch_gt_boxes[i], self.anchors, batch_gt_area[i], self.anchor_area
             )
         overlaps = overlaps.T
-        print(overlaps.shape, np.max(overlaps), np.min(overlaps))
-        print(overlaps)
+        # print(overlaps.shape, np.max(overlaps), np.min(overlaps))
+        # print(overlaps)
     
         # Apply conditions,
         # When bounding_box iou anchor > 0.7 class 1
@@ -219,14 +219,13 @@ class PreprareTrainData():
         # Moreover, if anchor1 iou with object 1 is 0.7 and object2 is 0.9 then we must choose the top score
         # for the anchor.
         anchor_iou_max_idx = np.argmax(overlaps, axis=1)  # Choose the highest score per anchor
-        print (anchor_iou_max_idx.shape, anchor_iou_max_idx)
         anchor_iou_max_score = overlaps[np.arange(len(overlaps)), anchor_iou_max_idx]
-        print(len(anchor_iou_max_score), anchor_iou_max_score)
+        # print(len(anchor_iou_max_score), anchor_iou_max_score)
         # print ('')
         
         # COND 1: Set rpn_target_class to -1 where the iou is < 0.3
         rpn_target_class[(anchor_iou_max_score < 0.3)] = -1
-        print (rpn_target_class)
+        # print (rpn_target_class)
         
         # COND 2: When all anchors are <0.7 to ground truth, we still choose the best anchor to perform the training.
         gt_iou_max_idx = np.argmax(overlaps, axis=0)
@@ -236,17 +235,17 @@ class PreprareTrainData():
         
         # COND 4: Set rpn_target_class = 1 where the iou is > 0.7
         rpn_target_class[(anchor_iou_max_score >= 0.7)] = 1
-        print(rpn_target_class)
+        # print(rpn_target_class)
         
         # The Positive and negative anchors should be balanced, otherwise the model may get biased.
         idx = np.where(rpn_target_class == 1)[0]
-        print('pos_idx, ', len(idx))
+        # print('pos_idx, ', len(idx))
         extra = len(idx) - self.max_rpn_targets // 2
         if (extra) > 0:
             rpn_target_class[np.random.choice(idx, extra, replace=False)] = 0
 
         idx = np.where(rpn_target_class == -1)[0]
-        print('neg_idx, ', len(idx))
+        # print('neg_idx, ', len(idx))
         extra = len(idx) - self.max_rpn_targets // 2
         if (len(idx) - self.max_rpn_targets // 2) > 0:
             rpn_target_class[np.random.choice(idx, extra, replace=False)] = 0
@@ -301,8 +300,7 @@ class PreprareTrainData():
         
         for num, img_id in enumerate(image_ids):
             image, gt_mask, gt_class_id, gt_bbox, image_meta = self.get_ground_truth_data(img_id)
-            print ('asdffwefewfewf ',image.shape, gt_mask.shape, gt_class_id.shape, gt_bbox.shape,
-                   image_meta.shape)
+            
             # GET RPN TARGETS
             rpn_target_class, rpn_target_bbox = self.build_rpn_targets(gt_bbox)
 
@@ -321,15 +319,6 @@ class PreprareTrainData():
                 batch_image_metas = np.zeros((batch_size,) + tuple(image_meta.shape), dtype=image_meta.dtype)
                 batch_rpn_target_class = np.zeros((batch_size,) + tuple(rpn_target_class.shape), dtype=rpn_target_class.dtype)
                 batch_rpn_target_bbox = np.zeros((batch_size,) + tuple(rpn_target_bbox.shape), dtype=rpn_target_bbox.dtype)
-
-            # print('batch_images ', batch_images.shape)
-            # print('batch_gt_masks ', batch_gt_masks.shape)
-            # print('batch_gt_class_ids ', batch_gt_class_ids.shape)
-            # print('batch_gt_bboxes ', batch_gt_bboxes.shape)
-            # print('batch_image_metas ', batch_image_metas.shape)
-            # print('batch_rpn_target_class ', batch_rpn_target_class.shape)
-            # print('batch_rpn_target_bbox ', batch_rpn_target_bbox.shape)
-            
             
             batch_images[num] = image
             batch_gt_masks[num,:,:, :gt_mask.shape[-1]] = gt_mask
@@ -347,8 +336,9 @@ class PreprareTrainData():
         print('batch_rpn_target_class ', batch_rpn_target_class.shape)
         print('batch_rpn_target_bbox ', batch_rpn_target_bbox.shape)
         
-        return (batch_images, batch_gt_masks, batch_gt_class_ids, batch_gt_bboxes,
-                batch_image_metas, batch_rpn_target_class, batch_rpn_target_bbox)
+        return (dict(batch_images=batch_images, batch_image_metas=batch_image_metas, batch_gt_masks=batch_gt_masks,
+                     batch_gt_class_ids=batch_gt_class_ids, batch_gt_bboxes=batch_gt_bboxes,
+                     batch_rpn_target_class=batch_rpn_target_class, batch_rpn_target_bbox=batch_rpn_target_bbox))
 
 
 def debug():

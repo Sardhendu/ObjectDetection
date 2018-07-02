@@ -1,6 +1,6 @@
 
 
-
+import logging
 import random
 import cv2
 import math
@@ -8,6 +8,10 @@ import numpy as np
 from MaskRCNN.building_blocks import utils
 from MaskRCNN.config import config
 
+
+
+logging.basicConfig(level=logging.DEBUG, filename="logfile.log", filemode="w",
+                    format="%(asctime)-15s %(levelname)-8s %(message)s")
 class ShapesConfig(config):
     """Configuration for training on the toy shapes dataset.
     Derives from the base Config class and overrides values specific
@@ -205,15 +209,30 @@ class Dataset():
 from MaskRCNN.building_blocks.data_processor import PreprareTrainData
 conf = ShapesConfig()
 
+batch_size = 1
 # Get data from for randomly generated shapes
-data = Dataset(num_images=5, height=128, width=128, num_classes=4)
+data = Dataset(num_images=batch_size, height=128, width=128, num_classes=4)
 # print (data.image_meta)
 image_ids = data.image_meta.keys()
 
-# # Get data attributes
+# print (data)
+
+######### PREPARE TRAINING DATA
+# Get data attributes
 # Get Data for 1 batch
 obj_ptd = PreprareTrainData(conf, data)
-obj_ptd.get_data(image_ids)
+data_dict = obj_ptd.get_data(image_ids)
+
+######### TRAINING
+from MaskRCNN.training import Train
+print(data_dict['batch_image_metas'])
+obj_trn = Train(conf, batch_size=batch_size)
+# obj_trn.transform_images(data_dict, image_ids)
+# obj_trn.build_train_graph()
+obj_trn.exec_sess(data_dict, image_ids)
+
+
+
 
 # (batch_images, batch_gt_masks, batch_gt_class_ids, batch_gt_bboxes, batch_image_metas) = obj_ptd.get_data(image_ids)
 # print(batch_images.shape)
