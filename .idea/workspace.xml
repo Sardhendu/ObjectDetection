@@ -2,12 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="0fb3f822-3e88-486f-b205-d71003adecdd" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/MaskRCNN/Notebooks/.ipynb_checkpoints/test_detection-checkpoint.ipynb" afterPath="$PROJECT_DIR$/MaskRCNN/Notebooks/.ipynb_checkpoints/test_detection-checkpoint.ipynb" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/MaskRCNN/Notebooks/.ipynb_checkpoints/train_dummy-checkpoint.ipynb" afterPath="$PROJECT_DIR$/MaskRCNN/Notebooks/.ipynb_checkpoints/train_dummy-checkpoint.ipynb" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/MaskRCNN/Notebooks/test_detection.ipynb" afterPath="$PROJECT_DIR$/MaskRCNN/Notebooks/test_detection.ipynb" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/MaskRCNN/Notebooks/train_dummy.ipynb" afterPath="$PROJECT_DIR$/MaskRCNN/Notebooks/train_dummy.ipynb" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/MaskRCNN/building_blocks/data_processor.py" afterPath="$PROJECT_DIR$/MaskRCNN/building_blocks/data_processor.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/MaskRCNN/building_blocks/logfile.log" afterPath="$PROJECT_DIR$/MaskRCNN/building_blocks/logfile.log" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/MaskRCNN/building_blocks/loss_optimize.py" afterPath="$PROJECT_DIR$/MaskRCNN/building_blocks/loss_optimize.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/MaskRCNN/training.py" afterPath="$PROJECT_DIR$/MaskRCNN/training.py" />
@@ -110,8 +105,8 @@
           <file leaf-file-name="shapes.py" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/MaskRCNN/shapes.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="72">
-                  <caret line="209" column="21" lean-forward="true" selection-start-line="209" selection-start-column="21" selection-end-line="209" selection-end-column="21" />
+                <state relative-caret-position="172">
+                  <caret line="214" column="25" lean-forward="true" selection-start-line="214" selection-start-column="25" selection-end-line="214" selection-end-column="25" />
                   <folding>
                     <element signature="e#2#16#0" expanded="true" />
                     <element signature="e#2268#2997#1" expanded="false" />
@@ -124,7 +119,7 @@
             <entry file="file://$PROJECT_DIR$/MaskRCNN/building_blocks/loss_optimize.py">
               <provider selected="true" editor-type-id="text-editor">
                 <state relative-caret-position="892">
-                  <caret line="75" column="47" lean-forward="false" selection-start-line="75" selection-start-column="47" selection-end-line="75" selection-end-column="47" />
+                  <caret line="78" column="37" lean-forward="false" selection-start-line="66" selection-start-column="10" selection-end-line="78" selection-end-column="37" />
                   <folding>
                     <element signature="e#2#25#0" expanded="true" />
                   </folding>
@@ -148,11 +143,11 @@
           <file leaf-file-name="training.py" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/MaskRCNN/training.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="528">
-                  <caret line="190" column="12" lean-forward="true" selection-start-line="190" selection-start-column="12" selection-end-line="190" selection-end-column="12" />
+                <state relative-caret-position="667">
+                  <caret line="209" column="12" lean-forward="true" selection-start-line="209" selection-start-column="12" selection-end-line="209" selection-end-column="12" />
                   <folding>
                     <element signature="e#1#10#0" expanded="true" />
-                    <marker date="1530762976560" expanded="true" signature="8990:17135" ph="..." />
+                    <marker date="1530834312266" expanded="true" signature="9822:17967" ph="..." />
                   </folding>
                 </state>
               </provider>
@@ -171,11 +166,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>preprocess</find>
-      <find>config</find>
-      <find>self.conf</find>
-      <find>apply_box_deltas</find>
-      <find>gen_anchors_fot_train</find>
       <find>Anchor shape</find>
       <find>trans</find>
       <find>print</find>
@@ -196,11 +186,16 @@
       <find>max_rpn_targets</find>
       <find>xIN</find>
       <find>build_train_graph</find>
-      <find>rpn_target_class</find>
       <find>anchors</find>
       <find>rpn_class_logits</find>
       <find>RPN_TRAIN_ANCHORS_PER_IMAGE</find>
       <find>pos_idx</find>
+      <find>rpn_target_class</find>
+      <find>rpn_target_box</find>
+      <find>rpn_pred_box</find>
+      <find>rpn_pred_probs</find>
+      <find>rpn_target_bbox</find>
+      <find>rpn_pred_logits</find>
     </findStrings>
     <replaceStrings>
       <replace>add_smry=False</replace>
@@ -223,6 +218,7 @@
       <replace>num_images</replace>
       <replace>DETECTION_POST_NMS_INSTANCES</replace>
       <replace>get_feature_maps</replace>
+      <replace>rpn_target_bbox</replace>
     </replaceStrings>
   </component>
   <component name="Git.Settings">
@@ -286,7 +282,7 @@
     </option>
   </component>
   <component name="ProjectFrameBounds" fullScreen="true">
-    <option name="x" value="-2560" />
+    <option name="x" value="-1280" />
     <option name="y" value="-257" />
     <option name="width" value="1280" />
     <option name="height" value="1057" />
@@ -510,7 +506,7 @@
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3282876" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33037156" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.25655282" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="true" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.25655282" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32956383" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
@@ -583,7 +579,7 @@
         <state relative-caret-position="3475">
           <caret line="174" column="18" lean-forward="false" selection-start-line="174" selection-start-column="18" selection-end-line="174" selection-end-column="18" />
           <folding>
-            <element signature="e#0#9#0" expanded="true" />
+            <element signature="e#0#9#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -717,7 +713,7 @@
         <state relative-caret-position="380">
           <caret line="20" column="9" lean-forward="false" selection-start-line="20" selection-start-column="9" selection-end-line="20" selection-end-column="9" />
           <folding>
-            <element signature="e#0#23#0" expanded="true" />
+            <element signature="e#0#23#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -739,7 +735,7 @@
         <state relative-caret-position="1003">
           <caret line="155" column="60" lean-forward="false" selection-start-line="151" selection-start-column="8" selection-end-line="155" selection-end-column="60" />
           <folding>
-            <element signature="e#0#9#0" expanded="true" />
+            <element signature="e#0#9#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -822,8 +818,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/MaskRCNN/shapes.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="72">
-          <caret line="209" column="21" lean-forward="true" selection-start-line="209" selection-start-column="21" selection-end-line="209" selection-end-column="21" />
+        <state relative-caret-position="172">
+          <caret line="214" column="25" lean-forward="true" selection-start-line="214" selection-start-column="25" selection-end-line="214" selection-end-column="25" />
           <folding>
             <element signature="e#2#16#0" expanded="true" />
             <element signature="e#2268#2997#1" expanded="false" />
@@ -833,11 +829,11 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/MaskRCNN/training.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="528">
-          <caret line="190" column="12" lean-forward="true" selection-start-line="190" selection-start-column="12" selection-end-line="190" selection-end-column="12" />
+        <state relative-caret-position="667">
+          <caret line="209" column="12" lean-forward="true" selection-start-line="209" selection-start-column="12" selection-end-line="209" selection-end-column="12" />
           <folding>
             <element signature="e#1#10#0" expanded="true" />
-            <marker date="1530762976560" expanded="true" signature="8990:17135" ph="..." />
+            <marker date="1530834312266" expanded="true" signature="9822:17967" ph="..." />
           </folding>
         </state>
       </provider>
@@ -845,7 +841,7 @@
     <entry file="file://$PROJECT_DIR$/MaskRCNN/building_blocks/loss_optimize.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="892">
-          <caret line="75" column="47" lean-forward="false" selection-start-line="75" selection-start-column="47" selection-end-line="75" selection-end-column="47" />
+          <caret line="78" column="37" lean-forward="false" selection-start-line="66" selection-start-column="10" selection-end-line="78" selection-end-column="37" />
           <folding>
             <element signature="e#2#25#0" expanded="true" />
           </folding>

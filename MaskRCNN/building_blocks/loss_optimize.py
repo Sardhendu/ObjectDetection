@@ -44,16 +44,16 @@ class Loss():
     
     
     @staticmethod
-    def rpn_box_loss(rpn_target_box, rpn_pred_box, rpn_target_class):
+    def rpn_box_loss(rpn_target_bbox, rpn_pred_box, rpn_target_class, batch_size):
         '''
         :param rpn_target_class:  [batch_size, num_anchors, 1] # required becasue we need to capture only +ve classes
-        :param rpn_target_box:    [batch_size, max_gt_boxes(100), (c_y, c_x, log(dh), log(dw)]
+        :param rpn_target_bbox:    [batch_size, max_gt_boxes(100), (c_y, c_x, log(dh), log(dw)]
         :param rpn_pred_box:      [batch_size, anchors, (c_y, c_x, log(dh). log(dw)]
         :return:
         
-        Note: rpn_target_box are zero-padded, they were added to fulfil the total number of box and concat for each objects. we assume that given an image we would at most find 100 objects.
+        Note: rpn_target_bbox are zero-padded, they were added to fulfil the total number of box and concat for each objects. we assume that given an image we would at most find 100 objects.
         
-        Losses are to be calculated on only Foreground, the rpn_target_box corresponds to only +ve classes,
+        Losses are to be calculated on only Foreground, the rpn_target_bbox corresponds to only +ve classes,
         '''
         rpn_target_class = tf.squeeze(rpn_target_class, -1)
         
@@ -61,17 +61,20 @@ class Loss():
         indices = tf.where(rpn_target_class == 1)
         rpn_pred_box_pos = tf.gather_nd(rpn_pred_box, indices)
         
-        # Gather from rpn_target_box where teh values are not zero. Basically the top "n" boxes are non zero. Also Note this has to be done for every batch
+        # Gather from rpn_target_bbox where teh values are not zero. Basically the top "n" boxes are non zero. Also Note this has to be done for every batch
         # Get data for count of non-padded (non=zero) records for each batch
-        non_pad_count = tf.reduce_sum(tf.cast(tf.equal(rpn_target_class, 1), tf.int32))
-        rpn_target_box_nopad = []
-        for i in range(0,rpn_pred_box.shape[0]):
-            rpn_target_box_nopad.append(rpn_target_box[i,:non_pad_count[i]]) # non_pad_count[i] The count of non-zeros records in batch i
-        pred_box_nopad = tf.concat(rpn_target_box_nopad, axis=0)
-        
-        # Now that we have two boxes of same size, lets get the Regression loss.
-        # L1=smooth norm  =     | 0.5(x_sq)   if |x| < 1
-        #                       | |x| - 0.5   otherwise
-        l1_dist = tf.abs(rpn_target_box - rpn_pred_box_pos)
-        tf.cast(tf.less(l1_dist, 1.0), tf.int32)
-        
+        non_pad_count = tf.reduce_sum(tf.cast(tf.equal(rpn_target_class, 1), tf.int32), axis=1)# K.sum(K.cast(K.equal(rpn_target_class, 1), tf.int32), axis=1)#
+        # rpn_target_bbox_nopad = []
+        # for i in range(0,batch_size):
+        #     rpn_target_bbox_nopad.append(rpn_target_bbox[i,:non_pad_count[i]]) # non_pad_count[i] The count of non-zeros records in batch i
+        # rpn_target_bbox_nopad = tf.concat(rpn_target_bbox_nopad, axis=0)
+        #
+        # # Now that we have two boxes of same size, lets get the Regression loss.
+        # # L1=smooth norm  =     | 0.5(x_sq)   if |x| < 1
+        # #                       | |x| - 0.5   otherwise
+        # l1_dist = tf.abs(rpn_target_bbox_nopad - rpn_pred_box_pos)
+        # less_than_one = tf.cast(tf.less(l1_dist, 1.0), tf.float32)
+        # loss = (0.5*less_than_one * l1_dist**2) + ((l1_dist-0.5) * (1-less_than_one))
+        #
+        # loss = K.switch(tf.size(loss) > 0, K.mean(loss), tf.constant(0.0))
+        return non_pad_count

@@ -104,22 +104,23 @@ class Train():
         
         #
         # CREATE THE RPN GRAPH
-        rpn_class_logits = []
-        rpn_class_probs = []
-        rpn_bbox = []
+        rpn_pred_logits = []
+        rpn_pred_probs = []
+        rpn_pred_bbox = []
         for fmap in [fpn_graph['fpn_p2'], fpn_graph['fpn_p3'], fpn_graph['fpn_p4'], fpn_graph['fpn_p5'],
                      fpn_graph['fpn_p6']]:
             rpn_obj = RPN(self.conf, depth=256, feature_map=fmap)  #
-            rpn_class_logits.append(rpn_obj.get_rpn_class_logits())
-            rpn_class_probs.append(rpn_obj.get_rpn_class_probs())
-            rpn_bbox.append(rpn_obj.get_rpn_bbox())
-        
-        rpn_class_logits = tf.concat(rpn_class_logits, axis=1)
-        rpn_class_probs = tf.concat(rpn_class_probs, axis=1)
-        rpn_bbox = tf.concat(rpn_bbox, axis=1)
+            rpn_pred_logits.append(rpn_obj.get_rpn_class_logits())
+            rpn_pred_probs.append(rpn_obj.get_rpn_class_probs())
+            rpn_pred_bbox.append(rpn_obj.get_rpn_bbox())
+
+        rpn_pred_logits = tf.concat(rpn_pred_logits, axis=1)
+        rpn_pred_probs = tf.concat(rpn_pred_probs, axis=1)
+        rpn_pred_bbox = tf.concat(rpn_pred_bbox, axis=1)
         
         # CREATE THE PROPOSAL GRAPH
-        proposals = Proposals(self.conf, self.batch_size, rpn_class_probs, rpn_bbox, anchors,
+        proposals = Proposals(self.conf, self.batch_size,
+                              rpn_pred_probs, rpn_pred_bbox, anchors,
                               DEBUG=True).get_proposals()
         
         # MRCNN GRAPH
@@ -135,22 +136,25 @@ class Train():
         
         # TODO: Create RPN LOSS
         # RPN has two losses 1) Classification loss and 2) Regularization
-        rpn_loss = Loss.rpn_class_loss(rpn_target_class, rpn_class_logits)
+        rpn_class_loss = Loss.rpn_class_loss(rpn_target_class, rpn_pred_logits)
+        rpn_box_loss = Loss.rpn_box_loss(rpn_target_bbox, rpn_pred_bbox, rpn_target_class, batch_size=1)
         
         # TODO: DETECTION
         
         # TODO: Create MRCNN Loss  (Hmm how would we do it, when we havent compute the ground truth)
         
-        return fpn_graph, rpn_class_logits, rpn_class_probs, rpn_bbox, proposals, mrcnn_graph, xIN, anchors, \
-               rpn_target_class, rpn_loss
+        return (fpn_graph, rpn_pred_logits, rpn_pred_probs, rpn_pred_bbox, proposals,
+                mrcnn_graph, xIN, anchors, rpn_target_class, rpn_target_bbox,
+                rpn_class_loss, rpn_box_loss)
     
     def exec_sess(self, data_dict, image_ids):
         # TODO: Inputs anchors and xIN
         tf.reset_default_graph()
         
         # BUILD THE GRAPH
-        fpn_graph, rpn_class_logits, rpn_class_probs, rpn_bbox, proposals, mrcnn_graph, xIN, anchors, \
-        rpn_target_class, rpn_loss = self.build_train_graph()
+        (fpn_graph, rpn_pred_logits, rpn_pred_probs, rpn_pred_bbox, proposals,
+                mrcnn_graph, xIN, anchors, rpn_target_class, rpn_target_bbox,
+                rpn_class_loss, rpn_box_loss) = self.build_train_graph()
         
         # GET INPUT DATA
         batch_images, batch_gt_masks, batch_gt_class_ids, batch_gt_bboxes, batch_image_metas, batch_rpn_target_class, \
@@ -160,10 +164,13 @@ class Train():
         
         with tf.Session() as sess:
             sess.run(tf.global_variables_initializer())
-            
-            rpn_class_logits_, rpn_class_probs_, rpn_bbox_, proposals_, mrcnn_class_probs_, mrcnn_bbox_ = sess.run(
-                    [rpn_class_logits, rpn_class_probs, rpn_bbox, proposals, mrcnn_graph['mrcnn_class_probs'],
-                     mrcnn_graph['mrcnn_bbox']],
+            (rpn_pred_logits_, rpn_pred_probs_, rpn_pred_bbox_, proposals_, mrcnn_class_probs_, mrcnn_bbox_) = sess.run([
+                            rpn_pred_logits,
+                            rpn_pred_probs,
+                            rpn_pred_bbox,
+                            proposals,
+                            mrcnn_graph['mrcnn_class_probs'],
+                            mrcnn_graph['mrcnn_bbox']],
                     feed_dict={xIN: batch_images, anchors: anchors_})
             
             print('Max and Min Proposals, ', np.amax(proposals_), np.amin(proposals_))
@@ -173,26 +180,37 @@ class Train():
             
             # print(rpn_class_probs_.shape, rpn_bbox_.shape, mrcnn_class_probs_.shape, mrcnn_bbox_.shape)
             
-            print('rpn_class_logits_.shape ', rpn_class_logits_.shape)
+            print('rpn_pred_logits_.shape ', rpn_pred_logits_.shape)
             print('')
-            print ('rpn_bbox_.shape ', rpn_bbox_.shape)
+            print ('rpn_bbox_.shape ', rpn_pred_bbox_.shape)
             print('')
             print ('mrcnn_class_probs_.shape ', mrcnn_class_probs_.shape)
             print ('')
             print('mrcnn_bbox_.shape ', mrcnn_bbox_.shape)
             
-            loss = sess.run(rpn_loss, feed_dict={rpn_target_class: batch_rpn_target_class,
-                                                 rpn_class_logits:rpn_class_logits_})
+            loss = sess.run(rpn_class_loss,
+                            feed_dict={
+                                rpn_target_class: batch_rpn_target_class, rpn_pred_logits:rpn_pred_logits_
+                            })
 
+            loss2 = sess.run(rpn_box_loss,
+                            feed_dict={
+                                rpn_target_class: batch_rpn_target_class,
+                                rpn_target_bbox: batch_rpn_target_bbox,
+                                rpn_pred_bbox: rpn_pred_bbox_
+                            })
+            
             print(loss)
             print ('')
-            print(batch_rpn_target_bbox)
-            print('')
+            print(loss2)
+            # print('')
+            # print(batch_rpn_target_bbox)
+            # print('')
             
             
-            for i in range(0,10):
-                print(batch_rpn_target_bbox[:,i,:])
-            
+            # for i in range(0,10):
+            #     print(batch_rpn_target_bbox[:,i,:])
+            #
             # print('')
             # print('')
             # print('0 ', len(np.where(target_class_[0] == 0)[0]))
