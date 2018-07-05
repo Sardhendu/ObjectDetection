@@ -1,254 +1,254 @@
-2018-07-01 23:44:47,455 INFO     Anchors: running for..... scales=8, feature_map_shapes=[32 32], feature_map_strides=4
-2018-07-01 23:44:47,456 INFO     Anchors: Box width shape = (1024, 3)
-2018-07-01 23:44:47,456 INFO     Anchors: Box height shape = (1024, 3)
-2018-07-01 23:44:47,456 INFO     Anchors: Box center_x shape = (1024, 3)
-2018-07-01 23:44:47,456 INFO     Anchors: Box center_y shape = (1024, 3)
-2018-07-01 23:44:47,457 INFO     Anchors: Stacked Box corner coordinates shape = (3072, 4)
-2018-07-01 23:44:47,457 INFO     Anchors: running for..... scales=16, feature_map_shapes=[16 16], feature_map_strides=8
-2018-07-01 23:44:47,457 INFO     Anchors: Box width shape = (256, 3)
-2018-07-01 23:44:47,457 INFO     Anchors: Box height shape = (256, 3)
-2018-07-01 23:44:47,457 INFO     Anchors: Box center_x shape = (256, 3)
-2018-07-01 23:44:47,458 INFO     Anchors: Box center_y shape = (256, 3)
-2018-07-01 23:44:47,458 INFO     Anchors: Stacked Box corner coordinates shape = (768, 4)
-2018-07-01 23:44:47,458 INFO     Anchors: running for..... scales=32, feature_map_shapes=[8 8], feature_map_strides=16
-2018-07-01 23:44:47,458 INFO     Anchors: Box width shape = (64, 3)
-2018-07-01 23:44:47,458 INFO     Anchors: Box height shape = (64, 3)
-2018-07-01 23:44:47,458 INFO     Anchors: Box center_x shape = (64, 3)
-2018-07-01 23:44:47,458 INFO     Anchors: Box center_y shape = (64, 3)
-2018-07-01 23:44:47,458 INFO     Anchors: Stacked Box corner coordinates shape = (192, 4)
-2018-07-01 23:44:47,459 INFO     Anchors: running for..... scales=64, feature_map_shapes=[4 4], feature_map_strides=32
-2018-07-01 23:44:47,459 INFO     Anchors: Box width shape = (16, 3)
-2018-07-01 23:44:47,459 INFO     Anchors: Box height shape = (16, 3)
-2018-07-01 23:44:47,459 INFO     Anchors: Box center_x shape = (16, 3)
-2018-07-01 23:44:47,459 INFO     Anchors: Box center_y shape = (16, 3)
-2018-07-01 23:44:47,459 INFO     Anchors: Stacked Box corner coordinates shape = (48, 4)
-2018-07-01 23:44:47,459 INFO     Anchors: running for..... scales=128, feature_map_shapes=[2 2], feature_map_strides=64
-2018-07-01 23:44:47,460 INFO     Anchors: Box width shape = (4, 3)
-2018-07-01 23:44:47,460 INFO     Anchors: Box height shape = (4, 3)
-2018-07-01 23:44:47,460 INFO     Anchors: Box center_x shape = (4, 3)
-2018-07-01 23:44:47,460 INFO     Anchors: Box center_y shape = (4, 3)
-2018-07-01 23:44:47,460 INFO     Anchors: Stacked Box corner coordinates shape = (12, 4)
-2018-07-01 23:44:47,460 INFO     Anchors: concatenated for each stage: shape = (4092, 4)
-2018-07-01 23:44:49,214 INFO     Image height = 128, width = 128 ................
-2018-07-01 23:44:49,214 INFO     Initiating FPN BOTTOM-UP .................................
-2018-07-01 23:44:49,217 INFO     Zero_padded: [None, 134, 134, 3]
-2018-07-01 23:44:49,218 INFO     STAGE 1 ...........................
-2018-07-01 23:44:49,265 INFO     Conv2D: [None, 64, 64, 64]
-2018-07-01 23:44:49,268 INFO     MaxPool2d: [None, 32, 32, 64]
-2018-07-01 23:44:49,269 INFO     STAGE 2 ...........................
-2018-07-01 23:44:49,316 INFO     res2a_branch1: [None, 32, 32, 256]
-2018-07-01 23:44:49,363 INFO     res2a_branch2a: [None, 32, 32, 64]
-2018-07-01 23:44:49,413 INFO     res2a_branch2b: [None, 32, 32, 64]
-2018-07-01 23:44:49,457 INFO     res2a_branch2c: [None, 32, 32, 256]
-2018-07-01 23:44:49,459 INFO     relu2a_branch_out: [None, 32, 32, 256]
-2018-07-01 23:44:49,504 INFO     res2b_branch2a: [None, 32, 32, 64]
-2018-07-01 23:44:49,550 INFO     res2b_branch2b: [None, 32, 32, 64]
-2018-07-01 23:44:49,595 INFO     res2b_branch2c: [None, 32, 32, 256]
-2018-07-01 23:44:49,597 INFO     relu2b_branch_out: [None, 32, 32, 256]
-2018-07-01 23:44:49,643 INFO     res2c_branch2a: [None, 32, 32, 64]
-2018-07-01 23:44:49,691 INFO     res2c_branch2b: [None, 32, 32, 64]
-2018-07-01 23:44:49,737 INFO     res2c_branch2c: [None, 32, 32, 256]
-2018-07-01 23:44:49,740 INFO     relu2c_branch_out: [None, 32, 32, 256]
-2018-07-01 23:44:49,740 INFO     STAGE 3 ...........................
-2018-07-01 23:44:49,789 INFO     res3a_branch1: [None, 16, 16, 512]
-2018-07-01 23:44:49,849 INFO     res3a_branch2a: [None, 16, 16, 128]
-2018-07-01 23:44:49,903 INFO     res3a_branch2b: [None, 16, 16, 128]
-2018-07-01 23:44:49,953 INFO     res3a_branch2c: [None, 16, 16, 512]
-2018-07-01 23:44:49,957 INFO     relu3a_branch_out: [None, 16, 16, 512]
-2018-07-01 23:44:50,025 INFO     res3b_branch2a: [None, 16, 16, 128]
-2018-07-01 23:44:50,076 INFO     res3b_branch2b: [None, 16, 16, 128]
-2018-07-01 23:44:50,134 INFO     res3b_branch2c: [None, 16, 16, 512]
-2018-07-01 23:44:50,137 INFO     relu3b_branch_out: [None, 16, 16, 512]
-2018-07-01 23:44:50,188 INFO     res3c_branch2a: [None, 16, 16, 128]
-2018-07-01 23:44:50,236 INFO     res3c_branch2b: [None, 16, 16, 128]
-2018-07-01 23:44:50,287 INFO     res3c_branch2c: [None, 16, 16, 512]
-2018-07-01 23:44:50,289 INFO     relu3c_branch_out: [None, 16, 16, 512]
-2018-07-01 23:44:50,339 INFO     res3d_branch2a: [None, 16, 16, 128]
-2018-07-01 23:44:50,392 INFO     res3d_branch2b: [None, 16, 16, 128]
-2018-07-01 23:44:50,442 INFO     res3d_branch2c: [None, 16, 16, 512]
-2018-07-01 23:44:50,445 INFO     relu3d_branch_out: [None, 16, 16, 512]
-2018-07-01 23:44:50,445 INFO     STAGE 4 ...........................
-2018-07-01 23:44:50,503 INFO     res4a_branch1: [None, 8, 8, 1024]
-2018-07-01 23:44:50,618 INFO     res4a_branch2a: [None, 8, 8, 256]
-2018-07-01 23:44:50,664 INFO     res4a_branch2b: [None, 8, 8, 256]
-2018-07-01 23:44:50,710 INFO     res4a_branch2c: [None, 8, 8, 1024]
-2018-07-01 23:44:50,714 INFO     relu4a_branch_out: [None, 8, 8, 1024]
-2018-07-01 23:44:50,762 INFO     res4b_branch2a: [None, 8, 8, 256]
-2018-07-01 23:44:50,812 INFO     res4b_branch2b: [None, 8, 8, 256]
-2018-07-01 23:44:50,862 INFO     res4b_branch2c: [None, 8, 8, 1024]
-2018-07-01 23:44:50,865 INFO     relu4b_branch_out: [None, 8, 8, 1024]
-2018-07-01 23:44:50,920 INFO     res4c_branch2a: [None, 8, 8, 256]
-2018-07-01 23:44:50,980 INFO     res4c_branch2b: [None, 8, 8, 256]
-2018-07-01 23:44:51,028 INFO     res4c_branch2c: [None, 8, 8, 1024]
-2018-07-01 23:44:51,031 INFO     relu4c_branch_out: [None, 8, 8, 1024]
-2018-07-01 23:44:51,076 INFO     res4d_branch2a: [None, 8, 8, 256]
-2018-07-01 23:44:51,124 INFO     res4d_branch2b: [None, 8, 8, 256]
-2018-07-01 23:44:51,168 INFO     res4d_branch2c: [None, 8, 8, 1024]
-2018-07-01 23:44:51,171 INFO     relu4d_branch_out: [None, 8, 8, 1024]
-2018-07-01 23:44:51,218 INFO     res4e_branch2a: [None, 8, 8, 256]
-2018-07-01 23:44:51,264 INFO     res4e_branch2b: [None, 8, 8, 256]
-2018-07-01 23:44:51,309 INFO     res4e_branch2c: [None, 8, 8, 1024]
-2018-07-01 23:44:51,311 INFO     relu4e_branch_out: [None, 8, 8, 1024]
-2018-07-01 23:44:51,357 INFO     res4f_branch2a: [None, 8, 8, 256]
-2018-07-01 23:44:51,403 INFO     res4f_branch2b: [None, 8, 8, 256]
-2018-07-01 23:44:51,446 INFO     res4f_branch2c: [None, 8, 8, 1024]
-2018-07-01 23:44:51,449 INFO     relu4f_branch_out: [None, 8, 8, 1024]
-2018-07-01 23:44:51,494 INFO     res4g_branch2a: [None, 8, 8, 256]
-2018-07-01 23:44:51,539 INFO     res4g_branch2b: [None, 8, 8, 256]
-2018-07-01 23:44:51,583 INFO     res4g_branch2c: [None, 8, 8, 1024]
-2018-07-01 23:44:51,586 INFO     relu4g_branch_out: [None, 8, 8, 1024]
-2018-07-01 23:44:51,631 INFO     res4h_branch2a: [None, 8, 8, 256]
-2018-07-01 23:44:51,676 INFO     res4h_branch2b: [None, 8, 8, 256]
-2018-07-01 23:44:51,722 INFO     res4h_branch2c: [None, 8, 8, 1024]
-2018-07-01 23:44:51,724 INFO     relu4h_branch_out: [None, 8, 8, 1024]
-2018-07-01 23:44:51,769 INFO     res4i_branch2a: [None, 8, 8, 256]
-2018-07-01 23:44:51,814 INFO     res4i_branch2b: [None, 8, 8, 256]
-2018-07-01 23:44:51,857 INFO     res4i_branch2c: [None, 8, 8, 1024]
-2018-07-01 23:44:51,859 INFO     relu4i_branch_out: [None, 8, 8, 1024]
-2018-07-01 23:44:51,906 INFO     res4j_branch2a: [None, 8, 8, 256]
-2018-07-01 23:44:52,041 INFO     res4j_branch2b: [None, 8, 8, 256]
-2018-07-01 23:44:52,087 INFO     res4j_branch2c: [None, 8, 8, 1024]
-2018-07-01 23:44:52,089 INFO     relu4j_branch_out: [None, 8, 8, 1024]
-2018-07-01 23:44:52,134 INFO     res4k_branch2a: [None, 8, 8, 256]
-2018-07-01 23:44:52,181 INFO     res4k_branch2b: [None, 8, 8, 256]
-2018-07-01 23:44:52,225 INFO     res4k_branch2c: [None, 8, 8, 1024]
-2018-07-01 23:44:52,227 INFO     relu4k_branch_out: [None, 8, 8, 1024]
-2018-07-01 23:44:52,272 INFO     res4l_branch2a: [None, 8, 8, 256]
-2018-07-01 23:44:52,318 INFO     res4l_branch2b: [None, 8, 8, 256]
-2018-07-01 23:44:52,362 INFO     res4l_branch2c: [None, 8, 8, 1024]
-2018-07-01 23:44:52,364 INFO     relu4l_branch_out: [None, 8, 8, 1024]
-2018-07-01 23:44:52,412 INFO     res4m_branch2a: [None, 8, 8, 256]
-2018-07-01 23:44:52,456 INFO     res4m_branch2b: [None, 8, 8, 256]
-2018-07-01 23:44:52,501 INFO     res4m_branch2c: [None, 8, 8, 1024]
-2018-07-01 23:44:52,504 INFO     relu4m_branch_out: [None, 8, 8, 1024]
-2018-07-01 23:44:52,549 INFO     res4n_branch2a: [None, 8, 8, 256]
-2018-07-01 23:44:52,595 INFO     res4n_branch2b: [None, 8, 8, 256]
-2018-07-01 23:44:52,639 INFO     res4n_branch2c: [None, 8, 8, 1024]
-2018-07-01 23:44:52,641 INFO     relu4n_branch_out: [None, 8, 8, 1024]
-2018-07-01 23:44:52,688 INFO     res4o_branch2a: [None, 8, 8, 256]
-2018-07-01 23:44:52,733 INFO     res4o_branch2b: [None, 8, 8, 256]
-2018-07-01 23:44:52,777 INFO     res4o_branch2c: [None, 8, 8, 1024]
-2018-07-01 23:44:52,779 INFO     relu4o_branch_out: [None, 8, 8, 1024]
-2018-07-01 23:44:52,825 INFO     res4p_branch2a: [None, 8, 8, 256]
-2018-07-01 23:44:52,869 INFO     res4p_branch2b: [None, 8, 8, 256]
-2018-07-01 23:44:52,916 INFO     res4p_branch2c: [None, 8, 8, 1024]
-2018-07-01 23:44:52,918 INFO     relu4p_branch_out: [None, 8, 8, 1024]
-2018-07-01 23:44:52,963 INFO     res4q_branch2a: [None, 8, 8, 256]
-2018-07-01 23:44:53,009 INFO     res4q_branch2b: [None, 8, 8, 256]
-2018-07-01 23:44:53,052 INFO     res4q_branch2c: [None, 8, 8, 1024]
-2018-07-01 23:44:53,054 INFO     relu4q_branch_out: [None, 8, 8, 1024]
-2018-07-01 23:44:53,100 INFO     res4r_branch2a: [None, 8, 8, 256]
-2018-07-01 23:44:53,147 INFO     res4r_branch2b: [None, 8, 8, 256]
-2018-07-01 23:44:53,192 INFO     res4r_branch2c: [None, 8, 8, 1024]
-2018-07-01 23:44:53,194 INFO     relu4r_branch_out: [None, 8, 8, 1024]
-2018-07-01 23:44:53,244 INFO     res4s_branch2a: [None, 8, 8, 256]
-2018-07-01 23:44:53,290 INFO     res4s_branch2b: [None, 8, 8, 256]
-2018-07-01 23:44:53,334 INFO     res4s_branch2c: [None, 8, 8, 1024]
-2018-07-01 23:44:53,336 INFO     relu4s_branch_out: [None, 8, 8, 1024]
-2018-07-01 23:44:53,381 INFO     res4t_branch2a: [None, 8, 8, 256]
-2018-07-01 23:44:53,428 INFO     res4t_branch2b: [None, 8, 8, 256]
-2018-07-01 23:44:53,472 INFO     res4t_branch2c: [None, 8, 8, 1024]
-2018-07-01 23:44:53,595 INFO     relu4t_branch_out: [None, 8, 8, 1024]
-2018-07-01 23:44:53,640 INFO     res4u_branch2a: [None, 8, 8, 256]
-2018-07-01 23:44:53,690 INFO     res4u_branch2b: [None, 8, 8, 256]
-2018-07-01 23:44:53,741 INFO     res4u_branch2c: [None, 8, 8, 1024]
-2018-07-01 23:44:53,744 INFO     relu4u_branch_out: [None, 8, 8, 1024]
-2018-07-01 23:44:53,796 INFO     res4v_branch2a: [None, 8, 8, 256]
-2018-07-01 23:44:53,845 INFO     res4v_branch2b: [None, 8, 8, 256]
-2018-07-01 23:44:53,893 INFO     res4v_branch2c: [None, 8, 8, 1024]
-2018-07-01 23:44:53,896 INFO     relu4v_branch_out: [None, 8, 8, 1024]
-2018-07-01 23:44:53,940 INFO     res4w_branch2a: [None, 8, 8, 256]
-2018-07-01 23:44:53,986 INFO     res4w_branch2b: [None, 8, 8, 256]
-2018-07-01 23:44:54,030 INFO     res4w_branch2c: [None, 8, 8, 1024]
-2018-07-01 23:44:54,032 INFO     relu4w_branch_out: [None, 8, 8, 1024]
-2018-07-01 23:44:54,032 INFO     STAGE 5 ...........................
-2018-07-01 23:44:54,075 INFO     res5a_branch1: [None, 4, 4, 2048]
-2018-07-01 23:44:54,126 INFO     res5a_branch2a: [None, 4, 4, 512]
-2018-07-01 23:44:54,180 INFO     res5a_branch2b: [None, 4, 4, 512]
-2018-07-01 23:44:54,230 INFO     res5a_branch2c: [None, 4, 4, 2048]
-2018-07-01 23:44:54,232 INFO     relu5a_branch_out: [None, 4, 4, 2048]
-2018-07-01 23:44:54,276 INFO     res5b_branch2a: [None, 4, 4, 512]
-2018-07-01 23:44:54,323 INFO     res5b_branch2b: [None, 4, 4, 512]
-2018-07-01 23:44:54,370 INFO     res5b_branch2c: [None, 4, 4, 2048]
-2018-07-01 23:44:54,372 INFO     relu5b_branch_out: [None, 4, 4, 2048]
-2018-07-01 23:44:54,420 INFO     res5c_branch2a: [None, 4, 4, 512]
-2018-07-01 23:44:54,464 INFO     res5c_branch2b: [None, 4, 4, 512]
-2018-07-01 23:44:54,509 INFO     res5c_branch2c: [None, 4, 4, 2048]
-2018-07-01 23:44:54,512 INFO     relu5c_branch_out: [None, 4, 4, 2048]
-2018-07-01 23:44:54,512 INFO     Initiating FPN TOP-DOWN .................................
-2018-07-01 23:44:54,532 INFO     FPN - M5: [None, 4, 4, 256]
-2018-07-01 23:44:54,564 INFO     FPN - M4: [None, 8, 8, 256]
-2018-07-01 23:44:54,598 INFO     FPN - M3: [None, 16, 16, 256]
-2018-07-01 23:44:54,630 INFO     FPN - M2: [None, 32, 32, 256]
-2018-07-01 23:44:54,713 INFO     FPN - P2 = [None, 32, 32, 256], P3 = [None, 16, 16, 256], P4 = [None, 8, 8, 256], P5 = [None, 4, 4, 256], P6 = [None, 2, 2, 256]:
-2018-07-01 23:44:54,737 INFO     RPN - Shared_conv: [None, 32, 32, 512]
-2018-07-01 23:44:54,757 INFO     RPN - Conv Class: [None, 32, 32, 6]
-2018-07-01 23:44:54,769 INFO     rpn_class_logits: [None, None, 2]
-2018-07-01 23:44:54,787 INFO     rpn_class_probs: [None, None, 2]
-2018-07-01 23:44:54,808 INFO     RPN - Conv Bbox: [None, 32, 32, 12]
-2018-07-01 23:44:54,820 INFO     rpn_bbox: [None, None, 4]
-2018-07-01 23:44:54,824 INFO     RPN - Shared_conv: [None, 16, 16, 512]
-2018-07-01 23:44:54,827 INFO     RPN - Conv Class: [None, 16, 16, 6]
-2018-07-01 23:44:54,840 INFO     rpn_class_logits: [None, None, 2]
-2018-07-01 23:44:54,856 INFO     rpn_class_probs: [None, None, 2]
-2018-07-01 23:44:54,859 INFO     RPN - Conv Bbox: [None, 16, 16, 12]
-2018-07-01 23:44:54,871 INFO     rpn_bbox: [None, None, 4]
-2018-07-01 23:44:54,876 INFO     RPN - Shared_conv: [None, 8, 8, 512]
-2018-07-01 23:44:54,879 INFO     RPN - Conv Class: [None, 8, 8, 6]
-2018-07-01 23:44:54,892 INFO     rpn_class_logits: [None, None, 2]
-2018-07-01 23:44:54,911 INFO     rpn_class_probs: [None, None, 2]
-2018-07-01 23:44:54,915 INFO     RPN - Conv Bbox: [None, 8, 8, 12]
-2018-07-01 23:44:54,927 INFO     rpn_bbox: [None, None, 4]
-2018-07-01 23:44:54,932 INFO     RPN - Shared_conv: [None, 4, 4, 512]
-2018-07-01 23:44:54,936 INFO     RPN - Conv Class: [None, 4, 4, 6]
-2018-07-01 23:44:54,947 INFO     rpn_class_logits: [None, None, 2]
-2018-07-01 23:44:54,964 INFO     rpn_class_probs: [None, None, 2]
-2018-07-01 23:44:54,968 INFO     RPN - Conv Bbox: [None, 4, 4, 12]
-2018-07-01 23:44:54,980 INFO     rpn_bbox: [None, None, 4]
-2018-07-01 23:44:54,985 INFO     RPN - Shared_conv: [None, 2, 2, 512]
-2018-07-01 23:44:54,988 INFO     RPN - Conv Class: [None, 2, 2, 6]
-2018-07-01 23:44:55,002 INFO     rpn_class_logits: [None, None, 2]
-2018-07-01 23:44:55,019 INFO     rpn_class_probs: [None, None, 2]
-2018-07-01 23:44:55,023 INFO     RPN - Conv Bbox: [None, 2, 2, 12]
-2018-07-01 23:44:55,035 INFO     rpn_bbox: [None, None, 4]
-2018-07-01 23:44:55,054 INFO     Foreground_probs shape: (?, ?)
-2018-07-01 23:44:55,056 INFO     bbox_delta shape: (?, ?, 4)
-2018-07-01 23:44:55,057 INFO     anchors shape: (?, ?, 4)
-2018-07-01 23:44:55,065 INFO     max_anc_before_nms shape: Tensor("Minimum:0", shape=(), dtype=int32)
-2018-07-01 23:44:55,067 INFO     ix shape: [None, None]
-2018-07-01 23:44:55,108 INFO     scores shape = (?, ?)
-2018-07-01 23:44:55,109 INFO     Box delta shape = (?, ?, 4)
-2018-07-01 23:44:55,111 INFO     anchors shape = (?, ?, 4)
-2018-07-01 23:44:55,260 INFO     bx_nw shape: [1, None, None]
-2018-07-01 23:44:56,218 INFO     Anchors: running for..... scales=8, feature_map_shapes=[32 32], feature_map_strides=4
-2018-07-01 23:44:56,218 INFO     Anchors: Box width shape = (1024, 3)
-2018-07-01 23:44:56,218 INFO     Anchors: Box height shape = (1024, 3)
-2018-07-01 23:44:56,218 INFO     Anchors: Box center_x shape = (1024, 3)
-2018-07-01 23:44:56,218 INFO     Anchors: Box center_y shape = (1024, 3)
-2018-07-01 23:44:56,219 INFO     Anchors: Stacked Box corner coordinates shape = (3072, 4)
-2018-07-01 23:44:56,219 INFO     Anchors: running for..... scales=16, feature_map_shapes=[16 16], feature_map_strides=8
-2018-07-01 23:44:56,219 INFO     Anchors: Box width shape = (256, 3)
-2018-07-01 23:44:56,219 INFO     Anchors: Box height shape = (256, 3)
-2018-07-01 23:44:56,219 INFO     Anchors: Box center_x shape = (256, 3)
-2018-07-01 23:44:56,219 INFO     Anchors: Box center_y shape = (256, 3)
-2018-07-01 23:44:56,219 INFO     Anchors: Stacked Box corner coordinates shape = (768, 4)
-2018-07-01 23:44:56,220 INFO     Anchors: running for..... scales=32, feature_map_shapes=[8 8], feature_map_strides=16
-2018-07-01 23:44:56,220 INFO     Anchors: Box width shape = (64, 3)
-2018-07-01 23:44:56,220 INFO     Anchors: Box height shape = (64, 3)
-2018-07-01 23:44:56,220 INFO     Anchors: Box center_x shape = (64, 3)
-2018-07-01 23:44:56,220 INFO     Anchors: Box center_y shape = (64, 3)
-2018-07-01 23:44:56,220 INFO     Anchors: Stacked Box corner coordinates shape = (192, 4)
-2018-07-01 23:44:56,220 INFO     Anchors: running for..... scales=64, feature_map_shapes=[4 4], feature_map_strides=32
-2018-07-01 23:44:56,221 INFO     Anchors: Box width shape = (16, 3)
-2018-07-01 23:44:56,221 INFO     Anchors: Box height shape = (16, 3)
-2018-07-01 23:44:56,221 INFO     Anchors: Box center_x shape = (16, 3)
-2018-07-01 23:44:56,221 INFO     Anchors: Box center_y shape = (16, 3)
-2018-07-01 23:44:56,221 INFO     Anchors: Stacked Box corner coordinates shape = (48, 4)
-2018-07-01 23:44:56,221 INFO     Anchors: running for..... scales=128, feature_map_shapes=[2 2], feature_map_strides=64
-2018-07-01 23:44:56,221 INFO     Anchors: Box width shape = (4, 3)
-2018-07-01 23:44:56,221 INFO     Anchors: Box height shape = (4, 3)
-2018-07-01 23:44:56,221 INFO     Anchors: Box center_x shape = (4, 3)
-2018-07-01 23:44:56,222 INFO     Anchors: Box center_y shape = (4, 3)
-2018-07-01 23:44:56,222 INFO     Anchors: Stacked Box corner coordinates shape = (12, 4)
-2018-07-01 23:44:56,222 INFO     Anchors: concatenated for each stage: shape = (4092, 4)
-2018-07-01 23:44:56,222 INFO     Anchors: Broadcast to num_batches: shape = (1, 4092, 4)
+2018-07-04 22:56:31,582 INFO     Anchors: running for..... scales=8, feature_map_shapes=[32 32], feature_map_strides=4
+2018-07-04 22:56:31,582 INFO     Anchors: Box width shape = (1024, 3)
+2018-07-04 22:56:31,582 INFO     Anchors: Box height shape = (1024, 3)
+2018-07-04 22:56:31,582 INFO     Anchors: Box center_x shape = (1024, 3)
+2018-07-04 22:56:31,583 INFO     Anchors: Box center_y shape = (1024, 3)
+2018-07-04 22:56:31,583 INFO     Anchors: Stacked Box corner coordinates shape = (3072, 4)
+2018-07-04 22:56:31,583 INFO     Anchors: running for..... scales=16, feature_map_shapes=[16 16], feature_map_strides=8
+2018-07-04 22:56:31,583 INFO     Anchors: Box width shape = (256, 3)
+2018-07-04 22:56:31,583 INFO     Anchors: Box height shape = (256, 3)
+2018-07-04 22:56:31,583 INFO     Anchors: Box center_x shape = (256, 3)
+2018-07-04 22:56:31,584 INFO     Anchors: Box center_y shape = (256, 3)
+2018-07-04 22:56:31,584 INFO     Anchors: Stacked Box corner coordinates shape = (768, 4)
+2018-07-04 22:56:31,584 INFO     Anchors: running for..... scales=32, feature_map_shapes=[8 8], feature_map_strides=16
+2018-07-04 22:56:31,584 INFO     Anchors: Box width shape = (64, 3)
+2018-07-04 22:56:31,584 INFO     Anchors: Box height shape = (64, 3)
+2018-07-04 22:56:31,584 INFO     Anchors: Box center_x shape = (64, 3)
+2018-07-04 22:56:31,584 INFO     Anchors: Box center_y shape = (64, 3)
+2018-07-04 22:56:31,584 INFO     Anchors: Stacked Box corner coordinates shape = (192, 4)
+2018-07-04 22:56:31,585 INFO     Anchors: running for..... scales=64, feature_map_shapes=[4 4], feature_map_strides=32
+2018-07-04 22:56:31,585 INFO     Anchors: Box width shape = (16, 3)
+2018-07-04 22:56:31,585 INFO     Anchors: Box height shape = (16, 3)
+2018-07-04 22:56:31,585 INFO     Anchors: Box center_x shape = (16, 3)
+2018-07-04 22:56:31,585 INFO     Anchors: Box center_y shape = (16, 3)
+2018-07-04 22:56:31,585 INFO     Anchors: Stacked Box corner coordinates shape = (48, 4)
+2018-07-04 22:56:31,585 INFO     Anchors: running for..... scales=128, feature_map_shapes=[2 2], feature_map_strides=64
+2018-07-04 22:56:31,586 INFO     Anchors: Box width shape = (4, 3)
+2018-07-04 22:56:31,586 INFO     Anchors: Box height shape = (4, 3)
+2018-07-04 22:56:31,586 INFO     Anchors: Box center_x shape = (4, 3)
+2018-07-04 22:56:31,586 INFO     Anchors: Box center_y shape = (4, 3)
+2018-07-04 22:56:31,586 INFO     Anchors: Stacked Box corner coordinates shape = (12, 4)
+2018-07-04 22:56:31,586 INFO     Anchors: concatenated for each stage: shape = (4092, 4)
+2018-07-04 22:56:33,299 INFO     Image height = 128, width = 128 ................
+2018-07-04 22:56:33,300 INFO     Initiating FPN BOTTOM-UP .................................
+2018-07-04 22:56:33,303 INFO     Zero_padded: [None, 134, 134, 3]
+2018-07-04 22:56:33,304 INFO     STAGE 1 ...........................
+2018-07-04 22:56:33,348 INFO     Conv2D: [None, 64, 64, 64]
+2018-07-04 22:56:33,352 INFO     MaxPool2d: [None, 32, 32, 64]
+2018-07-04 22:56:33,352 INFO     STAGE 2 ...........................
+2018-07-04 22:56:33,398 INFO     res2a_branch1: [None, 32, 32, 256]
+2018-07-04 22:56:33,444 INFO     res2a_branch2a: [None, 32, 32, 64]
+2018-07-04 22:56:33,493 INFO     res2a_branch2b: [None, 32, 32, 64]
+2018-07-04 22:56:33,538 INFO     res2a_branch2c: [None, 32, 32, 256]
+2018-07-04 22:56:33,540 INFO     relu2a_branch_out: [None, 32, 32, 256]
+2018-07-04 22:56:33,592 INFO     res2b_branch2a: [None, 32, 32, 64]
+2018-07-04 22:56:33,639 INFO     res2b_branch2b: [None, 32, 32, 64]
+2018-07-04 22:56:33,690 INFO     res2b_branch2c: [None, 32, 32, 256]
+2018-07-04 22:56:33,692 INFO     relu2b_branch_out: [None, 32, 32, 256]
+2018-07-04 22:56:33,736 INFO     res2c_branch2a: [None, 32, 32, 64]
+2018-07-04 22:56:33,784 INFO     res2c_branch2b: [None, 32, 32, 64]
+2018-07-04 22:56:33,828 INFO     res2c_branch2c: [None, 32, 32, 256]
+2018-07-04 22:56:33,830 INFO     relu2c_branch_out: [None, 32, 32, 256]
+2018-07-04 22:56:33,830 INFO     STAGE 3 ...........................
+2018-07-04 22:56:33,875 INFO     res3a_branch1: [None, 16, 16, 512]
+2018-07-04 22:56:33,920 INFO     res3a_branch2a: [None, 16, 16, 128]
+2018-07-04 22:56:33,966 INFO     res3a_branch2b: [None, 16, 16, 128]
+2018-07-04 22:56:34,016 INFO     res3a_branch2c: [None, 16, 16, 512]
+2018-07-04 22:56:34,018 INFO     relu3a_branch_out: [None, 16, 16, 512]
+2018-07-04 22:56:34,063 INFO     res3b_branch2a: [None, 16, 16, 128]
+2018-07-04 22:56:34,109 INFO     res3b_branch2b: [None, 16, 16, 128]
+2018-07-04 22:56:34,154 INFO     res3b_branch2c: [None, 16, 16, 512]
+2018-07-04 22:56:34,157 INFO     relu3b_branch_out: [None, 16, 16, 512]
+2018-07-04 22:56:34,205 INFO     res3c_branch2a: [None, 16, 16, 128]
+2018-07-04 22:56:34,250 INFO     res3c_branch2b: [None, 16, 16, 128]
+2018-07-04 22:56:34,295 INFO     res3c_branch2c: [None, 16, 16, 512]
+2018-07-04 22:56:34,299 INFO     relu3c_branch_out: [None, 16, 16, 512]
+2018-07-04 22:56:34,345 INFO     res3d_branch2a: [None, 16, 16, 128]
+2018-07-04 22:56:34,392 INFO     res3d_branch2b: [None, 16, 16, 128]
+2018-07-04 22:56:34,437 INFO     res3d_branch2c: [None, 16, 16, 512]
+2018-07-04 22:56:34,439 INFO     relu3d_branch_out: [None, 16, 16, 512]
+2018-07-04 22:56:34,439 INFO     STAGE 4 ...........................
+2018-07-04 22:56:34,485 INFO     res4a_branch1: [None, 8, 8, 1024]
+2018-07-04 22:56:34,606 INFO     res4a_branch2a: [None, 8, 8, 256]
+2018-07-04 22:56:34,650 INFO     res4a_branch2b: [None, 8, 8, 256]
+2018-07-04 22:56:34,697 INFO     res4a_branch2c: [None, 8, 8, 1024]
+2018-07-04 22:56:34,699 INFO     relu4a_branch_out: [None, 8, 8, 1024]
+2018-07-04 22:56:34,743 INFO     res4b_branch2a: [None, 8, 8, 256]
+2018-07-04 22:56:34,789 INFO     res4b_branch2b: [None, 8, 8, 256]
+2018-07-04 22:56:34,834 INFO     res4b_branch2c: [None, 8, 8, 1024]
+2018-07-04 22:56:34,836 INFO     relu4b_branch_out: [None, 8, 8, 1024]
+2018-07-04 22:56:34,881 INFO     res4c_branch2a: [None, 8, 8, 256]
+2018-07-04 22:56:34,927 INFO     res4c_branch2b: [None, 8, 8, 256]
+2018-07-04 22:56:34,972 INFO     res4c_branch2c: [None, 8, 8, 1024]
+2018-07-04 22:56:34,975 INFO     relu4c_branch_out: [None, 8, 8, 1024]
+2018-07-04 22:56:35,020 INFO     res4d_branch2a: [None, 8, 8, 256]
+2018-07-04 22:56:35,065 INFO     res4d_branch2b: [None, 8, 8, 256]
+2018-07-04 22:56:35,110 INFO     res4d_branch2c: [None, 8, 8, 1024]
+2018-07-04 22:56:35,112 INFO     relu4d_branch_out: [None, 8, 8, 1024]
+2018-07-04 22:56:35,156 INFO     res4e_branch2a: [None, 8, 8, 256]
+2018-07-04 22:56:35,205 INFO     res4e_branch2b: [None, 8, 8, 256]
+2018-07-04 22:56:35,248 INFO     res4e_branch2c: [None, 8, 8, 1024]
+2018-07-04 22:56:35,250 INFO     relu4e_branch_out: [None, 8, 8, 1024]
+2018-07-04 22:56:35,297 INFO     res4f_branch2a: [None, 8, 8, 256]
+2018-07-04 22:56:35,342 INFO     res4f_branch2b: [None, 8, 8, 256]
+2018-07-04 22:56:35,386 INFO     res4f_branch2c: [None, 8, 8, 1024]
+2018-07-04 22:56:35,389 INFO     relu4f_branch_out: [None, 8, 8, 1024]
+2018-07-04 22:56:35,435 INFO     res4g_branch2a: [None, 8, 8, 256]
+2018-07-04 22:56:35,482 INFO     res4g_branch2b: [None, 8, 8, 256]
+2018-07-04 22:56:35,526 INFO     res4g_branch2c: [None, 8, 8, 1024]
+2018-07-04 22:56:35,528 INFO     relu4g_branch_out: [None, 8, 8, 1024]
+2018-07-04 22:56:35,573 INFO     res4h_branch2a: [None, 8, 8, 256]
+2018-07-04 22:56:35,619 INFO     res4h_branch2b: [None, 8, 8, 256]
+2018-07-04 22:56:35,663 INFO     res4h_branch2c: [None, 8, 8, 1024]
+2018-07-04 22:56:35,665 INFO     relu4h_branch_out: [None, 8, 8, 1024]
+2018-07-04 22:56:35,713 INFO     res4i_branch2a: [None, 8, 8, 256]
+2018-07-04 22:56:35,758 INFO     res4i_branch2b: [None, 8, 8, 256]
+2018-07-04 22:56:35,807 INFO     res4i_branch2c: [None, 8, 8, 1024]
+2018-07-04 22:56:35,810 INFO     relu4i_branch_out: [None, 8, 8, 1024]
+2018-07-04 22:56:35,855 INFO     res4j_branch2a: [None, 8, 8, 256]
+2018-07-04 22:56:35,994 INFO     res4j_branch2b: [None, 8, 8, 256]
+2018-07-04 22:56:36,038 INFO     res4j_branch2c: [None, 8, 8, 1024]
+2018-07-04 22:56:36,041 INFO     relu4j_branch_out: [None, 8, 8, 1024]
+2018-07-04 22:56:36,091 INFO     res4k_branch2a: [None, 8, 8, 256]
+2018-07-04 22:56:36,137 INFO     res4k_branch2b: [None, 8, 8, 256]
+2018-07-04 22:56:36,182 INFO     res4k_branch2c: [None, 8, 8, 1024]
+2018-07-04 22:56:36,184 INFO     relu4k_branch_out: [None, 8, 8, 1024]
+2018-07-04 22:56:36,230 INFO     res4l_branch2a: [None, 8, 8, 256]
+2018-07-04 22:56:36,280 INFO     res4l_branch2b: [None, 8, 8, 256]
+2018-07-04 22:56:36,324 INFO     res4l_branch2c: [None, 8, 8, 1024]
+2018-07-04 22:56:36,327 INFO     relu4l_branch_out: [None, 8, 8, 1024]
+2018-07-04 22:56:36,372 INFO     res4m_branch2a: [None, 8, 8, 256]
+2018-07-04 22:56:36,418 INFO     res4m_branch2b: [None, 8, 8, 256]
+2018-07-04 22:56:36,462 INFO     res4m_branch2c: [None, 8, 8, 1024]
+2018-07-04 22:56:36,465 INFO     relu4m_branch_out: [None, 8, 8, 1024]
+2018-07-04 22:56:36,511 INFO     res4n_branch2a: [None, 8, 8, 256]
+2018-07-04 22:56:36,556 INFO     res4n_branch2b: [None, 8, 8, 256]
+2018-07-04 22:56:36,602 INFO     res4n_branch2c: [None, 8, 8, 1024]
+2018-07-04 22:56:36,605 INFO     relu4n_branch_out: [None, 8, 8, 1024]
+2018-07-04 22:56:36,653 INFO     res4o_branch2a: [None, 8, 8, 256]
+2018-07-04 22:56:36,699 INFO     res4o_branch2b: [None, 8, 8, 256]
+2018-07-04 22:56:36,744 INFO     res4o_branch2c: [None, 8, 8, 1024]
+2018-07-04 22:56:36,747 INFO     relu4o_branch_out: [None, 8, 8, 1024]
+2018-07-04 22:56:36,792 INFO     res4p_branch2a: [None, 8, 8, 256]
+2018-07-04 22:56:36,837 INFO     res4p_branch2b: [None, 8, 8, 256]
+2018-07-04 22:56:36,882 INFO     res4p_branch2c: [None, 8, 8, 1024]
+2018-07-04 22:56:36,884 INFO     relu4p_branch_out: [None, 8, 8, 1024]
+2018-07-04 22:56:36,929 INFO     res4q_branch2a: [None, 8, 8, 256]
+2018-07-04 22:56:36,976 INFO     res4q_branch2b: [None, 8, 8, 256]
+2018-07-04 22:56:37,020 INFO     res4q_branch2c: [None, 8, 8, 1024]
+2018-07-04 22:56:37,023 INFO     relu4q_branch_out: [None, 8, 8, 1024]
+2018-07-04 22:56:37,068 INFO     res4r_branch2a: [None, 8, 8, 256]
+2018-07-04 22:56:37,114 INFO     res4r_branch2b: [None, 8, 8, 256]
+2018-07-04 22:56:37,158 INFO     res4r_branch2c: [None, 8, 8, 1024]
+2018-07-04 22:56:37,160 INFO     relu4r_branch_out: [None, 8, 8, 1024]
+2018-07-04 22:56:37,207 INFO     res4s_branch2a: [None, 8, 8, 256]
+2018-07-04 22:56:37,252 INFO     res4s_branch2b: [None, 8, 8, 256]
+2018-07-04 22:56:37,296 INFO     res4s_branch2c: [None, 8, 8, 1024]
+2018-07-04 22:56:37,300 INFO     relu4s_branch_out: [None, 8, 8, 1024]
+2018-07-04 22:56:37,344 INFO     res4t_branch2a: [None, 8, 8, 256]
+2018-07-04 22:56:37,391 INFO     res4t_branch2b: [None, 8, 8, 256]
+2018-07-04 22:56:37,552 INFO     res4t_branch2c: [None, 8, 8, 1024]
+2018-07-04 22:56:37,555 INFO     relu4t_branch_out: [None, 8, 8, 1024]
+2018-07-04 22:56:37,601 INFO     res4u_branch2a: [None, 8, 8, 256]
+2018-07-04 22:56:37,649 INFO     res4u_branch2b: [None, 8, 8, 256]
+2018-07-04 22:56:37,697 INFO     res4u_branch2c: [None, 8, 8, 1024]
+2018-07-04 22:56:37,700 INFO     relu4u_branch_out: [None, 8, 8, 1024]
+2018-07-04 22:56:37,754 INFO     res4v_branch2a: [None, 8, 8, 256]
+2018-07-04 22:56:37,806 INFO     res4v_branch2b: [None, 8, 8, 256]
+2018-07-04 22:56:37,855 INFO     res4v_branch2c: [None, 8, 8, 1024]
+2018-07-04 22:56:37,857 INFO     relu4v_branch_out: [None, 8, 8, 1024]
+2018-07-04 22:56:37,904 INFO     res4w_branch2a: [None, 8, 8, 256]
+2018-07-04 22:56:37,949 INFO     res4w_branch2b: [None, 8, 8, 256]
+2018-07-04 22:56:37,994 INFO     res4w_branch2c: [None, 8, 8, 1024]
+2018-07-04 22:56:37,997 INFO     relu4w_branch_out: [None, 8, 8, 1024]
+2018-07-04 22:56:37,997 INFO     STAGE 5 ...........................
+2018-07-04 22:56:38,040 INFO     res5a_branch1: [None, 4, 4, 2048]
+2018-07-04 22:56:38,088 INFO     res5a_branch2a: [None, 4, 4, 512]
+2018-07-04 22:56:38,133 INFO     res5a_branch2b: [None, 4, 4, 512]
+2018-07-04 22:56:38,180 INFO     res5a_branch2c: [None, 4, 4, 2048]
+2018-07-04 22:56:38,183 INFO     relu5a_branch_out: [None, 4, 4, 2048]
+2018-07-04 22:56:38,228 INFO     res5b_branch2a: [None, 4, 4, 512]
+2018-07-04 22:56:38,273 INFO     res5b_branch2b: [None, 4, 4, 512]
+2018-07-04 22:56:38,318 INFO     res5b_branch2c: [None, 4, 4, 2048]
+2018-07-04 22:56:38,320 INFO     relu5b_branch_out: [None, 4, 4, 2048]
+2018-07-04 22:56:38,365 INFO     res5c_branch2a: [None, 4, 4, 512]
+2018-07-04 22:56:38,412 INFO     res5c_branch2b: [None, 4, 4, 512]
+2018-07-04 22:56:38,457 INFO     res5c_branch2c: [None, 4, 4, 2048]
+2018-07-04 22:56:38,459 INFO     relu5c_branch_out: [None, 4, 4, 2048]
+2018-07-04 22:56:38,459 INFO     Initiating FPN TOP-DOWN .................................
+2018-07-04 22:56:38,480 INFO     FPN - M5: [None, 4, 4, 256]
+2018-07-04 22:56:38,512 INFO     FPN - M4: [None, 8, 8, 256]
+2018-07-04 22:56:38,545 INFO     FPN - M3: [None, 16, 16, 256]
+2018-07-04 22:56:38,583 INFO     FPN - M2: [None, 32, 32, 256]
+2018-07-04 22:56:38,676 INFO     FPN - P2 = [None, 32, 32, 256], P3 = [None, 16, 16, 256], P4 = [None, 8, 8, 256], P5 = [None, 4, 4, 256], P6 = [None, 2, 2, 256]:
+2018-07-04 22:56:38,700 INFO     RPN - Shared_conv: [None, 32, 32, 512]
+2018-07-04 22:56:38,722 INFO     RPN - Conv Class: [None, 32, 32, 6]
+2018-07-04 22:56:38,734 INFO     rpn_class_logits: [None, None, 2]
+2018-07-04 22:56:38,752 INFO     rpn_class_probs: [None, None, 2]
+2018-07-04 22:56:38,773 INFO     RPN - Conv Bbox: [None, 32, 32, 12]
+2018-07-04 22:56:38,786 INFO     rpn_bbox: [None, None, 4]
+2018-07-04 22:56:38,791 INFO     RPN - Shared_conv: [None, 16, 16, 512]
+2018-07-04 22:56:38,794 INFO     RPN - Conv Class: [None, 16, 16, 6]
+2018-07-04 22:56:38,808 INFO     rpn_class_logits: [None, None, 2]
+2018-07-04 22:56:38,825 INFO     rpn_class_probs: [None, None, 2]
+2018-07-04 22:56:38,829 INFO     RPN - Conv Bbox: [None, 16, 16, 12]
+2018-07-04 22:56:38,841 INFO     rpn_bbox: [None, None, 4]
+2018-07-04 22:56:38,845 INFO     RPN - Shared_conv: [None, 8, 8, 512]
+2018-07-04 22:56:38,849 INFO     RPN - Conv Class: [None, 8, 8, 6]
+2018-07-04 22:56:38,861 INFO     rpn_class_logits: [None, None, 2]
+2018-07-04 22:56:38,879 INFO     rpn_class_probs: [None, None, 2]
+2018-07-04 22:56:38,884 INFO     RPN - Conv Bbox: [None, 8, 8, 12]
+2018-07-04 22:56:38,896 INFO     rpn_bbox: [None, None, 4]
+2018-07-04 22:56:38,901 INFO     RPN - Shared_conv: [None, 4, 4, 512]
+2018-07-04 22:56:38,904 INFO     RPN - Conv Class: [None, 4, 4, 6]
+2018-07-04 22:56:38,917 INFO     rpn_class_logits: [None, None, 2]
+2018-07-04 22:56:38,933 INFO     rpn_class_probs: [None, None, 2]
+2018-07-04 22:56:38,936 INFO     RPN - Conv Bbox: [None, 4, 4, 12]
+2018-07-04 22:56:38,950 INFO     rpn_bbox: [None, None, 4]
+2018-07-04 22:56:38,954 INFO     RPN - Shared_conv: [None, 2, 2, 512]
+2018-07-04 22:56:38,957 INFO     RPN - Conv Class: [None, 2, 2, 6]
+2018-07-04 22:56:38,970 INFO     rpn_class_logits: [None, None, 2]
+2018-07-04 22:56:38,988 INFO     rpn_class_probs: [None, None, 2]
+2018-07-04 22:56:38,992 INFO     RPN - Conv Bbox: [None, 2, 2, 12]
+2018-07-04 22:56:39,004 INFO     rpn_bbox: [None, None, 4]
+2018-07-04 22:56:39,024 INFO     Foreground_probs shape: (?, ?)
+2018-07-04 22:56:39,026 INFO     bbox_delta shape: (?, ?, 4)
+2018-07-04 22:56:39,026 INFO     anchors shape: (?, ?, 4)
+2018-07-04 22:56:39,035 INFO     max_anc_before_nms shape: Tensor("Minimum:0", shape=(), dtype=int32)
+2018-07-04 22:56:39,037 INFO     ix shape: [None, None]
+2018-07-04 22:56:39,078 INFO     scores shape = (?, ?)
+2018-07-04 22:56:39,080 INFO     Box delta shape = (?, ?, 4)
+2018-07-04 22:56:39,081 INFO     anchors shape = (?, ?, 4)
+2018-07-04 22:56:39,237 INFO     bx_nw shape: [1, None, None]
+2018-07-04 22:56:40,238 INFO     Anchors: running for..... scales=8, feature_map_shapes=[32 32], feature_map_strides=4
+2018-07-04 22:56:40,238 INFO     Anchors: Box width shape = (1024, 3)
+2018-07-04 22:56:40,239 INFO     Anchors: Box height shape = (1024, 3)
+2018-07-04 22:56:40,239 INFO     Anchors: Box center_x shape = (1024, 3)
+2018-07-04 22:56:40,239 INFO     Anchors: Box center_y shape = (1024, 3)
+2018-07-04 22:56:40,239 INFO     Anchors: Stacked Box corner coordinates shape = (3072, 4)
+2018-07-04 22:56:40,239 INFO     Anchors: running for..... scales=16, feature_map_shapes=[16 16], feature_map_strides=8
+2018-07-04 22:56:40,240 INFO     Anchors: Box width shape = (256, 3)
+2018-07-04 22:56:40,240 INFO     Anchors: Box height shape = (256, 3)
+2018-07-04 22:56:40,240 INFO     Anchors: Box center_x shape = (256, 3)
+2018-07-04 22:56:40,240 INFO     Anchors: Box center_y shape = (256, 3)
+2018-07-04 22:56:40,240 INFO     Anchors: Stacked Box corner coordinates shape = (768, 4)
+2018-07-04 22:56:40,240 INFO     Anchors: running for..... scales=32, feature_map_shapes=[8 8], feature_map_strides=16
+2018-07-04 22:56:40,240 INFO     Anchors: Box width shape = (64, 3)
+2018-07-04 22:56:40,240 INFO     Anchors: Box height shape = (64, 3)
+2018-07-04 22:56:40,240 INFO     Anchors: Box center_x shape = (64, 3)
+2018-07-04 22:56:40,241 INFO     Anchors: Box center_y shape = (64, 3)
+2018-07-04 22:56:40,241 INFO     Anchors: Stacked Box corner coordinates shape = (192, 4)
+2018-07-04 22:56:40,241 INFO     Anchors: running for..... scales=64, feature_map_shapes=[4 4], feature_map_strides=32
+2018-07-04 22:56:40,241 INFO     Anchors: Box width shape = (16, 3)
+2018-07-04 22:56:40,241 INFO     Anchors: Box height shape = (16, 3)
+2018-07-04 22:56:40,241 INFO     Anchors: Box center_x shape = (16, 3)
+2018-07-04 22:56:40,241 INFO     Anchors: Box center_y shape = (16, 3)
+2018-07-04 22:56:40,241 INFO     Anchors: Stacked Box corner coordinates shape = (48, 4)
+2018-07-04 22:56:40,242 INFO     Anchors: running for..... scales=128, feature_map_shapes=[2 2], feature_map_strides=64
+2018-07-04 22:56:40,242 INFO     Anchors: Box width shape = (4, 3)
+2018-07-04 22:56:40,242 INFO     Anchors: Box height shape = (4, 3)
+2018-07-04 22:56:40,242 INFO     Anchors: Box center_x shape = (4, 3)
+2018-07-04 22:56:40,242 INFO     Anchors: Box center_y shape = (4, 3)
+2018-07-04 22:56:40,242 INFO     Anchors: Stacked Box corner coordinates shape = (12, 4)
+2018-07-04 22:56:40,242 INFO     Anchors: concatenated for each stage: shape = (4092, 4)
+2018-07-04 22:56:40,242 INFO     Anchors: Broadcast to num_batches: shape = (1, 4092, 4)

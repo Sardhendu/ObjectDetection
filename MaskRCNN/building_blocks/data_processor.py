@@ -134,7 +134,7 @@ class PreprareTrainData():
     def extract_bboxes(self, mask):
         '''
         :param mask: [height, width, num_objects]
-        :return:     Given a mask outputs a bounding box with "lower left" and "upper right" coordinites
+        :return:     Given a mask, outputs a bounding box with "lower left" and "upper right" coordinates
         '''
         bboxes = np.zeros([mask.shape[-1], 4], dtype=np.int32)
         shift = [0, 0, 1, 1]
@@ -143,7 +143,7 @@ class PreprareTrainData():
             horizontal_coord = np.where(np.any(msk, axis=0))[0]
             vertical_coord = np.where(np.any(msk, axis=1))[0]
             
-            if len(horizontal_coord) >= 0 and len(horizontal_coord) >= 0:
+            if len(horizontal_coord) >= 0 and len(vertical_coord) >= 0:
                 x1, x2 = horizontal_coord[[0, -1]]
                 y1, y2 = vertical_coord[[0, -1]]
                 
@@ -177,7 +177,7 @@ class PreprareTrainData():
     def build_rpn_targets(self, batch_gt_boxes):
         ''' Building RPN target for classification
         
-        RPN produces two outputs 1) rpn_bboxes, 2) rpn_class_probs. The rpn_bboxes
+        RPN produces two outputs 1) rpn_bboxes, 2) rpn_class_probs.
         
         Suppose we have a feature_maps: [32,32], [16,16], [8,8], [4,4], [2,2] and num_anchors_per_pixel=3
         then, Anchor shape = [32x32x3 + 16x16x3 + .....+ 2*2*3, 4] = [4092, 4],
@@ -240,17 +240,21 @@ class PreprareTrainData():
         # print(rpn_target_class)
         
         # The Positive and negative anchors should be balanced, otherwise the model may get biased.
+        # TODO: Even though the max_rpn_target is 256, it may be the case that we were able to find 128 -ve class but only 1 +ve class. This would highly bias the network, check if this is the case even when using pretrained resnet weights.
+        
         idx = np.where(rpn_target_class == 1)[0]
-        # print('pos_idx, ', len(idx))
+        print('pos_idx, ', len(idx))
         extra = len(idx) - self.max_rpn_targets // 2
+        # print('extra 1 ', extra)
         if (extra) > 0:
             rpn_target_class[np.random.choice(idx, extra, replace=False)] = 0
 
         idx = np.where(rpn_target_class == -1)[0]
-        # print('neg_idx, ', len(idx))
+        print('neg_idx, ', len(idx), self.max_rpn_targets // 2)
         extra = len(idx) - self.max_rpn_targets // 2
-        if (len(idx) - self.max_rpn_targets // 2) > 0:
+        if extra > 0:
             rpn_target_class[np.random.choice(idx, extra, replace=False)] = 0
+        # print('extra -1 ', extra)
         
         # REGRESSION PART:
         rpn_target_bbox = np.zeros((self.max_rpn_targets, 4))
