@@ -85,7 +85,7 @@ class RPN():
 
 
         Outputs:
-        This module generates4 values
+        This module generates 4 values
         self.rpn_bbox = [batch_size, h, w, (dy, dx, log(dh), log(dw))]
             1. dy = center y pixel
             2. dx = center x pixel

@@ -103,7 +103,14 @@ def process_images(conf, list_of_images, list_of_image_ids):
 
 
 def get_iou_without_loop(proposal_per_img, gt_boxes_per_img):
+    '''Get Intersection over union with tensorflow
     
+    :param proposal_per_img:
+    :param gt_boxes_per_img:
+    :return:                    nxm matrix
+                                where n = num active proposals per image
+                                      m = num active gt_boxes_per_image
+    '''
     # Repeat the proposals "gt_boxes" time
     proposal_ = tf.reshape(      # Reshapes to original shape but repeating values
                          tf.tile(       # repeats the values horizontally
@@ -163,16 +170,16 @@ def build_detection_target(proposals, gt_bboxes):
     gt_boxes = tf.boolean_mask(gt_bboxes, non_zeros, name='gt_box_non_zeros')
     
     # Proposals and gt_bboxes are in (y1, x1, y2, x2) coordinates system, we directly get the intersection over union
-    
-
-    # for i in range(0, batch_size):
-    #     prop_, gt_boxes_ = get_iou_without_loop(prop[i], gt_boxes[i])
-    #     break
-        # batch_proposals.append(prop_)
-        # batch_gt_bboxes.append(gt_boxes_)
-
+    # Get the Intersection over union, iou
     iou = get_iou_without_loop(prop, gt_boxes)
-    return prop, gt_boxes, iou
+    
+    # Get Positive >0.5 and negative <0.3 anchors
+    pos_indices = tf.where(iou >= 0.05)[:, 0]
+    neg_indices = tf.where(iou < 0.05)[:, 0]
+    
+    # np.array()
+    
+    return prop, gt_boxes, iou, pos_indices, neg_indices
 
 
 

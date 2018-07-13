@@ -172,7 +172,7 @@ class Train():
         
         ######### ROUGH ###########################
         from MaskRCNN.building_blocks import data_processor
-        proposal__ = np.array([[[1, 10, 1, 10], [23, 54, 66, 77], [0, 0, 0, 0]],
+        proposal__ = np.array([[[1, 10, 1, 10], [23, 54, 155, 177], [0, 0, 0, 0]],
                                [[3, 2, 2, 2], [0, 0, 0, 0], [0, 0, 0, 0]]])
         
         # proposals_ = tf.placeholder(shape=(2, 3, 4), dtype=tf.float32, name='proposals')
@@ -181,7 +181,7 @@ class Train():
         batch_proposals = []
         batch_gt_boxes = []
         for i in range(0, 2):
-            prop, gt_boxes, gt_boxes_per_img = data_processor.build_detection_target(
+            prop, gt_boxes, gt_boxes_per_img, pos_indices, neg_indices = data_processor.build_detection_target(
                     proposals_[i], batch_gt_bboxes[i])
 
             break
@@ -194,12 +194,16 @@ class Train():
 
         with tf.Session() as sess:
             sess.run(tf.global_variables_initializer())
-            prop_, gt_boxes_, gt_boxes_per_img_ = sess.run([prop, gt_boxes, gt_boxes_per_img], feed_dict={proposals_: proposal__, })
+            prop_, gt_boxes_, gt_boxes_per_img_, pos_indices_, neg_indices_ = sess.run([prop, gt_boxes, gt_boxes_per_img, pos_indices, neg_indices], feed_dict={proposals_: proposal__, })
             print(prop_)
             print('')
             print(gt_boxes_)
             print('')
             print(gt_boxes_per_img_)
+            print('')
+            print (pos_indices_)
+            print('')
+            print(neg_indices_)
     
     
     
