@@ -2,7 +2,7 @@
 
 
 import numpy as np
-
+import tensorflow as tf
 from skimage import transform
 import scipy
 import logging
@@ -12,6 +12,8 @@ import logging
 logging.basicConfig(level=logging.DEBUG, filename="logfile.log", filemode="w",
                     format="%(asctime)-15s %(levelname)-8s %(message)s")
 
+
+        
 
 def intersection_over_union(box, reference_boxes, box_area, reference_box_areas):
     intersection_y1 = np.maximum(box[0], reference_boxes[:, 0])

@@ -52,6 +52,13 @@ def set_value(sess, tensor_variable, value):
     return sess.run(assign_op, feed_dict={assign_placeholder: value})
 
 
+
+def print_trainable_variable_names(sess):
+    variables_names = [v.name for v in tf.trainable_variables()]
+    values = sess.run(variables_names)
+    for k, v in zip(variables_names, values):
+        print ("Variable: ", k)
+        print ("Shape: ", v.shape)
 def print_pretrained_weights(weights_path, search_key=None):
     pretrained_weights = h5py.File(weights_path, mode='r')
     
@@ -66,20 +73,42 @@ def print_pretrained_weights(weights_path, search_key=None):
                     for k2, v2 in v1.items():
                         print (k2)
 
-def set_pretrained_weights(sess, weights_path):
+def set_pretrained_weights(sess, weights_path, train_nets=None):
+    '''
+    
+    :param sess:
+    :param weights_path:
+    :param train_nets:      Options, None, 'heads', 'full'
+    :return:
+    '''
+    
+    if train_nets == 'heads':
+        trainable_layers = ['fpn_c5p5', 'fpn_c4p4', 'fpn_c3p3', 'fpn_c2p2', 'fpn_p2', 'fpn_p3', 'fpn_p4', 'fpn_p5', 'rpn_conv_shared', 'rpn_class_raw', 'rpn_bbox_pred', 'mrcnn_class_conv1', 'mrcnn_class_bn1', 'mrcnn_class_conv2', 'mrcnn_class_bn2', 'mrcnn_class_logits', 'mrcnn_bbox_fc']
+    
     pretrained_weights = h5py.File(weights_path, mode='r')
+    
+    trainable_variables = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES)
+
+    # print('trainable_variables ', trainable_variables)
+    # Get only the trainable
 
     if h5py is None:
         raise ImportError('load_weights requires h5py.')
     
-    for var in tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES):
+    for var in trainable_variables:
         scope_name, graph_var_name = var.name.split('/')
-
+        # print('dsadasds ', scope_name)
+        
+        if scope_name in trainable_layers:
+            continue
+        
         try:
             if scope_name.split('_')[0] == 'rpn':
                 pretrained_var_name = pretrained_weights['rpn_model'][scope_name]
             else:
                 pretrained_var_name = pretrained_weights[scope_name][scope_name]
+                
+            print('popopopopopopopop', pretrained_var_name)
 
             if graph_var_name == 'kernel:0':
                 val = pretrained_var_name['kernel:0']
@@ -112,6 +141,8 @@ def set_pretrained_weights(sess, weights_path):
                 var = None
 
             if val.value.shape != var.shape:
+                print ('Variable: ', var)
+                print(val.value.shape, var.shape)
                 raise ValueError('Mismatch is shape of pretrained weights and network defined weights')
             #
             # if graph_var_name == 'b:0':

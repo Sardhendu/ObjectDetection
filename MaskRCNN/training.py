@@ -34,8 +34,9 @@ logging.basicConfig(level=logging.DEBUG, filename="logfile.log", filemode="w",
 
 
 class Train():
-    def __init__(self, conf, batch_size):
+    def __init__(self, conf, batch_size, pretrained_weights_path):
         self.batch_size = batch_size
+        self.pretrained_weights_path = pretrained_weights_path
         self.conf = conf
         print (self.conf)
     
@@ -57,8 +58,7 @@ class Train():
         print (transformed_images.shape, image_metas.shape, image_windows.shape,
                anchors.shape)
         
-        return \
-        (batch_images, batch_gt_masks, batch_gt_class_ids, batch_gt_bboxes, batch_image_metas, batch_rpn_target_class,
+        return (batch_images, batch_gt_masks, batch_gt_class_ids, batch_gt_bboxes, batch_image_metas, batch_rpn_target_class,
         batch_rpn_target_bbox, anchors)
     
     def get_network_inputs(self):
@@ -137,7 +137,7 @@ class Train():
         # TODO: Create RPN LOSS
         # RPN has two losses 1) Classification loss and 2) Regularization
         rpn_class_loss = Loss.rpn_class_loss(rpn_target_class, rpn_pred_logits)
-        rpn_box_loss = Loss.rpn_box_loss(rpn_target_bbox, rpn_pred_bbox, rpn_target_class, batch_size=1)
+        rpn_target_bbox_nopad, rpn_pred_box_pos = Loss.rpn_box_loss(rpn_target_bbox, rpn_pred_bbox, rpn_target_class, batch_size=1)
         
         # TODO: DETECTION
         
@@ -145,69 +145,139 @@ class Train():
         
         return (fpn_graph, rpn_pred_logits, rpn_pred_probs, rpn_pred_bbox, proposals,
                 mrcnn_graph, xIN, anchors, rpn_target_class, rpn_target_bbox,
-                rpn_class_loss, rpn_box_loss)
+                rpn_class_loss, rpn_target_bbox_nopad, rpn_pred_box_pos)
     
     def exec_sess(self, data_dict, image_ids):
         # TODO: Inputs anchors and xIN
         tf.reset_default_graph()
         
-        # BUILD THE GRAPH
-        (fpn_graph, rpn_pred_logits, rpn_pred_probs, rpn_pred_bbox, proposals,
-                mrcnn_graph, xIN, anchors, rpn_target_class, rpn_target_bbox,
-                rpn_class_loss, rpn_box_loss) = self.build_train_graph()
+        # # BUILD THE GRAPH
+        # (fpn_graph, rpn_pred_logits, rpn_pred_probs, rpn_pred_bbox, proposals,
+        #         mrcnn_graph, xIN, anchors, rpn_target_class, rpn_target_bbox,
+        #         rpn_class_loss, rpn_target_bbox_nopad, rpn_pred_box_pos) = self.build_train_graph()
         
         # GET INPUT DATA
         batch_images, batch_gt_masks, batch_gt_class_ids, batch_gt_bboxes, batch_image_metas, batch_rpn_target_class, \
         batch_rpn_target_bbox, anchors_ = self.transform_images(data_dict, image_ids)
         
-        print('batch_rpn_target_class ', batch_rpn_target_class)
+        batch_active_class_ids = batch_image_metas[:,-4:]  # 1 corresponds to the active level
         
+        print('batch_active_class_ids', batch_active_class_ids)
+        print('batch_rpn_target_class ', batch_rpn_target_class.shape)
+        
+        
+        
+        
+        
+        
+        ######### ROUGH ###########################
+        from MaskRCNN.building_blocks import data_processor
+        proposal__ = np.array([[[1, 10, 1, 10], [23, 54, 66, 77], [0, 0, 0, 0]],
+                               [[3, 2, 2, 2], [0, 0, 0, 0], [0, 0, 0, 0]]])
+        
+        # proposals_ = tf.placeholder(shape=(2, 3, 4), dtype=tf.float32, name='proposals')
+        proposals_ = tf.placeholder(shape=(2, 3, 4), dtype=tf.float32, name='proposals')
+
+        batch_proposals = []
+        batch_gt_boxes = []
+        for i in range(0, 2):
+            prop, gt_boxes, gt_boxes_per_img = data_processor.build_detection_target(
+                    proposals_[i], batch_gt_bboxes[i])
+
+            break
+            # batch_proposals.append(prop)
+
+        print(proposal__.shape)
+        print(batch_gt_bboxes.shape)
+        # print(batch_gt_bboxes)
+        
+
         with tf.Session() as sess:
             sess.run(tf.global_variables_initializer())
-            (rpn_pred_logits_, rpn_pred_probs_, rpn_pred_bbox_, proposals_, mrcnn_class_probs_, mrcnn_bbox_) = sess.run([
-                            rpn_pred_logits,
-                            rpn_pred_probs,
-                            rpn_pred_bbox,
-                            proposals,
-                            mrcnn_graph['mrcnn_class_probs'],
-                            mrcnn_graph['mrcnn_bbox']],
-                    feed_dict={xIN: batch_images, anchors: anchors_})
-            
-            print('Max and Min Proposals, ', np.amax(proposals_), np.amin(proposals_))
-            print('Num NaN present in Proposals ', np.sum(np.isnan(proposals_)))
-            
-            print('(MRCNN) proposals (shape) ', proposals_.shape)
-            
-            # print(rpn_class_probs_.shape, rpn_bbox_.shape, mrcnn_class_probs_.shape, mrcnn_bbox_.shape)
-            
-            print('rpn_pred_logits_.shape ', rpn_pred_logits_.shape)
+            prop_, gt_boxes_, gt_boxes_per_img_ = sess.run([prop, gt_boxes, gt_boxes_per_img], feed_dict={proposals_: proposal__, })
+            print(prop_)
             print('')
-            print ('rpn_bbox_.shape ', rpn_pred_bbox_.shape)
+            print(gt_boxes_)
             print('')
-            print ('mrcnn_class_probs_.shape ', mrcnn_class_probs_.shape)
-            print ('')
-            print('mrcnn_bbox_.shape ', mrcnn_bbox_.shape)
-            
-            loss = sess.run(rpn_class_loss,
-                            feed_dict={
-                                rpn_target_class: batch_rpn_target_class, rpn_pred_logits:rpn_pred_logits_
-                            })
-
-            loss2 = sess.run(rpn_box_loss,
-                            feed_dict={
-                                rpn_target_class: batch_rpn_target_class,
-                                rpn_target_bbox: batch_rpn_target_bbox,
-                                rpn_pred_bbox: rpn_pred_bbox_
-                            })
-            
-            print(loss)
-            print ('')
-            print(loss2)
+            print(gt_boxes_per_img_)
+    
+    
+    
+        ##########################################
+        
+        
+        
+        
+        
+        # with tf.Session() as sess:
+        #     sess.run(tf.global_variables_initializer())
+        #
+        #     # PRINT ALL THE TRAINING VARIABLES
+        #     load_params.print_trainable_variable_names(sess)
+        #
+        #     # GET PRETRAINED WEIGHTS
+        #     if self.pretrained_weights_path:
+        #         load_params.set_pretrained_weights(sess, self.pretrained_weights_path,
+        #                                            train_nets='heads')
+        #
+        #     (rpn_pred_logits_, rpn_pred_probs_, rpn_pred_bbox_, proposals_, mrcnn_class_logits_, mrcnn_class_probs_, mrcnn_bbox_) = sess.run([
+        #                     rpn_pred_logits,
+        #                     rpn_pred_probs,
+        #                     rpn_pred_bbox,
+        #                     proposals,
+        #                     mrcnn_graph['mrcnn_class_logits'],
+        #                     mrcnn_graph['mrcnn_class_probs'],
+        #                     mrcnn_graph['mrcnn_bbox']],
+        #             feed_dict={xIN: batch_images, anchors: anchors_})
+        #
+        #     print('Max and Min Proposals, ', np.amax(proposals_), np.amin(proposals_))
+        #     print('Num NaN present in Proposals ', np.sum(np.isnan(proposals_)))
+        #
+        #     print('(MRCNN) proposals (shape) ', proposals_.shape)
+        #
+        #     # print(rpn_class_probs_.shape, rpn_bbox_.shape, mrcnn_class_probs_.shape, mrcnn_bbox_.shape)
+        #
+        #     print('rpn_pred_logits_.shape ', rpn_pred_logits_.shape)
+        #     print('')
+        #     print ('rpn_bbox_.shape ', rpn_pred_bbox_.shape)
+        #     print('')
+        #     print ('mrcnn_class_probs_.shape ', mrcnn_class_probs_.shape)
+        #     print ('')
+        #     print('mrcnn_bbox_.shape ', mrcnn_bbox_.shape)
+        #
+        #     rpn_class_loss_ = sess.run(rpn_class_loss,
+        #                     feed_dict={
+        #                         rpn_target_class: batch_rpn_target_class, rpn_pred_logits:rpn_pred_logits_
+        #                     })
+        #
+        #     _,rpn_box_loss_ = sess.run([rpn_target_bbox_nopad, rpn_pred_box_pos],
+        #                     feed_dict={
+        #                         rpn_target_class: batch_rpn_target_class,
+        #                         rpn_target_bbox: batch_rpn_target_bbox,
+        #                         rpn_pred_bbox: rpn_pred_bbox_
+        #                     })
+        #
+        #     print('mrcnn_class_logits_ ', mrcnn_class_logits_.shape, mrcnn_class_logits_)
+        #
+        #     print(rpn_class_loss_)
+        #
+        #     Loss.mrcnn_class_loss(mrcnn_target_class=batch_gt_class_ids,
+        #                           mrcnn_pred_logits=mrcnn_class_logits_,
+        #                           batch_active_class_ids=batch_active_class_ids,
+        #                           sess=sess)
+        #
+        
+        
+        
+        
+        ##### ROUGH
+            # print('')
+            # print(rpn_box_loss_)
             # print('')
             # print(batch_rpn_target_bbox)
             # print('')
-            
-            
+
+
             # for i in range(0,10):
             #     print(batch_rpn_target_bbox[:,i,:])
             #
@@ -365,7 +435,7 @@ class Train():
 #                          feature_maps=[fpn_graph['fpn_p2'], fpn_graph['fpn_p3'],
 #                                        fpn_graph['fpn_p4'], fpn_graph['fpn_p5']],
 #                          type='keras', DEBUG=False).get_mrcnn_graph()
-#
+#         # TODO: Set trainable weights for only non-trainable parameters
 #         # TODO: DETECTION LAYER
 #         # RPN has two losses 1) Classification loss and 2) Regularization
 #
@@ -421,3 +491,1350 @@ class Train():
 #         #     print('')
 #         #     print(target_class_)
 #         #
+
+
+
+'''
+Traceback (most recent call last):
+  File "/Users/sam/All-Program/App/ObjectDetection/MaskRCNN/shapes.py", line 233, in <module>
+    obj_trn.exec_sess(data_dict, image_ids)
+  File "/Users/sam/All-Program/App/ObjectDetection/MaskRCNN/training.py", line 171, in exec_sess
+    load_params.set_pretrained_weights(sess, self.pretrained_weights_path)
+  File "/Users/sam/All-Program/App/ObjectDetection/MaskRCNN/building_blocks/load_params.py", line 117, in set_pretrained_weights
+    raise ValueError('Mismatch is shape of pretrained weights and network defined weights')
+ValueError: Mismatch is shape of pretrained weights and network defined weights
+Variable:  <tf.Variable 'mrcnn_class_logits/kernel:0' shape=(1024, 4) dtype=float32_ref>
+(1024, 81) (1024, 4)
+
+
+
+
+
+
+
+
+Variable:  conv1/kernel:0
+Shape:  (7, 7, 3, 64)
+Variable:  conv1/bias:0
+Shape:  (64,)
+Variable:  bn_conv1/gamma:0
+Shape:  (64,)
+Variable:  bn_conv1/beta:0
+Shape:  (64,)
+Variable:  bn_conv1/moving_mean:0
+Shape:  (64,)
+Variable:  bn_conv1/moving_variance:0
+Shape:  (64,)
+Variable:  res2a_branch1/kernel:0
+Shape:  (1, 1, 64, 256)
+Variable:  res2a_branch1/bias:0
+Shape:  (256,)
+Variable:  bn2a_branch1/gamma:0
+Shape:  (256,)
+Variable:  bn2a_branch1/beta:0
+Shape:  (256,)
+Variable:  bn2a_branch1/moving_mean:0
+Shape:  (256,)
+Variable:  bn2a_branch1/moving_variance:0
+Shape:  (256,)
+Variable:  res2a_branch2a/kernel:0
+Shape:  (1, 1, 64, 64)
+Variable:  res2a_branch2a/bias:0
+Shape:  (64,)
+Variable:  bn2a_branch2a/gamma:0
+Shape:  (64,)
+Variable:  bn2a_branch2a/beta:0
+Shape:  (64,)
+Variable:  bn2a_branch2a/moving_mean:0
+Shape:  (64,)
+Variable:  bn2a_branch2a/moving_variance:0
+Shape:  (64,)
+Variable:  res2a_branch2b/kernel:0
+Shape:  (3, 3, 64, 64)
+Variable:  res2a_branch2b/bias:0
+Shape:  (64,)
+Variable:  bn2a_branch2b/gamma:0
+Shape:  (64,)
+Variable:  bn2a_branch2b/beta:0
+Shape:  (64,)
+Variable:  bn2a_branch2b/moving_mean:0
+Shape:  (64,)
+Variable:  bn2a_branch2b/moving_variance:0
+Shape:  (64,)
+Variable:  res2a_branch2c/kernel:0
+Shape:  (1, 1, 64, 256)
+Variable:  res2a_branch2c/bias:0
+Shape:  (256,)
+Variable:  bn2a_branch2c/gamma:0
+Shape:  (256,)
+Variable:  bn2a_branch2c/beta:0
+Shape:  (256,)
+Variable:  bn2a_branch2c/moving_mean:0
+Shape:  (256,)
+Variable:  bn2a_branch2c/moving_variance:0
+Shape:  (256,)
+Variable:  res2b_branch2a/kernel:0
+Shape:  (1, 1, 256, 64)
+Variable:  res2b_branch2a/bias:0
+Shape:  (64,)
+Variable:  bn2b_branch2a/gamma:0
+Shape:  (64,)
+Variable:  bn2b_branch2a/beta:0
+Shape:  (64,)
+Variable:  bn2b_branch2a/moving_mean:0
+Shape:  (64,)
+Variable:  bn2b_branch2a/moving_variance:0
+Shape:  (64,)
+Variable:  res2b_branch2b/kernel:0
+Shape:  (3, 3, 64, 64)
+Variable:  res2b_branch2b/bias:0
+Shape:  (64,)
+Variable:  bn2b_branch2b/gamma:0
+Shape:  (64,)
+Variable:  bn2b_branch2b/beta:0
+Shape:  (64,)
+Variable:  bn2b_branch2b/moving_mean:0
+Shape:  (64,)
+Variable:  bn2b_branch2b/moving_variance:0
+Shape:  (64,)
+Variable:  res2b_branch2c/kernel:0
+Shape:  (1, 1, 64, 256)
+Variable:  res2b_branch2c/bias:0
+Shape:  (256,)
+Variable:  bn2b_branch2c/gamma:0
+Shape:  (256,)
+Variable:  bn2b_branch2c/beta:0
+Shape:  (256,)
+Variable:  bn2b_branch2c/moving_mean:0
+Shape:  (256,)
+Variable:  bn2b_branch2c/moving_variance:0
+Shape:  (256,)
+Variable:  res2c_branch2a/kernel:0
+Shape:  (1, 1, 256, 64)
+Variable:  res2c_branch2a/bias:0
+Shape:  (64,)
+Variable:  bn2c_branch2a/gamma:0
+Shape:  (64,)
+Variable:  bn2c_branch2a/beta:0
+Shape:  (64,)
+Variable:  bn2c_branch2a/moving_mean:0
+Shape:  (64,)
+Variable:  bn2c_branch2a/moving_variance:0
+Shape:  (64,)
+Variable:  res2c_branch2b/kernel:0
+Shape:  (3, 3, 64, 64)
+Variable:  res2c_branch2b/bias:0
+Shape:  (64,)
+Variable:  bn2c_branch2b/gamma:0
+Shape:  (64,)
+Variable:  bn2c_branch2b/beta:0
+Shape:  (64,)
+Variable:  bn2c_branch2b/moving_mean:0
+Shape:  (64,)
+Variable:  bn2c_branch2b/moving_variance:0
+Shape:  (64,)
+Variable:  res2c_branch2c/kernel:0
+Shape:  (1, 1, 64, 256)
+Variable:  res2c_branch2c/bias:0
+Shape:  (256,)
+Variable:  bn2c_branch2c/gamma:0
+Shape:  (256,)
+Variable:  bn2c_branch2c/beta:0
+Shape:  (256,)
+Variable:  bn2c_branch2c/moving_mean:0
+Shape:  (256,)
+Variable:  bn2c_branch2c/moving_variance:0
+Shape:  (256,)
+Variable:  res3a_branch1/kernel:0
+Shape:  (1, 1, 256, 512)
+Variable:  res3a_branch1/bias:0
+Shape:  (512,)
+Variable:  bn3a_branch1/gamma:0
+Shape:  (512,)
+Variable:  bn3a_branch1/beta:0
+Shape:  (512,)
+Variable:  bn3a_branch1/moving_mean:0
+Shape:  (512,)
+Variable:  bn3a_branch1/moving_variance:0
+Shape:  (512,)
+Variable:  res3a_branch2a/kernel:0
+Shape:  (1, 1, 256, 128)
+Variable:  res3a_branch2a/bias:0
+Shape:  (128,)
+Variable:  bn3a_branch2a/gamma:0
+Shape:  (128,)
+Variable:  bn3a_branch2a/beta:0
+Shape:  (128,)
+Variable:  bn3a_branch2a/moving_mean:0
+Shape:  (128,)
+Variable:  bn3a_branch2a/moving_variance:0
+Shape:  (128,)
+Variable:  res3a_branch2b/kernel:0
+Shape:  (3, 3, 128, 128)
+Variable:  res3a_branch2b/bias:0
+Shape:  (128,)
+Variable:  bn3a_branch2b/gamma:0
+Shape:  (128,)
+Variable:  bn3a_branch2b/beta:0
+Shape:  (128,)
+Variable:  bn3a_branch2b/moving_mean:0
+Shape:  (128,)
+Variable:  bn3a_branch2b/moving_variance:0
+Shape:  (128,)
+Variable:  res3a_branch2c/kernel:0
+Shape:  (1, 1, 128, 512)
+Variable:  res3a_branch2c/bias:0
+Shape:  (512,)
+Variable:  bn3a_branch2c/gamma:0
+Shape:  (512,)
+Variable:  bn3a_branch2c/beta:0
+Shape:  (512,)
+Variable:  bn3a_branch2c/moving_mean:0
+Shape:  (512,)
+Variable:  bn3a_branch2c/moving_variance:0
+Shape:  (512,)
+Variable:  res3b_branch2a/kernel:0
+Shape:  (1, 1, 512, 128)
+Variable:  res3b_branch2a/bias:0
+Shape:  (128,)
+Variable:  bn3b_branch2a/gamma:0
+Shape:  (128,)
+Variable:  bn3b_branch2a/beta:0
+Shape:  (128,)
+Variable:  bn3b_branch2a/moving_mean:0
+Shape:  (128,)
+Variable:  bn3b_branch2a/moving_variance:0
+Shape:  (128,)
+Variable:  res3b_branch2b/kernel:0
+Shape:  (3, 3, 128, 128)
+Variable:  res3b_branch2b/bias:0
+Shape:  (128,)
+Variable:  bn3b_branch2b/gamma:0
+Shape:  (128,)
+Variable:  bn3b_branch2b/beta:0
+Shape:  (128,)
+Variable:  bn3b_branch2b/moving_mean:0
+Shape:  (128,)
+Variable:  bn3b_branch2b/moving_variance:0
+Shape:  (128,)
+Variable:  res3b_branch2c/kernel:0
+Shape:  (1, 1, 128, 512)
+Variable:  res3b_branch2c/bias:0
+Shape:  (512,)
+Variable:  bn3b_branch2c/gamma:0
+Shape:  (512,)
+Variable:  bn3b_branch2c/beta:0
+Shape:  (512,)
+Variable:  bn3b_branch2c/moving_mean:0
+Shape:  (512,)
+Variable:  bn3b_branch2c/moving_variance:0
+Shape:  (512,)
+Variable:  res3c_branch2a/kernel:0
+Shape:  (1, 1, 512, 128)
+Variable:  res3c_branch2a/bias:0
+Shape:  (128,)
+Variable:  bn3c_branch2a/gamma:0
+Shape:  (128,)
+Variable:  bn3c_branch2a/beta:0
+Shape:  (128,)
+Variable:  bn3c_branch2a/moving_mean:0
+Shape:  (128,)
+Variable:  bn3c_branch2a/moving_variance:0
+Shape:  (128,)
+Variable:  res3c_branch2b/kernel:0
+Shape:  (3, 3, 128, 128)
+Variable:  res3c_branch2b/bias:0
+Shape:  (128,)
+Variable:  bn3c_branch2b/gamma:0
+Shape:  (128,)
+Variable:  bn3c_branch2b/beta:0
+Shape:  (128,)
+Variable:  bn3c_branch2b/moving_mean:0
+Shape:  (128,)
+Variable:  bn3c_branch2b/moving_variance:0
+Shape:  (128,)
+Variable:  res3c_branch2c/kernel:0
+Shape:  (1, 1, 128, 512)
+Variable:  res3c_branch2c/bias:0
+Shape:  (512,)
+Variable:  bn3c_branch2c/gamma:0
+Shape:  (512,)
+Variable:  bn3c_branch2c/beta:0
+Shape:  (512,)
+Variable:  bn3c_branch2c/moving_mean:0
+Shape:  (512,)
+Variable:  bn3c_branch2c/moving_variance:0
+Shape:  (512,)
+Variable:  res3d_branch2a/kernel:0
+Shape:  (1, 1, 512, 128)
+Variable:  res3d_branch2a/bias:0
+Shape:  (128,)
+Variable:  bn3d_branch2a/gamma:0
+Shape:  (128,)
+Variable:  bn3d_branch2a/beta:0
+Shape:  (128,)
+Variable:  bn3d_branch2a/moving_mean:0
+Shape:  (128,)
+Variable:  bn3d_branch2a/moving_variance:0
+Shape:  (128,)
+Variable:  res3d_branch2b/kernel:0
+Shape:  (3, 3, 128, 128)
+Variable:  res3d_branch2b/bias:0
+Shape:  (128,)
+Variable:  bn3d_branch2b/gamma:0
+Shape:  (128,)
+Variable:  bn3d_branch2b/beta:0
+Shape:  (128,)
+Variable:  bn3d_branch2b/moving_mean:0
+Shape:  (128,)
+Variable:  bn3d_branch2b/moving_variance:0
+Shape:  (128,)
+Variable:  res3d_branch2c/kernel:0
+Shape:  (1, 1, 128, 512)
+Variable:  res3d_branch2c/bias:0
+Shape:  (512,)
+Variable:  bn3d_branch2c/gamma:0
+Shape:  (512,)
+Variable:  bn3d_branch2c/beta:0
+Shape:  (512,)
+Variable:  bn3d_branch2c/moving_mean:0
+Shape:  (512,)
+Variable:  bn3d_branch2c/moving_variance:0
+Shape:  (512,)
+Variable:  res4a_branch1/kernel:0
+Shape:  (1, 1, 512, 1024)
+Variable:  res4a_branch1/bias:0
+Shape:  (1024,)
+Variable:  bn4a_branch1/gamma:0
+Shape:  (1024,)
+Variable:  bn4a_branch1/beta:0
+Shape:  (1024,)
+Variable:  bn4a_branch1/moving_mean:0
+Shape:  (1024,)
+Variable:  bn4a_branch1/moving_variance:0
+Shape:  (1024,)
+Variable:  res4a_branch2a/kernel:0
+Shape:  (1, 1, 512, 256)
+Variable:  res4a_branch2a/bias:0
+Shape:  (256,)
+Variable:  bn4a_branch2a/gamma:0
+Shape:  (256,)
+Variable:  bn4a_branch2a/beta:0
+Shape:  (256,)
+Variable:  bn4a_branch2a/moving_mean:0
+Shape:  (256,)
+Variable:  bn4a_branch2a/moving_variance:0
+Shape:  (256,)
+Variable:  res4a_branch2b/kernel:0
+Shape:  (3, 3, 256, 256)
+Variable:  res4a_branch2b/bias:0
+Shape:  (256,)
+Variable:  bn4a_branch2b/gamma:0
+Shape:  (256,)
+Variable:  bn4a_branch2b/beta:0
+Shape:  (256,)
+Variable:  bn4a_branch2b/moving_mean:0
+Shape:  (256,)
+Variable:  bn4a_branch2b/moving_variance:0
+Shape:  (256,)
+Variable:  res4a_branch2c/kernel:0
+Shape:  (1, 1, 256, 1024)
+Variable:  res4a_branch2c/bias:0
+Shape:  (1024,)
+Variable:  bn4a_branch2c/gamma:0
+Shape:  (1024,)
+Variable:  bn4a_branch2c/beta:0
+Shape:  (1024,)
+Variable:  bn4a_branch2c/moving_mean:0
+Shape:  (1024,)
+Variable:  bn4a_branch2c/moving_variance:0
+Shape:  (1024,)
+Variable:  res4b_branch2a/kernel:0
+Shape:  (1, 1, 1024, 256)
+Variable:  res4b_branch2a/bias:0
+Shape:  (256,)
+Variable:  bn4b_branch2a/gamma:0
+Shape:  (256,)
+Variable:  bn4b_branch2a/beta:0
+Shape:  (256,)
+Variable:  bn4b_branch2a/moving_mean:0
+Shape:  (256,)
+Variable:  bn4b_branch2a/moving_variance:0
+Shape:  (256,)
+Variable:  res4b_branch2b/kernel:0
+Shape:  (3, 3, 256, 256)
+Variable:  res4b_branch2b/bias:0
+Shape:  (256,)
+Variable:  bn4b_branch2b/gamma:0
+Shape:  (256,)
+Variable:  bn4b_branch2b/beta:0
+Shape:  (256,)
+Variable:  bn4b_branch2b/moving_mean:0
+Shape:  (256,)
+Variable:  bn4b_branch2b/moving_variance:0
+Shape:  (256,)
+Variable:  res4b_branch2c/kernel:0
+Shape:  (1, 1, 256, 1024)
+Variable:  res4b_branch2c/bias:0
+Shape:  (1024,)
+Variable:  bn4b_branch2c/gamma:0
+Shape:  (1024,)
+Variable:  bn4b_branch2c/beta:0
+Shape:  (1024,)
+Variable:  bn4b_branch2c/moving_mean:0
+Shape:  (1024,)
+Variable:  bn4b_branch2c/moving_variance:0
+Shape:  (1024,)
+Variable:  res4c_branch2a/kernel:0
+Shape:  (1, 1, 1024, 256)
+Variable:  res4c_branch2a/bias:0
+Shape:  (256,)
+Variable:  bn4c_branch2a/gamma:0
+Shape:  (256,)
+Variable:  bn4c_branch2a/beta:0
+Shape:  (256,)
+Variable:  bn4c_branch2a/moving_mean:0
+Shape:  (256,)
+Variable:  bn4c_branch2a/moving_variance:0
+Shape:  (256,)
+Variable:  res4c_branch2b/kernel:0
+Shape:  (3, 3, 256, 256)
+Variable:  res4c_branch2b/bias:0
+Shape:  (256,)
+Variable:  bn4c_branch2b/gamma:0
+Shape:  (256,)
+Variable:  bn4c_branch2b/beta:0
+Shape:  (256,)
+Variable:  bn4c_branch2b/moving_mean:0
+Shape:  (256,)
+Variable:  bn4c_branch2b/moving_variance:0
+Shape:  (256,)
+Variable:  res4c_branch2c/kernel:0
+Shape:  (1, 1, 256, 1024)
+Variable:  res4c_branch2c/bias:0
+Shape:  (1024,)
+Variable:  bn4c_branch2c/gamma:0
+Shape:  (1024,)
+Variable:  bn4c_branch2c/beta:0
+Shape:  (1024,)
+Variable:  bn4c_branch2c/moving_mean:0
+Shape:  (1024,)
+Variable:  bn4c_branch2c/moving_variance:0
+Shape:  (1024,)
+Variable:  res4d_branch2a/kernel:0
+Shape:  (1, 1, 1024, 256)
+Variable:  res4d_branch2a/bias:0
+Shape:  (256,)
+Variable:  bn4d_branch2a/gamma:0
+Shape:  (256,)
+Variable:  bn4d_branch2a/beta:0
+Shape:  (256,)
+Variable:  bn4d_branch2a/moving_mean:0
+Shape:  (256,)
+Variable:  bn4d_branch2a/moving_variance:0
+Shape:  (256,)
+Variable:  res4d_branch2b/kernel:0
+Shape:  (3, 3, 256, 256)
+Variable:  res4d_branch2b/bias:0
+Shape:  (256,)
+Variable:  bn4d_branch2b/gamma:0
+Shape:  (256,)
+Variable:  bn4d_branch2b/beta:0
+Shape:  (256,)
+Variable:  bn4d_branch2b/moving_mean:0
+Shape:  (256,)
+Variable:  bn4d_branch2b/moving_variance:0
+Shape:  (256,)
+Variable:  res4d_branch2c/kernel:0
+Shape:  (1, 1, 256, 1024)
+Variable:  res4d_branch2c/bias:0
+Shape:  (1024,)
+Variable:  bn4d_branch2c/gamma:0
+Shape:  (1024,)
+Variable:  bn4d_branch2c/beta:0
+Shape:  (1024,)
+Variable:  bn4d_branch2c/moving_mean:0
+Shape:  (1024,)
+Variable:  bn4d_branch2c/moving_variance:0
+Shape:  (1024,)
+Variable:  res4e_branch2a/kernel:0
+Shape:  (1, 1, 1024, 256)
+Variable:  res4e_branch2a/bias:0
+Shape:  (256,)
+Variable:  bn4e_branch2a/gamma:0
+Shape:  (256,)
+Variable:  bn4e_branch2a/beta:0
+Shape:  (256,)
+Variable:  bn4e_branch2a/moving_mean:0
+Shape:  (256,)
+Variable:  bn4e_branch2a/moving_variance:0
+Shape:  (256,)
+Variable:  res4e_branch2b/kernel:0
+Shape:  (3, 3, 256, 256)
+Variable:  res4e_branch2b/bias:0
+Shape:  (256,)
+Variable:  bn4e_branch2b/gamma:0
+Shape:  (256,)
+Variable:  bn4e_branch2b/beta:0
+Shape:  (256,)
+Variable:  bn4e_branch2b/moving_mean:0
+Shape:  (256,)
+Variable:  bn4e_branch2b/moving_variance:0
+Shape:  (256,)
+Variable:  res4e_branch2c/kernel:0
+Shape:  (1, 1, 256, 1024)
+Variable:  res4e_branch2c/bias:0
+Shape:  (1024,)
+Variable:  bn4e_branch2c/gamma:0
+Shape:  (1024,)
+Variable:  bn4e_branch2c/beta:0
+Shape:  (1024,)
+Variable:  bn4e_branch2c/moving_mean:0
+Shape:  (1024,)
+Variable:  bn4e_branch2c/moving_variance:0
+Shape:  (1024,)
+Variable:  res4f_branch2a/kernel:0
+Shape:  (1, 1, 1024, 256)
+Variable:  res4f_branch2a/bias:0
+Shape:  (256,)
+Variable:  bn4f_branch2a/gamma:0
+Shape:  (256,)
+Variable:  bn4f_branch2a/beta:0
+Shape:  (256,)
+Variable:  bn4f_branch2a/moving_mean:0
+Shape:  (256,)
+Variable:  bn4f_branch2a/moving_variance:0
+Shape:  (256,)
+Variable:  res4f_branch2b/kernel:0
+Shape:  (3, 3, 256, 256)
+Variable:  res4f_branch2b/bias:0
+Shape:  (256,)
+Variable:  bn4f_branch2b/gamma:0
+Shape:  (256,)
+Variable:  bn4f_branch2b/beta:0
+Shape:  (256,)
+Variable:  bn4f_branch2b/moving_mean:0
+Shape:  (256,)
+Variable:  bn4f_branch2b/moving_variance:0
+Shape:  (256,)
+Variable:  res4f_branch2c/kernel:0
+Shape:  (1, 1, 256, 1024)
+Variable:  res4f_branch2c/bias:0
+Shape:  (1024,)
+Variable:  bn4f_branch2c/gamma:0
+Shape:  (1024,)
+Variable:  bn4f_branch2c/beta:0
+Shape:  (1024,)
+Variable:  bn4f_branch2c/moving_mean:0
+Shape:  (1024,)
+Variable:  bn4f_branch2c/moving_variance:0
+Shape:  (1024,)
+Variable:  res4g_branch2a/kernel:0
+Shape:  (1, 1, 1024, 256)
+Variable:  res4g_branch2a/bias:0
+Shape:  (256,)
+Variable:  bn4g_branch2a/gamma:0
+Shape:  (256,)
+Variable:  bn4g_branch2a/beta:0
+Shape:  (256,)
+Variable:  bn4g_branch2a/moving_mean:0
+Shape:  (256,)
+Variable:  bn4g_branch2a/moving_variance:0
+Shape:  (256,)
+Variable:  res4g_branch2b/kernel:0
+Shape:  (3, 3, 256, 256)
+Variable:  res4g_branch2b/bias:0
+Shape:  (256,)
+Variable:  bn4g_branch2b/gamma:0
+Shape:  (256,)
+Variable:  bn4g_branch2b/beta:0
+Shape:  (256,)
+Variable:  bn4g_branch2b/moving_mean:0
+Shape:  (256,)
+Variable:  bn4g_branch2b/moving_variance:0
+Shape:  (256,)
+Variable:  res4g_branch2c/kernel:0
+Shape:  (1, 1, 256, 1024)
+Variable:  res4g_branch2c/bias:0
+Shape:  (1024,)
+Variable:  bn4g_branch2c/gamma:0
+Shape:  (1024,)
+Variable:  bn4g_branch2c/beta:0
+Shape:  (1024,)
+Variable:  bn4g_branch2c/moving_mean:0
+Shape:  (1024,)
+Variable:  bn4g_branch2c/moving_variance:0
+Shape:  (1024,)
+Variable:  res4h_branch2a/kernel:0
+Shape:  (1, 1, 1024, 256)
+Variable:  res4h_branch2a/bias:0
+Shape:  (256,)
+Variable:  bn4h_branch2a/gamma:0
+Shape:  (256,)
+Variable:  bn4h_branch2a/beta:0
+Shape:  (256,)
+Variable:  bn4h_branch2a/moving_mean:0
+Shape:  (256,)
+Variable:  bn4h_branch2a/moving_variance:0
+Shape:  (256,)
+Variable:  res4h_branch2b/kernel:0
+Shape:  (3, 3, 256, 256)
+Variable:  res4h_branch2b/bias:0
+Shape:  (256,)
+Variable:  bn4h_branch2b/gamma:0
+Shape:  (256,)
+Variable:  bn4h_branch2b/beta:0
+Shape:  (256,)
+Variable:  bn4h_branch2b/moving_mean:0
+Shape:  (256,)
+Variable:  bn4h_branch2b/moving_variance:0
+Shape:  (256,)
+Variable:  res4h_branch2c/kernel:0
+Shape:  (1, 1, 256, 1024)
+Variable:  res4h_branch2c/bias:0
+Shape:  (1024,)
+Variable:  bn4h_branch2c/gamma:0
+Shape:  (1024,)
+Variable:  bn4h_branch2c/beta:0
+Shape:  (1024,)
+Variable:  bn4h_branch2c/moving_mean:0
+Shape:  (1024,)
+Variable:  bn4h_branch2c/moving_variance:0
+Shape:  (1024,)
+Variable:  res4i_branch2a/kernel:0
+Shape:  (1, 1, 1024, 256)
+Variable:  res4i_branch2a/bias:0
+Shape:  (256,)
+Variable:  bn4i_branch2a/gamma:0
+Shape:  (256,)
+Variable:  bn4i_branch2a/beta:0
+Shape:  (256,)
+Variable:  bn4i_branch2a/moving_mean:0
+Shape:  (256,)
+Variable:  bn4i_branch2a/moving_variance:0
+Shape:  (256,)
+Variable:  res4i_branch2b/kernel:0
+Shape:  (3, 3, 256, 256)
+Variable:  res4i_branch2b/bias:0
+Shape:  (256,)
+Variable:  bn4i_branch2b/gamma:0
+Shape:  (256,)
+Variable:  bn4i_branch2b/beta:0
+Shape:  (256,)
+Variable:  bn4i_branch2b/moving_mean:0
+Shape:  (256,)
+Variable:  bn4i_branch2b/moving_variance:0
+Shape:  (256,)
+Variable:  res4i_branch2c/kernel:0
+Shape:  (1, 1, 256, 1024)
+Variable:  res4i_branch2c/bias:0
+Shape:  (1024,)
+Variable:  bn4i_branch2c/gamma:0
+Shape:  (1024,)
+Variable:  bn4i_branch2c/beta:0
+Shape:  (1024,)
+Variable:  bn4i_branch2c/moving_mean:0
+Shape:  (1024,)
+Variable:  bn4i_branch2c/moving_variance:0
+Shape:  (1024,)
+Variable:  res4j_branch2a/kernel:0
+Shape:  (1, 1, 1024, 256)
+Variable:  res4j_branch2a/bias:0
+Shape:  (256,)
+Variable:  bn4j_branch2a/gamma:0
+Shape:  (256,)
+Variable:  bn4j_branch2a/beta:0
+Shape:  (256,)
+Variable:  bn4j_branch2a/moving_mean:0
+Shape:  (256,)
+Variable:  bn4j_branch2a/moving_variance:0
+Shape:  (256,)
+Variable:  res4j_branch2b/kernel:0
+Shape:  (3, 3, 256, 256)
+Variable:  res4j_branch2b/bias:0
+Shape:  (256,)
+Variable:  bn4j_branch2b/gamma:0
+Shape:  (256,)
+Variable:  bn4j_branch2b/beta:0
+Shape:  (256,)
+Variable:  bn4j_branch2b/moving_mean:0
+Shape:  (256,)
+Variable:  bn4j_branch2b/moving_variance:0
+Shape:  (256,)
+Variable:  res4j_branch2c/kernel:0
+Shape:  (1, 1, 256, 1024)
+Variable:  res4j_branch2c/bias:0
+Shape:  (1024,)
+Variable:  bn4j_branch2c/gamma:0
+Shape:  (1024,)
+Variable:  bn4j_branch2c/beta:0
+Shape:  (1024,)
+Variable:  bn4j_branch2c/moving_mean:0
+Shape:  (1024,)
+Variable:  bn4j_branch2c/moving_variance:0
+Shape:  (1024,)
+Variable:  res4k_branch2a/kernel:0
+Shape:  (1, 1, 1024, 256)
+Variable:  res4k_branch2a/bias:0
+Shape:  (256,)
+Variable:  bn4k_branch2a/gamma:0
+Shape:  (256,)
+Variable:  bn4k_branch2a/beta:0
+Shape:  (256,)
+Variable:  bn4k_branch2a/moving_mean:0
+Shape:  (256,)
+Variable:  bn4k_branch2a/moving_variance:0
+Shape:  (256,)
+Variable:  res4k_branch2b/kernel:0
+Shape:  (3, 3, 256, 256)
+Variable:  res4k_branch2b/bias:0
+Shape:  (256,)
+Variable:  bn4k_branch2b/gamma:0
+Shape:  (256,)
+Variable:  bn4k_branch2b/beta:0
+Shape:  (256,)
+Variable:  bn4k_branch2b/moving_mean:0
+Shape:  (256,)
+Variable:  bn4k_branch2b/moving_variance:0
+Shape:  (256,)
+Variable:  res4k_branch2c/kernel:0
+Shape:  (1, 1, 256, 1024)
+Variable:  res4k_branch2c/bias:0
+Shape:  (1024,)
+Variable:  bn4k_branch2c/gamma:0
+Shape:  (1024,)
+Variable:  bn4k_branch2c/beta:0
+Shape:  (1024,)
+Variable:  bn4k_branch2c/moving_mean:0
+Shape:  (1024,)
+Variable:  bn4k_branch2c/moving_variance:0
+Shape:  (1024,)
+Variable:  res4l_branch2a/kernel:0
+Shape:  (1, 1, 1024, 256)
+Variable:  res4l_branch2a/bias:0
+Shape:  (256,)
+Variable:  bn4l_branch2a/gamma:0
+Shape:  (256,)
+Variable:  bn4l_branch2a/beta:0
+Shape:  (256,)
+Variable:  bn4l_branch2a/moving_mean:0
+Shape:  (256,)
+Variable:  bn4l_branch2a/moving_variance:0
+Shape:  (256,)
+Variable:  res4l_branch2b/kernel:0
+Shape:  (3, 3, 256, 256)
+Variable:  res4l_branch2b/bias:0
+Shape:  (256,)
+Variable:  bn4l_branch2b/gamma:0
+Shape:  (256,)
+Variable:  bn4l_branch2b/beta:0
+Shape:  (256,)
+Variable:  bn4l_branch2b/moving_mean:0
+Shape:  (256,)
+Variable:  bn4l_branch2b/moving_variance:0
+Shape:  (256,)
+Variable:  res4l_branch2c/kernel:0
+Shape:  (1, 1, 256, 1024)
+Variable:  res4l_branch2c/bias:0
+Shape:  (1024,)
+Variable:  bn4l_branch2c/gamma:0
+Shape:  (1024,)
+Variable:  bn4l_branch2c/beta:0
+Shape:  (1024,)
+Variable:  bn4l_branch2c/moving_mean:0
+Shape:  (1024,)
+Variable:  bn4l_branch2c/moving_variance:0
+Shape:  (1024,)
+Variable:  res4m_branch2a/kernel:0
+Shape:  (1, 1, 1024, 256)
+Variable:  res4m_branch2a/bias:0
+Shape:  (256,)
+Variable:  bn4m_branch2a/gamma:0
+Shape:  (256,)
+Variable:  bn4m_branch2a/beta:0
+Shape:  (256,)
+Variable:  bn4m_branch2a/moving_mean:0
+Shape:  (256,)
+Variable:  bn4m_branch2a/moving_variance:0
+Shape:  (256,)
+Variable:  res4m_branch2b/kernel:0
+Shape:  (3, 3, 256, 256)
+Variable:  res4m_branch2b/bias:0
+Shape:  (256,)
+Variable:  bn4m_branch2b/gamma:0
+Shape:  (256,)
+Variable:  bn4m_branch2b/beta:0
+Shape:  (256,)
+Variable:  bn4m_branch2b/moving_mean:0
+Shape:  (256,)
+Variable:  bn4m_branch2b/moving_variance:0
+Shape:  (256,)
+Variable:  res4m_branch2c/kernel:0
+Shape:  (1, 1, 256, 1024)
+Variable:  res4m_branch2c/bias:0
+Shape:  (1024,)
+Variable:  bn4m_branch2c/gamma:0
+Shape:  (1024,)
+Variable:  bn4m_branch2c/beta:0
+Shape:  (1024,)
+Variable:  bn4m_branch2c/moving_mean:0
+Shape:  (1024,)
+Variable:  bn4m_branch2c/moving_variance:0
+Shape:  (1024,)
+Variable:  res4n_branch2a/kernel:0
+Shape:  (1, 1, 1024, 256)
+Variable:  res4n_branch2a/bias:0
+Shape:  (256,)
+Variable:  bn4n_branch2a/gamma:0
+Shape:  (256,)
+Variable:  bn4n_branch2a/beta:0
+Shape:  (256,)
+Variable:  bn4n_branch2a/moving_mean:0
+Shape:  (256,)
+Variable:  bn4n_branch2a/moving_variance:0
+Shape:  (256,)
+Variable:  res4n_branch2b/kernel:0
+Shape:  (3, 3, 256, 256)
+Variable:  res4n_branch2b/bias:0
+Shape:  (256,)
+Variable:  bn4n_branch2b/gamma:0
+Shape:  (256,)
+Variable:  bn4n_branch2b/beta:0
+Shape:  (256,)
+Variable:  bn4n_branch2b/moving_mean:0
+Shape:  (256,)
+Variable:  bn4n_branch2b/moving_variance:0
+Shape:  (256,)
+Variable:  res4n_branch2c/kernel:0
+Shape:  (1, 1, 256, 1024)
+Variable:  res4n_branch2c/bias:0
+Shape:  (1024,)
+Variable:  bn4n_branch2c/gamma:0
+Shape:  (1024,)
+Variable:  bn4n_branch2c/beta:0
+Shape:  (1024,)
+Variable:  bn4n_branch2c/moving_mean:0
+Shape:  (1024,)
+Variable:  bn4n_branch2c/moving_variance:0
+Shape:  (1024,)
+Variable:  res4o_branch2a/kernel:0
+Shape:  (1, 1, 1024, 256)
+Variable:  res4o_branch2a/bias:0
+Shape:  (256,)
+Variable:  bn4o_branch2a/gamma:0
+Shape:  (256,)
+Variable:  bn4o_branch2a/beta:0
+Shape:  (256,)
+Variable:  bn4o_branch2a/moving_mean:0
+Shape:  (256,)
+Variable:  bn4o_branch2a/moving_variance:0
+Shape:  (256,)
+Variable:  res4o_branch2b/kernel:0
+Shape:  (3, 3, 256, 256)
+Variable:  res4o_branch2b/bias:0
+Shape:  (256,)
+Variable:  bn4o_branch2b/gamma:0
+Shape:  (256,)
+Variable:  bn4o_branch2b/beta:0
+Shape:  (256,)
+Variable:  bn4o_branch2b/moving_mean:0
+Shape:  (256,)
+Variable:  bn4o_branch2b/moving_variance:0
+Shape:  (256,)
+Variable:  res4o_branch2c/kernel:0
+Shape:  (1, 1, 256, 1024)
+Variable:  res4o_branch2c/bias:0
+Shape:  (1024,)
+Variable:  bn4o_branch2c/gamma:0
+Shape:  (1024,)
+Variable:  bn4o_branch2c/beta:0
+Shape:  (1024,)
+Variable:  bn4o_branch2c/moving_mean:0
+Shape:  (1024,)
+Variable:  bn4o_branch2c/moving_variance:0
+Shape:  (1024,)
+Variable:  res4p_branch2a/kernel:0
+Shape:  (1, 1, 1024, 256)
+Variable:  res4p_branch2a/bias:0
+Shape:  (256,)
+Variable:  bn4p_branch2a/gamma:0
+Shape:  (256,)
+Variable:  bn4p_branch2a/beta:0
+Shape:  (256,)
+Variable:  bn4p_branch2a/moving_mean:0
+Shape:  (256,)
+Variable:  bn4p_branch2a/moving_variance:0
+Shape:  (256,)
+Variable:  res4p_branch2b/kernel:0
+Shape:  (3, 3, 256, 256)
+Variable:  res4p_branch2b/bias:0
+Shape:  (256,)
+Variable:  bn4p_branch2b/gamma:0
+Shape:  (256,)
+Variable:  bn4p_branch2b/beta:0
+Shape:  (256,)
+Variable:  bn4p_branch2b/moving_mean:0
+Shape:  (256,)
+Variable:  bn4p_branch2b/moving_variance:0
+Shape:  (256,)
+Variable:  res4p_branch2c/kernel:0
+Shape:  (1, 1, 256, 1024)
+Variable:  res4p_branch2c/bias:0
+Shape:  (1024,)
+Variable:  bn4p_branch2c/gamma:0
+Shape:  (1024,)
+Variable:  bn4p_branch2c/beta:0
+Shape:  (1024,)
+Variable:  bn4p_branch2c/moving_mean:0
+Shape:  (1024,)
+Variable:  bn4p_branch2c/moving_variance:0
+Shape:  (1024,)
+Variable:  res4q_branch2a/kernel:0
+Shape:  (1, 1, 1024, 256)
+Variable:  res4q_branch2a/bias:0
+Shape:  (256,)
+Variable:  bn4q_branch2a/gamma:0
+Shape:  (256,)
+Variable:  bn4q_branch2a/beta:0
+Shape:  (256,)
+Variable:  bn4q_branch2a/moving_mean:0
+Shape:  (256,)
+Variable:  bn4q_branch2a/moving_variance:0
+Shape:  (256,)
+Variable:  res4q_branch2b/kernel:0
+Shape:  (3, 3, 256, 256)
+Variable:  res4q_branch2b/bias:0
+Shape:  (256,)
+Variable:  bn4q_branch2b/gamma:0
+Shape:  (256,)
+Variable:  bn4q_branch2b/beta:0
+Shape:  (256,)
+Variable:  bn4q_branch2b/moving_mean:0
+Shape:  (256,)
+Variable:  bn4q_branch2b/moving_variance:0
+Shape:  (256,)
+Variable:  res4q_branch2c/kernel:0
+Shape:  (1, 1, 256, 1024)
+Variable:  res4q_branch2c/bias:0
+Shape:  (1024,)
+Variable:  bn4q_branch2c/gamma:0
+Shape:  (1024,)
+Variable:  bn4q_branch2c/beta:0
+Shape:  (1024,)
+Variable:  bn4q_branch2c/moving_mean:0
+Shape:  (1024,)
+Variable:  bn4q_branch2c/moving_variance:0
+Shape:  (1024,)
+Variable:  res4r_branch2a/kernel:0
+Shape:  (1, 1, 1024, 256)
+Variable:  res4r_branch2a/bias:0
+Shape:  (256,)
+Variable:  bn4r_branch2a/gamma:0
+Shape:  (256,)
+Variable:  bn4r_branch2a/beta:0
+Shape:  (256,)
+Variable:  bn4r_branch2a/moving_mean:0
+Shape:  (256,)
+Variable:  bn4r_branch2a/moving_variance:0
+Shape:  (256,)
+Variable:  res4r_branch2b/kernel:0
+Shape:  (3, 3, 256, 256)
+Variable:  res4r_branch2b/bias:0
+Shape:  (256,)
+Variable:  bn4r_branch2b/gamma:0
+Shape:  (256,)
+Variable:  bn4r_branch2b/beta:0
+Shape:  (256,)
+Variable:  bn4r_branch2b/moving_mean:0
+Shape:  (256,)
+Variable:  bn4r_branch2b/moving_variance:0
+Shape:  (256,)
+Variable:  res4r_branch2c/kernel:0
+Shape:  (1, 1, 256, 1024)
+Variable:  res4r_branch2c/bias:0
+Shape:  (1024,)
+Variable:  bn4r_branch2c/gamma:0
+Shape:  (1024,)
+Variable:  bn4r_branch2c/beta:0
+Shape:  (1024,)
+Variable:  bn4r_branch2c/moving_mean:0
+Shape:  (1024,)
+Variable:  bn4r_branch2c/moving_variance:0
+Shape:  (1024,)
+Variable:  res4s_branch2a/kernel:0
+Shape:  (1, 1, 1024, 256)
+Variable:  res4s_branch2a/bias:0
+Shape:  (256,)
+Variable:  bn4s_branch2a/gamma:0
+Shape:  (256,)
+Variable:  bn4s_branch2a/beta:0
+Shape:  (256,)
+Variable:  bn4s_branch2a/moving_mean:0
+Shape:  (256,)
+Variable:  bn4s_branch2a/moving_variance:0
+Shape:  (256,)
+Variable:  res4s_branch2b/kernel:0
+Shape:  (3, 3, 256, 256)
+Variable:  res4s_branch2b/bias:0
+Shape:  (256,)
+Variable:  bn4s_branch2b/gamma:0
+Shape:  (256,)
+Variable:  bn4s_branch2b/beta:0
+Shape:  (256,)
+Variable:  bn4s_branch2b/moving_mean:0
+Shape:  (256,)
+Variable:  bn4s_branch2b/moving_variance:0
+Shape:  (256,)
+Variable:  res4s_branch2c/kernel:0
+Shape:  (1, 1, 256, 1024)
+Variable:  res4s_branch2c/bias:0
+Shape:  (1024,)
+Variable:  bn4s_branch2c/gamma:0
+Shape:  (1024,)
+Variable:  bn4s_branch2c/beta:0
+Shape:  (1024,)
+Variable:  bn4s_branch2c/moving_mean:0
+Shape:  (1024,)
+Variable:  bn4s_branch2c/moving_variance:0
+Shape:  (1024,)
+Variable:  res4t_branch2a/kernel:0
+Shape:  (1, 1, 1024, 256)
+Variable:  res4t_branch2a/bias:0
+Shape:  (256,)
+Variable:  bn4t_branch2a/gamma:0
+Shape:  (256,)
+Variable:  bn4t_branch2a/beta:0
+Shape:  (256,)
+Variable:  bn4t_branch2a/moving_mean:0
+Shape:  (256,)
+Variable:  bn4t_branch2a/moving_variance:0
+Shape:  (256,)
+Variable:  res4t_branch2b/kernel:0
+Shape:  (3, 3, 256, 256)
+Variable:  res4t_branch2b/bias:0
+Shape:  (256,)
+Variable:  bn4t_branch2b/gamma:0
+Shape:  (256,)
+Variable:  bn4t_branch2b/beta:0
+Shape:  (256,)
+Variable:  bn4t_branch2b/moving_mean:0
+Shape:  (256,)
+Variable:  bn4t_branch2b/moving_variance:0
+Shape:  (256,)
+Variable:  res4t_branch2c/kernel:0
+Shape:  (1, 1, 256, 1024)
+Variable:  res4t_branch2c/bias:0
+Shape:  (1024,)
+Variable:  bn4t_branch2c/gamma:0
+Shape:  (1024,)
+Variable:  bn4t_branch2c/beta:0
+Shape:  (1024,)
+Variable:  bn4t_branch2c/moving_mean:0
+Shape:  (1024,)
+Variable:  bn4t_branch2c/moving_variance:0
+Shape:  (1024,)
+Variable:  res4u_branch2a/kernel:0
+Shape:  (1, 1, 1024, 256)
+Variable:  res4u_branch2a/bias:0
+Shape:  (256,)
+Variable:  bn4u_branch2a/gamma:0
+Shape:  (256,)
+Variable:  bn4u_branch2a/beta:0
+Shape:  (256,)
+Variable:  bn4u_branch2a/moving_mean:0
+Shape:  (256,)
+Variable:  bn4u_branch2a/moving_variance:0
+Shape:  (256,)
+Variable:  res4u_branch2b/kernel:0
+Shape:  (3, 3, 256, 256)
+Variable:  res4u_branch2b/bias:0
+Shape:  (256,)
+Variable:  bn4u_branch2b/gamma:0
+Shape:  (256,)
+Variable:  bn4u_branch2b/beta:0
+Shape:  (256,)
+Variable:  bn4u_branch2b/moving_mean:0
+Shape:  (256,)
+Variable:  bn4u_branch2b/moving_variance:0
+Shape:  (256,)
+Variable:  res4u_branch2c/kernel:0
+Shape:  (1, 1, 256, 1024)
+Variable:  res4u_branch2c/bias:0
+Shape:  (1024,)
+Variable:  bn4u_branch2c/gamma:0
+Shape:  (1024,)
+Variable:  bn4u_branch2c/beta:0
+Shape:  (1024,)
+Variable:  bn4u_branch2c/moving_mean:0
+Shape:  (1024,)
+Variable:  bn4u_branch2c/moving_variance:0
+Shape:  (1024,)
+Variable:  res4v_branch2a/kernel:0
+Shape:  (1, 1, 1024, 256)
+Variable:  res4v_branch2a/bias:0
+Shape:  (256,)
+Variable:  bn4v_branch2a/gamma:0
+Shape:  (256,)
+Variable:  bn4v_branch2a/beta:0
+Shape:  (256,)
+Variable:  bn4v_branch2a/moving_mean:0
+Shape:  (256,)
+Variable:  bn4v_branch2a/moving_variance:0
+Shape:  (256,)
+Variable:  res4v_branch2b/kernel:0
+Shape:  (3, 3, 256, 256)
+Variable:  res4v_branch2b/bias:0
+Shape:  (256,)
+Variable:  bn4v_branch2b/gamma:0
+Shape:  (256,)
+Variable:  bn4v_branch2b/beta:0
+Shape:  (256,)
+Variable:  bn4v_branch2b/moving_mean:0
+Shape:  (256,)
+Variable:  bn4v_branch2b/moving_variance:0
+Shape:  (256,)
+Variable:  res4v_branch2c/kernel:0
+Shape:  (1, 1, 256, 1024)
+Variable:  res4v_branch2c/bias:0
+Shape:  (1024,)
+Variable:  bn4v_branch2c/gamma:0
+Shape:  (1024,)
+Variable:  bn4v_branch2c/beta:0
+Shape:  (1024,)
+Variable:  bn4v_branch2c/moving_mean:0
+Shape:  (1024,)
+Variable:  bn4v_branch2c/moving_variance:0
+Shape:  (1024,)
+Variable:  res4w_branch2a/kernel:0
+Shape:  (1, 1, 1024, 256)
+Variable:  res4w_branch2a/bias:0
+Shape:  (256,)
+Variable:  bn4w_branch2a/gamma:0
+Shape:  (256,)
+Variable:  bn4w_branch2a/beta:0
+Shape:  (256,)
+Variable:  bn4w_branch2a/moving_mean:0
+Shape:  (256,)
+Variable:  bn4w_branch2a/moving_variance:0
+Shape:  (256,)
+Variable:  res4w_branch2b/kernel:0
+Shape:  (3, 3, 256, 256)
+Variable:  res4w_branch2b/bias:0
+Shape:  (256,)
+Variable:  bn4w_branch2b/gamma:0
+Shape:  (256,)
+Variable:  bn4w_branch2b/beta:0
+Shape:  (256,)
+Variable:  bn4w_branch2b/moving_mean:0
+Shape:  (256,)
+Variable:  bn4w_branch2b/moving_variance:0
+Shape:  (256,)
+Variable:  res4w_branch2c/kernel:0
+Shape:  (1, 1, 256, 1024)
+Variable:  res4w_branch2c/bias:0
+Shape:  (1024,)
+Variable:  bn4w_branch2c/gamma:0
+Shape:  (1024,)
+Variable:  bn4w_branch2c/beta:0
+Shape:  (1024,)
+Variable:  bn4w_branch2c/moving_mean:0
+Shape:  (1024,)
+Variable:  bn4w_branch2c/moving_variance:0
+Shape:  (1024,)
+Variable:  res5a_branch1/kernel:0
+Shape:  (1, 1, 1024, 2048)
+Variable:  res5a_branch1/bias:0
+Shape:  (2048,)
+Variable:  bn5a_branch1/gamma:0
+Shape:  (2048,)
+Variable:  bn5a_branch1/beta:0
+Shape:  (2048,)
+Variable:  bn5a_branch1/moving_mean:0
+Shape:  (2048,)
+Variable:  bn5a_branch1/moving_variance:0
+Shape:  (2048,)
+Variable:  res5a_branch2a/kernel:0
+Shape:  (1, 1, 1024, 512)
+Variable:  res5a_branch2a/bias:0
+Shape:  (512,)
+Variable:  bn5a_branch2a/gamma:0
+Shape:  (512,)
+Variable:  bn5a_branch2a/beta:0
+Shape:  (512,)
+Variable:  bn5a_branch2a/moving_mean:0
+Shape:  (512,)
+Variable:  bn5a_branch2a/moving_variance:0
+Shape:  (512,)
+Variable:  res5a_branch2b/kernel:0
+Shape:  (3, 3, 512, 512)
+Variable:  res5a_branch2b/bias:0
+Shape:  (512,)
+Variable:  bn5a_branch2b/gamma:0
+Shape:  (512,)
+Variable:  bn5a_branch2b/beta:0
+Shape:  (512,)
+Variable:  bn5a_branch2b/moving_mean:0
+Shape:  (512,)
+Variable:  bn5a_branch2b/moving_variance:0
+Shape:  (512,)
+Variable:  res5a_branch2c/kernel:0
+Shape:  (1, 1, 512, 2048)
+Variable:  res5a_branch2c/bias:0
+Shape:  (2048,)
+Variable:  bn5a_branch2c/gamma:0
+Shape:  (2048,)
+Variable:  bn5a_branch2c/beta:0
+Shape:  (2048,)
+Variable:  bn5a_branch2c/moving_mean:0
+Shape:  (2048,)
+Variable:  bn5a_branch2c/moving_variance:0
+Shape:  (2048,)
+Variable:  res5b_branch2a/kernel:0
+Shape:  (1, 1, 2048, 512)
+Variable:  res5b_branch2a/bias:0
+Shape:  (512,)
+Variable:  bn5b_branch2a/gamma:0
+Shape:  (512,)
+Variable:  bn5b_branch2a/beta:0
+Shape:  (512,)
+Variable:  bn5b_branch2a/moving_mean:0
+Shape:  (512,)
+Variable:  bn5b_branch2a/moving_variance:0
+Shape:  (512,)
+Variable:  res5b_branch2b/kernel:0
+Shape:  (3, 3, 512, 512)
+Variable:  res5b_branch2b/bias:0
+Shape:  (512,)
+Variable:  bn5b_branch2b/gamma:0
+Shape:  (512,)
+Variable:  bn5b_branch2b/beta:0
+Shape:  (512,)
+Variable:  bn5b_branch2b/moving_mean:0
+Shape:  (512,)
+Variable:  bn5b_branch2b/moving_variance:0
+Shape:  (512,)
+Variable:  res5b_branch2c/kernel:0
+Shape:  (1, 1, 512, 2048)
+Variable:  res5b_branch2c/bias:0
+Shape:  (2048,)
+Variable:  bn5b_branch2c/gamma:0
+Shape:  (2048,)
+Variable:  bn5b_branch2c/beta:0
+Shape:  (2048,)
+Variable:  bn5b_branch2c/moving_mean:0
+Shape:  (2048,)
+Variable:  bn5b_branch2c/moving_variance:0
+Shape:  (2048,)
+Variable:  res5c_branch2a/kernel:0
+Shape:  (1, 1, 2048, 512)
+Variable:  res5c_branch2a/bias:0
+Shape:  (512,)
+Variable:  bn5c_branch2a/gamma:0
+Shape:  (512,)
+Variable:  bn5c_branch2a/beta:0
+Shape:  (512,)
+Variable:  bn5c_branch2a/moving_mean:0
+Shape:  (512,)
+Variable:  bn5c_branch2a/moving_variance:0
+Shape:  (512,)
+Variable:  res5c_branch2b/kernel:0
+Shape:  (3, 3, 512, 512)
+Variable:  res5c_branch2b/bias:0
+Shape:  (512,)
+Variable:  bn5c_branch2b/gamma:0
+Shape:  (512,)
+Variable:  bn5c_branch2b/beta:0
+Shape:  (512,)
+Variable:  bn5c_branch2b/moving_mean:0
+Shape:  (512,)
+Variable:  bn5c_branch2b/moving_variance:0
+Shape:  (512,)
+Variable:  res5c_branch2c/kernel:0
+Shape:  (1, 1, 512, 2048)
+Variable:  res5c_branch2c/bias:0
+Shape:  (2048,)
+Variable:  bn5c_branch2c/gamma:0
+Shape:  (2048,)
+Variable:  bn5c_branch2c/beta:0
+Shape:  (2048,)
+Variable:  bn5c_branch2c/moving_mean:0
+Shape:  (2048,)
+Variable:  bn5c_branch2c/moving_variance:0
+Shape:  (2048,)
+Variable:  fpn_c5p5/kernel:0
+Shape:  (1, 1, 2048, 256)
+Variable:  fpn_c5p5/bias:0
+Shape:  (256,)
+Variable:  fpn_c4p4/kernel:0
+Shape:  (1, 1, 1024, 256)
+Variable:  fpn_c4p4/bias:0
+Shape:  (256,)
+Variable:  fpn_c3p3/kernel:0
+Shape:  (1, 1, 512, 256)
+Variable:  fpn_c3p3/bias:0
+Shape:  (256,)
+Variable:  fpn_c2p2/kernel:0
+Shape:  (1, 1, 256, 256)
+Variable:  fpn_c2p2/bias:0
+Shape:  (256,)
+Variable:  fpn_p2/kernel:0
+Shape:  (3, 3, 256, 256)
+Variable:  fpn_p2/bias:0
+Shape:  (256,)
+Variable:  fpn_p3/kernel:0
+Shape:  (3, 3, 256, 256)
+Variable:  fpn_p3/bias:0
+Shape:  (256,)
+Variable:  fpn_p4/kernel:0
+Shape:  (3, 3, 256, 256)
+Variable:  fpn_p4/bias:0
+Shape:  (256,)
+Variable:  fpn_p5/kernel:0
+Shape:  (3, 3, 256, 256)
+Variable:  fpn_p5/bias:0
+Shape:  (256,)
+Variable:  rpn_conv_shared/kernel:0
+Shape:  (3, 3, 256, 512)
+Variable:  rpn_conv_shared/bias:0
+Shape:  (512,)
+Variable:  rpn_class_raw/kernel:0
+Shape:  (1, 1, 512, 6)
+Variable:  rpn_class_raw/bias:0
+Shape:  (6,)
+Variable:  rpn_bbox_pred/kernel:0
+Shape:  (1, 1, 512, 12)
+Variable:  rpn_bbox_pred/bias:0
+Shape:  (12,)
+Variable:  mrcnn_class_conv1/kernel:0
+Shape:  (7, 7, 256, 1024)
+Variable:  mrcnn_class_conv1/bias:0
+Shape:  (1024,)
+Variable:  mrcnn_class_bn1/gamma:0
+Shape:  (1024,)
+Variable:  mrcnn_class_bn1/beta:0
+Shape:  (1024,)
+Variable:  mrcnn_class_bn1/moving_mean:0
+Shape:  (1024,)
+Variable:  mrcnn_class_bn1/moving_variance:0
+Shape:  (1024,)
+Variable:  mrcnn_class_conv2/kernel:0
+Shape:  (1, 1, 1024, 1024)
+Variable:  mrcnn_class_conv2/bias:0
+Shape:  (1024,)
+Variable:  mrcnn_class_bn2/gamma:0
+Shape:  (1024,)
+Variable:  mrcnn_class_bn2/beta:0
+Shape:  (1024,)
+Variable:  mrcnn_class_bn2/moving_mean:0
+Shape:  (1024,)
+Variable:  mrcnn_class_bn2/moving_variance:0
+Shape:  (1024,)
+Variable:  mrcnn_class_logits/kernel:0
+Shape:  (1024, 4)
+Variable:  mrcnn_class_logits/bias:0
+Shape:  (4,)
+Variable:  mrcnn_bbox_fc/kernel:0
+Shape:  (1024, 16)
+Variable:  mrcnn_bbox_fc/bias:0
+Shape:  (16,)
+'''

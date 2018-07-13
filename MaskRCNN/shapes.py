@@ -209,11 +209,12 @@ class Dataset():
 from MaskRCNN.building_blocks.data_processor import PreprareTrainData
 conf = ShapesConfig()
 
-batch_size = 1
+batch_size = 2
 # Get data from for randomly generated shapes
 data = Dataset(num_images=batch_size, height=128, width=128, num_classes=4)
-# print (data.image_meta)
+print ('Batch Meta: ', data.image_meta)
 image_ids = data.image_meta.keys()
+# print(data.image_meta)
 
 # print (data)
 
@@ -226,10 +227,15 @@ data_dict = obj_ptd.get_data(image_ids)
 ######### TRAINING
 from MaskRCNN.training import Train
 print(data_dict['batch_image_metas'])
-obj_trn = Train(conf, batch_size=batch_size)
+pretrained_weights_path = '/Users/sam/All-Program/App-DataSet/ObjectDetection/MaskRCNN/mask_rcnn_coco.h5'
+obj_trn = Train(conf, batch_size=batch_size, pretrained_weights_path=None)
 # obj_trn.transform_images(data_dict, image_ids)
 # obj_trn.build_train_graph()
 obj_trn.exec_sess(data_dict, image_ids)
+
+
+
+
 
 
 

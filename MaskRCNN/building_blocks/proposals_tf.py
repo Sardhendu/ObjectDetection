@@ -342,8 +342,7 @@ def debug(rpn_class_probs=[], rpn_bbox=[], input_anchors=[]):
     bbox_delta, ix, scores, anchors, anchor_delta = obj_p.debug_outputs()
    
     # print(proposals)
-    feed_dict = {p_graph['rpn_class_probs']: rpn_class_probs, p_graph['rpn_bbox']: rpn_bbox,
-                 p_graph['input_anchors']: input_anchors}
+    feed_dict = {p_graph['rpn_class_probs']: rpn_class_probs, p_graph['rpn_bbox']: rpn_bbox, p_graph['input_anchors']: input_anchors}
     with tf.Session() as sess:
         sess.run(tf.global_variables_initializer())
 

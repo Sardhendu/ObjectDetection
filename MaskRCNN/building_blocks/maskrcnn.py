@@ -10,7 +10,6 @@ import numpy as np
 import keras.backend as K
 import keras.layers as KL
 import tensorflow as tf
-
 from MaskRCNN.building_blocks import ops
 
 
@@ -48,7 +47,6 @@ class MaskRCNN():
         # self.P3 = tf.placeholder(dtype=tf.float32, shape=[None, 128, 128, 256], name='P3')
         # self.P4 = tf.placeholder(dtype=tf.float32, shape=[None, 64, 64, 256], name='P4')
         # self.P5 = tf.placeholder(dtype=tf.float32, shape=[None, 32, 32, 256], name='P5')
-
         feature_maps = [tf.cast(fmaps, dtype=tf.float32) for fmaps in feature_maps]
 
         proposals = tf.cast(proposals, dtype=tf.float32)
@@ -165,8 +163,8 @@ class MaskRCNN():
         box_to_level = tf.concat([tf.cast(box_to_level, tf.int32), box_range], axis=1)
 
         # Rearrange pooled features to match the order of the original boxes
-        # Sort box_to_level by batch then box index, TF doesn't have a way to sort by two columns, so merge them and
-        # sort. Assumption: We will never have more than 100000 combination of batch and anchors
+        # Sort box_to_level by batch then box index, TF doesn't have a way to sort by two columns, so merge them and sort.
+        # Assumption: We will never have more than 100000 combination of batch and anchors
         sorting_tensor = box_to_level[:, 0] * 100000 + box_to_level[:, 1]
         # Get the indices from the [::-1] column (column added in box_range) using the sorting tensor and then sort the
         # pooled_rois
@@ -257,36 +255,40 @@ class MaskRCNN():
 
         '''
 
-        # FC_CONV layer 1: We perform a 7x7 convolution to create x=[batch_like_num, 1, 1, 1024] , This is equivalent
-        # to a FC layer but with convolutional style
+        # FC_CONV layer 1: We perform a 7x7 convolution to create x=[batch_like_num, 1, 1, 1024] , This is equivalent to a FC layer but with convolutional style
         print ("(MRCNN) Pooled Roi's (shape)", self.pooled_rois.shape)
-        x = KL.TimeDistributed(KL.Conv2D(1024, (self.pool_shape[0], self.pool_shape[1]), padding="valid"),
-                               name='mrcnn_class_conv1')(self.pooled_rois)
+        x = KL.TimeDistributed(KL.Conv2D(1024, (self.pool_shape[0], self.pool_shape[1]), padding="valid"), name='mrcnn_class_conv1')(self.pooled_rois)
         x = KL.TimeDistributed(BatchNorm(), name='mrcnn_class_bn1')(x, training=False)
         x = KL.Activation('relu')(x)
         self.FC1 = x if self.DEBUG else []
+        print('1 popripoweiropwiropiowperipewir ', x.get_shape().as_list())
 
         # FC_CONV layer 2: Perform 1x1 convolutions
         x = KL.TimeDistributed(KL.Conv2D(1024, (1, 1)), name="mrcnn_class_conv2")(x)
         x = KL.TimeDistributed(BatchNorm(), name='mrcnn_class_bn2')(x, training=False)
         x = KL.Activation('relu')(x)
         self.FC2 = x if self.DEBUG else []
+        print('2 popripoweiropwiropiowperipewir ', x.get_shape().as_list())
 
         # Shared Convolution across the Classifier and Regressor
         self.shared = KL.Lambda(lambda x: K.squeeze(K.squeeze(x, 3), 2), name="pool_squeeze")(x)
+        print('3 popripoweiropwiropiowperipewir ', self.shared.get_shape().as_list())
         # self.shared = shared if self.DEBUG else []
 
         # Classifier (Object detection)
         # with tf.variable_scope('mrcnn_class_scores'):
-        mrcnn_class_logits = KL.TimeDistributed(KL.Dense(self.num_classes),
+        # print('p909u894ur84r4r4hruh4i8r4 ', self.num_classes)
+        self.mrcnn_class_logits = KL.TimeDistributed(KL.Dense(self.num_classes),
                                                 name='mrcnn_class_logits')(self.shared)
+        print('4 popripoweiropwiropiowperipewir ', self.mrcnn_class_logits.get_shape().as_list())
         self.mrcnn_class_probs = KL.TimeDistributed(KL.Activation("softmax"),
-                                         name="mrcnn_class")(mrcnn_class_logits)
+                                         name="mrcnn_class")(self.mrcnn_class_logits)
 
         # Bbox Refiner
         # with tf.variable_scope('mrcnn_bbox'):
         x = KL.TimeDistributed(KL.Dense(self.num_classes * 4, activation='linear'),
                                name='mrcnn_bbox_fc')(self.shared)
+        print('5 popripoweiropwiropiowperipewir ', x.get_shape().as_list())
         # Reshape to [batch, boxes, num_classes, (dy, dx, log(dh), log(dw))]
         s = K.shape(x)
         self.mrcnn_bbox = KL.Reshape((s[1], self.num_classes, 4), name="mrcnn_bbox")(x)
@@ -305,10 +307,20 @@ class MaskRCNN():
         return self.mrcnn_bbox
 
     def get_mrcnn_graph(self):
-        return dict(mrcnn_class_probs=self.mrcnn_class_probs, mrcnn_bbox=self.mrcnn_bbox)
+        return dict(mrcnn_class_logits=self.mrcnn_class_logits,
+                    mrcnn_class_probs=self.mrcnn_class_probs,
+                    mrcnn_bbox=self.mrcnn_bbox)
 
     def debug_outputs(self):
         return self.roi_level, self.box_to_level, self.sorting_tensor, self.ix, self.FC1, self.FC2, self.shared
+
+
+
+
+
+
+
+
 
 
 
@@ -332,7 +344,7 @@ def debug(feature_maps=[], proposals=[], image_metas=[]):
 
 
     # Mask RCNN : ROI Pooling
-    obj_MRCNN = MaskRCNN(image_shape=image_shape, pool_shape=[7, 7], num_classes=81, levels=[2, 3, 4, 5],
+    obj_MRCNN = MaskRCNN(image_shape=image_shape, pool_shape=[7, 7], num_classes=4, levels=[2, 3, 4, 5],
                          proposals=proposals, feature_maps=feature_maps, type='keras', DEBUG=True)
     pooled_rois = obj_MRCNN.get_pooled_rois()
     mrcnn_graph = obj_MRCNN.get_mrcnn_graph()

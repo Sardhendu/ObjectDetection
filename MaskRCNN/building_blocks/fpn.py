@@ -63,24 +63,27 @@ class FPN():
         ## BRANCH 2a
         x = ops.conv_layer(x_in, [1, 1, x_shape[-1], f1], stride=1, padding='SAME',
                            scope_name=conv_name + '2a')
+        x = tf.layers.batch_normalization(x, axis=-1, name=bn_name + '2a', trainable=False)
         # x = ops.batch_norm(x, axis=[0, 1, 2], scope_name=bn_name + '2a')
-        x = BatchNorm(name=bn_name + '2a')(x, training=False)
+        # x = BatchNorm(name=bn_name + '2a')(x, training=False)
         x = ops.activation(x, 'relu', relu_name + '2a')
         logging.info('%s: %s', str(conv_name + '2a'), str(x.get_shape().as_list()))
     
         ## BRANCH 2b
         x = ops.conv_layer(x, [3, 3, f1, f2], stride=1, padding='SAME',
                            scope_name=conv_name + '2b')
+        x = tf.layers.batch_normalization(x, axis=-1, name=bn_name + '2b', trainable=False)
         # x = ops.batch_norm(x, axis=[0, 1, 2], scope_name=bn_name + '2b')
-        x = BatchNorm(name=bn_name + '2b')(x, training=False)
+        # x = BatchNorm(name=bn_name + '2b')(x, training=False)
         x = ops.activation(x, 'relu', relu_name + '2b')
         logging.info('%s: %s', str(conv_name + '2b'), str(x.get_shape().as_list()))
     
         ## BRANCH 2c
         x = ops.conv_layer(x, [1, 1, f2, f3], stride=1, padding='SAME',
                            scope_name=conv_name + '2c')
+        x = tf.layers.batch_normalization(x, axis=-1, name=bn_name + '2c', trainable=False)
         # x = ops.batch_norm(x, axis=[0, 1, 2], scope_name=bn_name + '2c')
-        x = BatchNorm(name=bn_name + '2c')(x, training=False)
+        # x = BatchNorm(name=bn_name + '2c')(x, training=False)
         logging.info('%s: %s', str(conv_name + '2c'), str(x.get_shape().as_list()))
     
         ## Add
@@ -103,33 +106,36 @@ class FPN():
         x_shape = x_in.get_shape().as_list()
         
         ## SHORTCUT (Skip Connection)
-        shortcut = ops.conv_layer(x_in, [1, 1, x_shape[-1], f3], stride=strides, padding='SAME',
-                           scope_name = conv_name + '1')
+        shortcut = ops.conv_layer(x_in, [1, 1, x_shape[-1], f3], stride=strides, padding='SAME', scope_name = conv_name + '1')
+        shortcut = tf.layers.batch_normalization(shortcut, axis=-1, name=bn_name + '1', trainable=False)
         # shortcut = ops.batch_norm(shortcut, axis=[0, 1, 2], scope_name=bn_name + '1')
-        shortcut = BatchNorm(name=bn_name + '1')(shortcut, training=False)
+        # shortcut = BatchNorm(name=bn_name + '1')(shortcut, training=False)
         logging.info('%s: %s', str(conv_name + '1'), str(shortcut.get_shape().as_list()))
     
         ## BRANCH 2a
         x = ops.conv_layer(x_in, [1, 1, x_shape[-1], f1], stride=strides, padding='SAME',
                            scope_name = conv_name + '2a')
+        x = tf.layers.batch_normalization(x, axis=-1, name=bn_name + '2a', trainable=False)
         # x = ops.batch_norm(x, axis=[0, 1, 2], scope_name=bn_name + '2a')
-        x = BatchNorm(name=bn_name + '2a')(x, training=False)
+        # x = BatchNorm(name=bn_name + '2a')(x, training=False)
         x = ops.activation(x, 'relu', relu_name + '2a')
         logging.info('%s: %s', str(conv_name + '2a'), str(x.get_shape().as_list()))
     
         ## BRANCH 2b
         x = ops.conv_layer(x, [3, 3, f1, f2], stride=1, padding='SAME',
                            scope_name = conv_name + '2b')
+        x = tf.layers.batch_normalization(x, axis=-1, name=bn_name + '2b', trainable=False)
         # x = ops.batch_norm(x, axis=[0, 1, 2], scope_name=bn_name + '2b')
-        x = BatchNorm(name=bn_name + '2b')(x, training=False)
+        # x = BatchNorm(name=bn_name + '2b')(x, training=False)
         x = ops.activation(x, 'relu', relu_name + '2b')
         logging.info('%s: %s', str(conv_name + '2b'), str(x.get_shape().as_list()))
     
         ## BRANCH 2c
         x = ops.conv_layer(x, [1, 1, f2, f3], stride=1, padding='SAME',
                            scope_name=conv_name + '2c')
+        x = tf.layers.batch_normalization(x, axis=-1, name=bn_name + '2c', trainable=False)
         # x = ops.batch_norm(x, axis=[0, 1, 2], scope_name=bn_name + '2c')
-        x = BatchNorm(name=bn_name + '2c')(x, training=False)
+        # x = BatchNorm(name=bn_name + '2c')(x, training=False)
         logging.info('%s: %s', str(conv_name + '2c'), str(x.get_shape().as_list()))
         
         ## Add
@@ -164,7 +170,8 @@ class FPN():
         # STAGE 1
         logging.info('STAGE 1 ...........................')
         x = ops.conv_layer(x, [7,7,3,64], stride=2, padding='VALID', scope_name='conv1')
-        x = BatchNorm(name='bn_conv1')(x, training=False)
+        x = tf.layers.batch_normalization(x,axis=-1, name='bn_conv1', trainable=False)
+        # x = BatchNorm(name='bn_conv1')(x, training=False)
         # x = ops.batch_norm(x, axis=[0, 1, 2], scope_name='bn_conv1')
         x = ops.activation(x, 'relu', 'relu_conv1')
         logging.info('Conv2D: %s', str(x.get_shape().as_list()))
@@ -219,35 +226,32 @@ class FPN():
         logging.info('Initiating FPN TOP-DOWN .................................')
         
         # Feature Map 1
-        M5 = ops.conv_layer(self.C5, [1, 1, self.C5.get_shape().as_list()[-1], 256], stride=1, padding='SAME', scope_name='fpn_c5p5')  # to reduce the channel depth
+        M5 = ops.conv_layer(self.C5, [1, 1, self.C5.get_shape().as_list()[-1], 256], stride=1, padding='SAME', scope_name='fpn_c5p5', trainable=True)  # to reduce the channel depth
         logging.info('FPN - M5: %s', str(M5.get_shape().as_list()))
     
         # Feature Map 2
-        m4_c = ops.conv_layer(self.C4, [1,1,self.C4.get_shape().as_list()[-1], 256], stride=1, padding='SAME',
-                              scope_name='fpn_c4p4')
+        m4_c = ops.conv_layer(self.C4, [1,1,self.C4.get_shape().as_list()[-1], 256], stride=1, padding='SAME', scope_name='fpn_c4p4', trainable=True)
         m4_up = KL.UpSampling2D(size=(2, 2), name="fpn_p5upsampled")(M5)
         M4 = KL.Add(name="fpn_p4add")([m4_up, m4_c])
         logging.info('FPN - M4: %s', str(M4.get_shape().as_list()))
     
         # Feature Map 3
-        m3_c = ops.conv_layer(self.C3, [1, 1, self.C3.get_shape().as_list()[-1], 256], stride=1, padding='SAME',
-                              scope_name='fpn_c3p3')
+        m3_c = ops.conv_layer(self.C3, [1, 1, self.C3.get_shape().as_list()[-1], 256], stride=1, padding='SAME', scope_name='fpn_c3p3', trainable=True)
         m3_up = KL.UpSampling2D(size=(2, 2), name="fpn_p4upsampled")(M4)
         M3 = KL.Add(name="fpn_p3add")([m3_up, m3_c])
         logging.info('FPN - M3: %s', str(M3.get_shape().as_list()))
     
         # Feature Map 4
-        m2_c = ops.conv_layer(self.C2, [1, 1, self.C2.get_shape().as_list()[-1], 256], stride=1, padding='SAME',
-                              scope_name='fpn_c2p2')
+        m2_c = ops.conv_layer(self.C2, [1, 1, self.C2.get_shape().as_list()[-1], 256], stride=1, padding='SAME', scope_name='fpn_c2p2', trainable=True)
         m2_up = KL.UpSampling2D(size=(2, 2), name="fpn_p3upsampled")(M3)
         M2 = KL.Add(name="fpn_p2add")([m2_up, m2_c])
         logging.info('FPN - M2: %s', str(M2.get_shape().as_list()))
         
         #### CREATE THE FEATURE MAP FOR PREDICTION
-        self.P2 = ops.conv_layer(M2, [3, 3, 256, 256], stride=1, padding='SAME', scope_name='fpn_p2')
-        self.P3 = ops.conv_layer(M3, [3, 3, 256, 256], stride=1, padding='SAME', scope_name='fpn_p3')
-        self.P4 = ops.conv_layer(M4, [3, 3, 256, 256], stride=1, padding='SAME', scope_name='fpn_p4')
-        self.P5 = ops.conv_layer(M5, [3, 3, 256, 256], stride=1, padding='SAME', scope_name='fpn_p5')
+        self.P2 = ops.conv_layer(M2, [3, 3, 256, 256], stride=1, padding='SAME', scope_name='fpn_p2', trainable=True)
+        self.P3 = ops.conv_layer(M3, [3, 3, 256, 256], stride=1, padding='SAME', scope_name='fpn_p3', trainable=True)
+        self.P4 = ops.conv_layer(M4, [3, 3, 256, 256], stride=1, padding='SAME', scope_name='fpn_p4', trainable=True)
+        self.P5 = ops.conv_layer(M5, [3, 3, 256, 256], stride=1, padding='SAME', scope_name='fpn_p5', trainable=True)
 
         self.P6 = tf.layers.max_pooling2d(self.P5, pool_size=1, strides=2, padding='SAME', name='fpn_p6')
     

@@ -99,6 +99,90 @@ def process_images(conf, list_of_images, list_of_image_ids):
     return transformed_images, image_metas, image_windows, anchors
 
 
+
+
+
+def get_iou_without_loop(proposal_per_img, gt_boxes_per_img):
+    
+    # Repeat the proposals "gt_boxes" time
+    proposal_ = tf.reshape(      # Reshapes to original shape but repeating values
+                         tf.tile(       # repeats the values horizontally
+                            tf.expand_dims(proposal_per_img, 1),
+                            [1, 1, tf.shape(gt_boxes_per_img)[0]]),
+                        [-1,4])
+    
+    # repeat gt_boxes vertically to match proposal_per_img
+    gt_boxes_ = tf.tile(gt_boxes_per_img, [tf.shape(proposal_per_img)[0], 1])
+    
+    # Get the coordinates
+    p_y1, p_x1, p_y2, p_x2 = tf.split(proposal_, 4, axis=1)
+    g_y1, g_x1, g_y2, g_x2 = tf.split(gt_boxes_, 4, axis=1)
+    
+    # Get the Area
+    p_area = tf.multiply(p_y2 - p_y1, p_x2 - p_x1)
+    g_area = tf.multiply(g_y2 - g_y1, g_x2 - g_x1)
+    
+    # Get Intersection
+    i_y1 = tf.maximum(p_y1, g_y1)
+    i_x1 = tf.maximum(p_x1, g_x1)
+    i_y2 = tf.minimum(p_y2, g_y2)
+    i_x2 = tf.minimum(p_x2, g_x2)
+    inter_area =  tf.multiply(tf.maximum(i_y2-i_y1, 0), tf.maximum(i_x2-i_x1, 0))
+    
+    # Intersection over union
+    iou = inter_area / (tf.add(p_area, g_area) - inter_area)
+    iou = tf.reshape(iou, [tf.shape(proposal_per_img)[0], tf.shape(gt_boxes_per_img)[0]])
+    return iou
+    
+
+
+def build_detection_target(proposals, gt_bboxes):
+    '''
+    The proposals we receive from the proposal layer are :
+            [num_batch, num_proposals, (y1, x1, y2, x2)]
+    Also, we have ground_truth (gt_boxes).
+
+    In order to build the mrcnn_loss, we would require to find equal number of +ve and -ve class and similarly and
+    find intersection over union of >0.7 and <0.3
+
+    TO Note:
+        1. Proposals are zero padded.
+        2. The class_id and
+    :return:
+    '''
+
+    gt_bboxes = tf.cast(gt_bboxes, dtype=tf.float32)
+    # RUN for each Image
+
+    # Remove the additional padding from proposals
+    non_zeros = tf.cast(tf.reduce_sum(tf.abs(proposals), axis=1), dtype=tf.bool)
+    prop = tf.boolean_mask(proposals, non_zeros, name='proposals_non_zeros')
+
+    # Remove the additional padding from the ground truth boxes
+    non_zeros = tf.cast(tf.reduce_sum(tf.abs(gt_bboxes), axis=1), dtype=tf.bool)
+    gt_boxes = tf.boolean_mask(gt_bboxes, non_zeros, name='gt_box_non_zeros')
+    
+    # Proposals and gt_bboxes are in (y1, x1, y2, x2) coordinates system, we directly get the intersection over union
+    
+
+    # for i in range(0, batch_size):
+    #     prop_, gt_boxes_ = get_iou_without_loop(prop[i], gt_boxes[i])
+    #     break
+        # batch_proposals.append(prop_)
+        # batch_gt_bboxes.append(gt_boxes_)
+
+    iou = get_iou_without_loop(prop, gt_boxes)
+    return prop, gt_boxes, iou
+
+
+
+
+import tensorflow as tf
+
+
+
+
+
 class PreprareTrainData():
     def __init__(self, conf, dataset):
         self.image_min_dim = conf.IMAGE_MIN_DIM
@@ -171,6 +255,8 @@ class PreprareTrainData():
         gt_bboxes = self.extract_bboxes(gt_mask)
         image_metas = compose_image_meta(image_id, original_image_shape, image.shape,
                                              image_window, scale, active_class_ids)
+        print('active_class_ids ', active_class_ids)
+        # print ('poweurweuriweuriwe, ', gt_class_ids)
         return image, gt_mask, gt_class_ids, gt_bboxes, image_metas
 
 

@@ -58,23 +58,75 @@ class Loss():
         rpn_target_class = tf.squeeze(rpn_target_class, -1)
         
         # rpn_pre_box = [batch_size, 100, 4] here only few out of 100 box would be +ve classes rest all are zero padded. Inorder to compare them we find the boxes from rpn_pred_box corresponding to +ve class.
-        indices = tf.where(rpn_target_class == 1)
+        indices = tf.where(tf.equal(rpn_target_class, 1))
         rpn_pred_box_pos = tf.gather_nd(rpn_pred_box, indices)
         
         # Gather from rpn_target_bbox where teh values are not zero. Basically the top "n" boxes are non zero. Also Note this has to be done for every batch
         # Get data for count of non-padded (non=zero) records for each batch
         non_pad_count = tf.reduce_sum(tf.cast(tf.equal(rpn_target_class, 1), tf.int32), axis=1)# K.sum(K.cast(K.equal(rpn_target_class, 1), tf.int32), axis=1)#
-        # rpn_target_bbox_nopad = []
-        # for i in range(0,batch_size):
-        #     rpn_target_bbox_nopad.append(rpn_target_bbox[i,:non_pad_count[i]]) # non_pad_count[i] The count of non-zeros records in batch i
-        # rpn_target_bbox_nopad = tf.concat(rpn_target_bbox_nopad, axis=0)
+        rpn_target_bbox_nopad = []
+        for i in range(0,batch_size):
+            rpn_target_bbox_nopad.append(rpn_target_bbox[i,:non_pad_count[i]]) # non_pad_count[i] The count of non-zeros records in batch i
+        rpn_target_bbox_nopad = tf.concat(rpn_target_bbox_nopad, axis=0)
         #
         # # Now that we have two boxes of same size, lets get the Regression loss.
         # # L1=smooth norm  =     | 0.5(x_sq)   if |x| < 1
         # #                       | |x| - 0.5   otherwise
-        # l1_dist = tf.abs(rpn_target_bbox_nopad - rpn_pred_box_pos)
-        # less_than_one = tf.cast(tf.less(l1_dist, 1.0), tf.float32)
-        # loss = (0.5*less_than_one * l1_dist**2) + ((l1_dist-0.5) * (1-less_than_one))
-        #
-        # loss = K.switch(tf.size(loss) > 0, K.mean(loss), tf.constant(0.0))
-        return non_pad_count
+        l1_dist = tf.abs(rpn_target_bbox_nopad - rpn_pred_box_pos)
+        less_than_one = tf.cast(tf.less(l1_dist, 1.0), tf.float32)
+        loss = (0.5*less_than_one * l1_dist**2) + ((l1_dist-0.5) * (1-less_than_one))
+
+        loss = K.switch(tf.size(loss) > 0, K.mean(loss), tf.constant(0.0))
+        
+        # TODO: The problem with random weights, the loss becomes NaN because the prediction box are very high negative numbers. try using pretrained weights, and see if the problem vanishes.
+        return rpn_pred_box_pos, loss
+
+    @staticmethod
+    def mrcnn_class_loss(mrcnn_target_class, mrcnn_pred_logits, batch_active_class_ids, sess):
+        '''
+
+        :param mrcnn_target_class: Zero padded [batch_size, 100,4],
+                                    4    -> number of classes
+                                    100  -> maximum number of objects to be detected
+        :param mrcnn_class_logits:      [batch_size, 100, 4]
+                                    100 -> Number of rois
+        :param batch_active_class_ids:  [batch_size, 4]
+                            # Has a value of 1 for each object in the image of a batch
+        :return:
+
+        '''
+        mrcnn_target_class = tf.cast(mrcnn_target_class, dtype=tf.int64)
+        batch_active_class_ids = tf.cast(batch_active_class_ids, dtype=tf.int32)
+        mrcnn_pred_logits = tf.cast(mrcnn_pred_logits, dtype=tf.float32)
+    
+        pred_class_ids = tf.argmax(mrcnn_pred_logits, axis=2)
+    
+        # Perform the cross entropy loss,
+        # Note mrcnn_target_class, mrcnn_pred_logits are not one-hot-coded, they are in labe;
+        
+        # loss = tf.losses.sparse_softmax_cross_entropy(mrcnn_target_class, pred_class_ids)
+    
+        t = sess.run(mrcnn_target_class)
+        l = sess.run(mrcnn_pred_logits)
+        p = sess.run(pred_class_ids)
+        print('mrcnn_target_class ', t)
+        print('')
+        print('mrcnn_class_logits ', l)
+        print('')
+        print('batch_active_class_ids ', sess.run(batch_active_class_ids))
+        print('')
+        print('pred_class_ids ', )
+        # print('')
+        # print('loss ', sess.run(loss))
+        
+        print (t.shape, l.shape, p.shape)
+        
+        
+        
+        # TODO: Somehow the mrcnn module return 1000 bbox and labels, this should be only 100 check why?
+
+
+        
+        
+        
+        

@@ -34,7 +34,8 @@ class RPN():
         shared = ops.conv_layer(self.xrpn,
                                 k_shape=[3, 3, self.xrpn.get_shape().as_list()[-1], 512],
                                 stride=self.rpn_anchor_stride,
-                                padding='SAME', scope_name='rpn_conv_shared')
+                                padding='SAME', scope_name='rpn_conv_shared',
+                                trainable=True)
         shared = ops.activation(shared, 'relu', scope_name='rpn_relu_shared')
         logging.info('RPN - Shared_conv: %s', str(shared.get_shape().as_list()))
 
@@ -52,7 +53,7 @@ class RPN():
         sh_in = x.get_shape().as_list()[-1]
 
         # Here 2*anchor_per_location = 6, where 2 indicates the binary classification of Foreground and background and anchor_per_location = 3
-        x = ops.conv_layer(x, k_shape=[1, 1, sh_in, 2 * anchor_per_location], stride=anchor_stride, padding='VALID', scope_name='rpn_class_raw')
+        x = ops.conv_layer(x, k_shape=[1, 1, sh_in, 2 * anchor_per_location], stride=anchor_stride, padding='VALID', scope_name='rpn_class_raw', trainable=True)
         logging.info('RPN - Conv Class: %s', str(x.get_shape().as_list()))
 
         # Here we convert {anchor_per_location = 3}
@@ -98,7 +99,7 @@ class RPN():
         sh_in = x.get_shape().as_list()[-1]
 
         # Here 4*len(anchor_ratio) = 8, where 4 is the count of bounding box output
-        x = ops.conv_layer(x, k_shape=[1, 1, sh_in, 4 * anchor_per_location], stride=anchor_stride, padding='VALID', scope_name='rpn_bbox_pred')
+        x = ops.conv_layer(x, k_shape=[1, 1, sh_in, 4 * anchor_per_location], stride=anchor_stride, padding='VALID', scope_name='rpn_bbox_pred', trainable=True)
         logging.info('RPN - Conv Bbox: %s', str(x.get_shape().as_list()))
 
         # The shape of rpn_bbox = [None, None, 4] =  Which says for each image for each pixel position of a feature map the output of box is 4 -> center_x, center_y, width and height. Since we do it in pixel basis, we would end up having many many bounding boxes overlapping and hence we use non-max suppression to overcome this situation.
