@@ -179,74 +179,17 @@ class Train():
         # proposals_ = tf.placeholder(shape=(2, 3, 4), dtype=tf.float32, name='proposals')
         proposals_ = tf.placeholder(shape=(2, 4, 4), dtype=tf.float32, name='proposals')
 
-        batch_proposals = []
-        batch_gt_boxes = []
+        batch_rois = []
+        batch_roi_gt_class_ids = []
+        batch_roi_gt_class_boxes = []
         for i in range(0, 2):
-            dict_ = data_processor.build_detection_target(self.conf,
-                    proposals_[i], batch_gt_bboxes[i], batch_gt_class_ids[i])
-            
-            dict2_ = data_processor.detection_targets_graph(self.conf,
-                    proposals_[i], batch_gt_bboxes[i], batch_gt_class_ids[i])
+            rois, roi_gt_class_ids, roi_gt_box_deltas = data_processor.BuildDetectionTargets(self.conf,
+                    proposals_[i], batch_gt_bboxes[i], batch_gt_class_ids[i], DEBUG=False).get_target_rois()
 
             break
             # batch_proposals.append(prop)
 
-        print('\n Proposals', proposal__)
-        print('\n gt_boxes', batch_gt_bboxes)
-        print('\n gt_class_ids', batch_gt_class_ids)
-        
-
-        with tf.Session() as sess:
-            sess.run(tf.global_variables_initializer())
-            a,b,c,d,e,f,g,h,i,j = sess.run(
-                    [dict_['a'], dict_['b'], dict_['c'], dict_['d'], dict_['e'],
-                     dict_['f'], dict_['g'], dict_['h'], dict_['i'], dict_['j']], feed_dict={proposals_: proposal__, })
-            print(a)
-            print('')
-            print(b)
-            print('')
-            print(c)
-            print('')
-            print (d)
-            print('')
-            print(e)
-            print('')
-            print(f)
-            print('')
-            print(g)
-            print('')
-            print(h)
-            print('')
-            print(i)
-            print('')
-            print(j)
-
-            print('############################')
-            # a, b, c, d, e, f, g, h, i, j, k = sess.run(
-            #         [dict2_['a'], dict2_['b'], dict2_['c'], dict2_['d'], dict2_['e'],
-            #          dict2_['f'], dict2_['g'], dict2_['h'], dict2_['i'], dict2_['j'],
-            #          dict2_['k']], feed_dict={proposals_: proposal__, })
-            # print(a)
-            # print('')
-            # print(b)
-            # print('')
-            # print(c)
-            # print('')
-            # print(d)
-            # print('')
-            # print(e)
-            # print('')
-            # print(f)
-            # print('')
-            # print(g)
-            # print('')
-            # print(h)
-            # print('')
-            # print(i)
-            # print('')
-            # print(j)
-            # print('')
-            # print(k)
+       
             #
     
         ##########################################
