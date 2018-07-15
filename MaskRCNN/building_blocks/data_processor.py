@@ -7,6 +7,7 @@ The RCNN module takes input as a certain format. For instance the
 from skimage.transform import resize
 import numpy as np
 import math
+import tensorflow as tf
 from MaskRCNN.building_blocks import utils
 
 
@@ -100,9 +101,40 @@ def process_images(conf, list_of_images, list_of_image_ids):
 
 
 
+def box_refinement_tf(box, gt_box):
+    """Compute refinement needed to transform box to gt_box.
+    box and gt_box are [N, (y1, x1, y2, x2)]
+    
+    Theory:
+        A foreground (+ve) proposals or anchor or roi might not be centered perfectly over
+        the object. So the RPN estimates a delta (% change in x, y, width, height) to
+        refine the anchor box w.r.t gt_boxes to fit the object better.
+    """
+    box = tf.cast(box, tf.float32)
+    gt_box = tf.cast(gt_box, tf.float32)
+
+    height = box[:, 2] - box[:, 0]
+    width = box[:, 3] - box[:, 1]
+    center_y = box[:, 0] + 0.5 * height
+    center_x = box[:, 1] + 0.5 * width
+
+    gt_height = gt_box[:, 2] - gt_box[:, 0]
+    gt_width = gt_box[:, 3] - gt_box[:, 1]
+    gt_center_y = gt_box[:, 0] + 0.5 * gt_height
+    gt_center_x = gt_box[:, 1] + 0.5 * gt_width
+
+    dy = (gt_center_y - center_y) / height
+    dx = (gt_center_x - center_x) / width
+    dh = tf.log(gt_height / height)
+    dw = tf.log(gt_width / width)
+
+    result = tf.stack([dy, dx, dh, dw], axis=1)
+    return result
 
 
-def get_iou_without_loop(proposal_per_img, gt_boxes_per_img):
+# class BuildDectectionTargets():
+
+def get_iou_tf(proposal_per_img, gt_boxes_per_img):
     '''Get Intersection over union with tensorflow
     
     :param proposal_per_img:
@@ -143,20 +175,31 @@ def get_iou_without_loop(proposal_per_img, gt_boxes_per_img):
     
 
 
-def build_detection_target(proposals, gt_bboxes):
+def build_detection_target(conf, proposals, gt_bboxes, gt_class_ids):
     '''
     The proposals we receive from the proposal layer are :
             [num_batch, num_proposals, (y1, x1, y2, x2)]
     Also, we have ground_truth (gt_boxes).
 
     In order to build the mrcnn_loss, we would require to find equal number of +ve and -ve class and similarly and
-    find intersection over union of >0.7 and <0.3
+    find intersection over union of >=0.5 and <0.5
 
+    Process:
+        1. Remove the zero padded records from the gt_boxes, gt_class_id and select proposals only for valid "gt" instances
+        2. Compute intersection over union
+        3. Fetch proportional +ve and -ve boxes based on the iou
+        4. Fetch roi_class_id (class_id of proposals) and roi_bboxes for +ve boxes
+        5. Fetch all gt_boxes, gt_class_ids that have most IOU with each +ve Proposals
+        
     TO Note:
         1. Proposals are zero padded.
         2. The class_id and
     :return:
     '''
+    
+    
+    prcntg_pos_instances = 0.3
+    # prcntg_neg_instances = 0.7
 
     gt_bboxes = tf.cast(gt_bboxes, dtype=tf.float32)
     # RUN for each Image
@@ -169,26 +212,210 @@ def build_detection_target(proposals, gt_bboxes):
     non_zeros = tf.cast(tf.reduce_sum(tf.abs(gt_bboxes), axis=1), dtype=tf.bool)
     gt_boxes = tf.boolean_mask(gt_bboxes, non_zeros, name='gt_box_non_zeros')
     
+    # Get teh Class ID's for the Ground Truth boxes
+    gt_class_ids = tf.boolean_mask(gt_class_ids, non_zeros, name='gt_class_id_non_zeros')
+    
     # Proposals and gt_bboxes are in (y1, x1, y2, x2) coordinates system, we directly get the intersection over union
     # Get the Intersection over union, iou
-    iou = get_iou_without_loop(prop, gt_boxes)
+    iou = get_iou_tf(prop, gt_boxes)
+    # If one proposal has iou > threshold with two objects than select teh max iou (required to make a proposal only pertaining to +ve or -ve class)
+    roi_iou_max = tf.reduce_max(iou, axis=1)
     
     # Get Positive >0.5 and negative <0.3 anchors
-    pos_indices = tf.where(iou >= 0.05)[:, 0]
-    neg_indices = tf.where(iou < 0.05)[:, 0]
+    pos_indices = tf.where(roi_iou_max >= 0.05)#[:, 0]
+    neg_indices = tf.where(roi_iou_max < 0.05)#[:, 0]
     
-    # np.array()
+    # Get Shuffle Positive and negative indices and select only a few of them
+    num_pos_inst = int(conf.MRCNN_TRAIN_PROPOSALS_PER_IMAGE * prcntg_pos_instances)
+    pos_indices = tf.random_shuffle(pos_indices)[:num_pos_inst]
+    pos_count = tf.shape(pos_indices)[0]
     
-    return prop, gt_boxes, iou, pos_indices, neg_indices
+    # For negative instances we directly dont take the 0.7% of MRCNN_TRAIN_PROPOSALS_PER_IMAGE, because in realty the +ve instances could be very high and -ve instances could be very low. So, we compute the -ve instance could when scaled with +ve count
+    neg_cnt = tf.cast((1/prcntg_pos_instances) * tf.cast(pos_count, tf.float32),
+                             tf.int32) - pos_count
+    # neg_cnt2 = tf.divide(tf.cast(tf.cast(prcntg_pos_instances, tf.float32) * positive_count, dtype=tf.float32) , tf.cast(prcntg_neg_instances, dtype=tf.float32))
+    neg_indices = tf.random_shuffle(neg_indices)[:neg_cnt]
+    
+    # Get the positive and negative proposals
+    pos_rois = tf.gather(proposals, pos_indices)
+    neg_rois = tf.gather(proposals, neg_indices)
+    
+    # Assign Positive ROIs to Ground Truth boxes
+    # We can have multiple proposals(rois) intersecting with gt_boxes,
+    # Inorder to compute proper losses, For each +ve proposal we need to get the gt_box that intersects with that proposal maximum.
+    # roi_gt_box_assignment are the indices of the gt_boxes that intersects with most with each proposals
+    # This case could even output only one gt_box
+    pos_iou = tf.gather(iou, pos_indices)
+    roi_gt_box_assignment = tf.argmax(pos_iou, axis=1)
+    roi_gt_class_ids = tf.gather(gt_class_ids, roi_gt_box_assignment)
+    roi_gt_boxes = tf.gather(gt_boxes, roi_gt_box_assignment)
+    
+    # Refine boxes to compute proper loss
+    # deltas = box_refinement_tf(pos_rois, roi_gt_boxes)
+    # deltas /= conf.BBOX_STD_DEV
+    
+    
+    # TODO: Change and Run the detection_targets_graph of MASKRCNN implementation and understand whats going on. Because this is important.
+    return dict(a=prop, b=gt_boxes, c=gt_class_ids, d=iou, e=pos_rois, f=neg_rois, g=pos_iou, h=roi_gt_box_assignment, i=roi_gt_class_ids, j=roi_gt_boxes)
 
 
 
 
-import tensorflow as tf
+def trim_zeros_graph(boxes, name=None):
+    """Often boxes are represented with matricies of shape [N, 4] and
+    are padded with zeros. This removes zero boxes.
+    boxes: [N, 4] matrix of boxes.
+    non_zeros: [N] a 1D boolean mask identifying the rows to keep
+    """
+    non_zeros = tf.cast(tf.reduce_sum(tf.abs(boxes), axis=1), tf.bool)
+    boxes = tf.boolean_mask(boxes, non_zeros, name=name)
+    return boxes, non_zeros
 
+def overlaps_graph(boxes1, boxes2):
+    """Computes IoU overlaps between two sets of boxes.
+    boxes1, boxes2: [N, (y1, x1, y2, x2)].
+    """
+    # 1. Tile boxes2 and repeate boxes1. This allows us to compare
+    # every boxes1 against every boxes2 without loops.
+    # TF doesn't have an equivalent to np.repeate() so simulate it
+    # using tf.tile() and tf.reshape.
+    b1 = tf.reshape(tf.tile(tf.expand_dims(boxes1, 1),
+                            [1, 1, tf.shape(boxes2)[0]]), [-1, 4])
+    b2 = tf.tile(boxes2, [tf.shape(boxes1)[0], 1])
+    # 2. Compute intersections
+    b1_y1, b1_x1, b1_y2, b1_x2 = tf.split(b1, 4, axis=1)
+    b2_y1, b2_x1, b2_y2, b2_x2 = tf.split(b2, 4, axis=1)
+    y1 = tf.maximum(b1_y1, b2_y1)
+    x1 = tf.maximum(b1_x1, b2_x1)
+    y2 = tf.minimum(b1_y2, b2_y2)
+    x2 = tf.minimum(b1_x2, b2_x2)
+    intersection = tf.maximum(x2 - x1, 0) * tf.maximum(y2 - y1, 0)
+    # 3. Compute unions
+    b1_area = (b1_y2 - b1_y1) * (b1_x2 - b1_x1)
+    b2_area = (b2_y2 - b2_y1) * (b2_x2 - b2_x1)
+    union = b1_area + b2_area - intersection
+    # 4. Compute IoU and reshape to [boxes1, boxes2]
+    iou = intersection / union
+    overlaps = tf.reshape(iou, [tf.shape(boxes1)[0], tf.shape(boxes2)[0]])
+    return overlaps
 
+def detection_targets_graph(conf, proposals, gt_boxes, gt_class_ids):
+    """Generates detection targets for one image. Subsamples proposals and
+    generates target class IDs, bounding box deltas, and masks for each.
+    Inputs:
+    proposals: [N, (y1, x1, y2, x2)] in normalized coordinates. Might
+               be zero padded if there are not enough proposals.
+    gt_class_ids: [MAX_GT_INSTANCES] int class IDs
+    gt_boxes: [MAX_GT_INSTANCES, (y1, x1, y2, x2)] in normalized coordinates.
+    gt_masks: [height, width, MAX_GT_INSTANCES] of boolean type.
+    Returns: Target ROIs and corresponding class IDs, bounding box shifts,
+    and masks.
+    rois: [TRAIN_ROIS_PER_IMAGE, (y1, x1, y2, x2)] in normalized coordinates
+    class_ids: [TRAIN_ROIS_PER_IMAGE]. Integer class IDs. Zero padded.
+    deltas: [TRAIN_ROIS_PER_IMAGE, NUM_CLASSES, (dy, dx, log(dh), log(dw))]
+            Class-specific bbox refinements.
+    masks: [TRAIN_ROIS_PER_IMAGE, height, width). Masks cropped to bbox
+           boundaries and resized to neural network output size.
+    Note: Returned arrays might be zero padded if not enough target ROIs.
+    """
+    # Assertions
+    asserts = [
+        tf.Assert(tf.greater(tf.shape(proposals)[0], 0), [proposals],
+                  name="roi_assertion"),
+    ]
+    with tf.control_dependencies(asserts):
+        proposals = tf.identity(proposals)
+    
+    # Remove zero padding
+    proposals, _ = trim_zeros_graph(proposals, name="trim_proposals")
+    gt_boxes, non_zeros = trim_zeros_graph(gt_boxes, name="trim_gt_boxes")
+    gt_class_ids = tf.boolean_mask(gt_class_ids, non_zeros,
+                                   name="trim_gt_class_ids")
+    # gt_masks = tf.gather(gt_masks, tf.where(non_zeros)[:, 0], axis=2,
+    #                      name="trim_gt_masks")
+    
+   
+    overlaps = overlaps_graph(proposals, gt_boxes)
+ 
+    
+    # Determine postive and negative ROIs
+    roi_iou_max = tf.reduce_max(overlaps, axis=1)
+    # 1. Positive ROIs are those with >= 0.5 IoU with a GT box
+    positive_roi_bool = (roi_iou_max >= 0.05)
+    positive_indices = tf.where(positive_roi_bool)[:, 0]
+    # 2. Negative ROIs are those with < 0.5 with every GT box. Skip crowds.
+    #####negative_indices = tf.where(tf.logical_and(roi_iou_max < 0.5, no_crowd_bool))[:, 0]
+    negative_indices = tf.where(roi_iou_max < 0.05)[:, 0]
+    
+    # Subsample ROIs. Aim for 33% positive
+    # Positive ROIs
+    positive_count = int(conf.MRCNN_TRAIN_PROPOSALS_PER_IMAGE * 0.3)
+    positive_indices = tf.random_shuffle(positive_indices)[:positive_count]
+    positive_count = tf.shape(positive_indices)[0]
+    # Negative ROIs. Add enough to maintain positive:negative ratio.
+    r = 1.0 / 0.3
+    negative_count = tf.cast(r * tf.cast(positive_count, tf.float32), tf.int32) - positive_count
+    negative_indices = tf.random_shuffle(negative_indices)[:negative_count]
+    # Gather selected ROIs
+    positive_rois = tf.gather(proposals, positive_indices)
+    negative_rois = tf.gather(proposals, negative_indices)
+    
+    # Assign positive ROIs to GT boxes.
+    positive_overlaps = tf.gather(overlaps, positive_indices)
+    roi_gt_box_assignment = tf.argmax(positive_overlaps, axis=1)
+    roi_gt_boxes = tf.gather(gt_boxes, roi_gt_box_assignment)
+    roi_gt_class_ids = tf.gather(gt_class_ids, roi_gt_box_assignment)
+    
+    # Compute bbox refinement for positive ROIs
+    deltas = box_refinement_tf(positive_rois, roi_gt_boxes)
+    deltas /= conf.BBOX_STD_DEV
+    
+    # # Assign positive ROIs to GT masks
+    # # Permute masks to [N, height, width, 1]
+    # transposed_masks = tf.expand_dims(tf.transpose(gt_masks, [2, 0, 1]), -1)
+    # # Pick the right mask for each ROI
+    # roi_masks = tf.gather(transposed_masks, roi_gt_box_assignment)
+    #
+    # # Compute mask targets
+    # boxes = positive_rois
+    # if config.USE_MINI_MASK:
+    #     # Transform ROI corrdinates from normalized image space
+    #     # to normalized mini-mask space.
+    #     y1, x1, y2, x2 = tf.split(positive_rois, 4, axis=1)
+    #     gt_y1, gt_x1, gt_y2, gt_x2 = tf.split(roi_gt_boxes, 4, axis=1)
+    #     gt_h = gt_y2 - gt_y1
+    #     gt_w = gt_x2 - gt_x1
+    #     y1 = (y1 - gt_y1) / gt_h
+    #     x1 = (x1 - gt_x1) / gt_w
+    #     y2 = (y2 - gt_y1) / gt_h
+    #     x2 = (x2 - gt_x1) / gt_w
+    #     boxes = tf.concat([y1, x1, y2, x2], 1)
+    # box_ids = tf.range(0, tf.shape(roi_masks)[0])
+    # masks = tf.image.crop_and_resize(tf.cast(roi_masks, tf.float32), boxes,
+    #                                  box_ids,
+    #                                  config.MASK_SHAPE)
+    # # Remove the extra dimension from masks.
+    # masks = tf.squeeze(masks, axis=3)
+    #
+    # # Threshold mask pixels at 0.5 to have GT masks be 0 or 1 to use with
+    # # binary cross entropy loss.
+    # masks = tf.round(masks)
+    #
+    # # Append negative ROIs and pad bbox deltas and masks that
+    # # are not used for negative ROIs with zeros.
+    # rois = tf.concat([positive_rois, negative_rois], axis=0)
+    # N = tf.shape(negative_rois)[0]
+    # P = tf.maximum(config.TRAIN_ROIS_PER_IMAGE - tf.shape(rois)[0], 0)
+    # rois = tf.pad(rois, [(0, P), (0, 0)])
+    # roi_gt_boxes = tf.pad(roi_gt_boxes, [(0, N + P), (0, 0)])
+    # roi_gt_class_ids = tf.pad(roi_gt_class_ids, [(0, N + P)])
+    # deltas = tf.pad(deltas, [(0, N + P), (0, 0)])
+    # masks = tf.pad(masks, [[0, N + P], (0, 0), (0, 0)])
+    #
+    # return rois, roi_gt_class_ids, deltas, masks
 
-
+    return dict(a=proposals, b=gt_boxes, c=gt_class_ids, d=overlaps, e=positive_rois, f=negative_rois, g=positive_overlaps, h=roi_gt_box_assignment,
+                i=roi_gt_class_ids, j=roi_gt_boxes, k=deltas)
 
 class PreprareTrainData():
     def __init__(self, conf, dataset):

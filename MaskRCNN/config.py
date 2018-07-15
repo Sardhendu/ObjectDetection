@@ -46,12 +46,13 @@ class config(object):
     DETECTION_MIN_THRESHOLD = 0.7
     DETECTION_NMS_THRESHOLD = 0.3
     DETECTION_POST_NMS_INSTANCES = 100
-    
-    
+
     
     # + TRAINING VARIABLES
     # The number of anchors max to be selected for training the RPN stage (positive_anchors=128, negative_anchors=128)
     RPN_TRAIN_ANCHORS_PER_IMAGE = 256
+    MRCNN_TRAIN_PROPOSALS_PER_IMAGE = 200  # Proporsals are same as ROI's
+    
 
     # Maximum number of ground truth instances to use in one image
     MAX_GT_OBJECTS = 100
