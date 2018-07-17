@@ -108,7 +108,7 @@ def set_pretrained_weights(sess, weights_path, train_nets=None):
             else:
                 pretrained_var_name = pretrained_weights[scope_name][scope_name]
                 
-            print('popopopopopopopop', pretrained_var_name)
+            print('Variable name: ', pretrained_var_name)
 
             if graph_var_name == 'kernel:0':
                 val = pretrained_var_name['kernel:0']

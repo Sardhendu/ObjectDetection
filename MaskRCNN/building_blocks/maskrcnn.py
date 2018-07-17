@@ -261,18 +261,18 @@ class MaskRCNN():
         x = KL.TimeDistributed(BatchNorm(), name='mrcnn_class_bn1')(x, training=False)
         x = KL.Activation('relu')(x)
         self.FC1 = x if self.DEBUG else []
-        print('1 popripoweiropwiropiowperipewir ', x.get_shape().as_list())
+        # print('1 popripoweiropwiropiowperipewir ', x.get_shape().as_list())
 
         # FC_CONV layer 2: Perform 1x1 convolutions
         x = KL.TimeDistributed(KL.Conv2D(1024, (1, 1)), name="mrcnn_class_conv2")(x)
         x = KL.TimeDistributed(BatchNorm(), name='mrcnn_class_bn2')(x, training=False)
         x = KL.Activation('relu')(x)
         self.FC2 = x if self.DEBUG else []
-        print('2 popripoweiropwiropiowperipewir ', x.get_shape().as_list())
+        # print('2 popripoweiropwiropiowperipewir ', x.get_shape().as_list())
 
         # Shared Convolution across the Classifier and Regressor
         self.shared = KL.Lambda(lambda x: K.squeeze(K.squeeze(x, 3), 2), name="pool_squeeze")(x)
-        print('3 popripoweiropwiropiowperipewir ', self.shared.get_shape().as_list())
+        # print('3 popripoweiropwiropiowperipewir ', self.shared.get_shape().as_list())
         # self.shared = shared if self.DEBUG else []
 
         # Classifier (Object detection)
@@ -280,7 +280,7 @@ class MaskRCNN():
         # print('p909u894ur84r4r4hruh4i8r4 ', self.num_classes)
         self.mrcnn_class_logits = KL.TimeDistributed(KL.Dense(self.num_classes),
                                                 name='mrcnn_class_logits')(self.shared)
-        print('4 popripoweiropwiropiowperipewir ', self.mrcnn_class_logits.get_shape().as_list())
+        # print('4 popripoweiropwiropiowperipewir ', self.mrcnn_class_logits.get_shape().as_list())
         self.mrcnn_class_probs = KL.TimeDistributed(KL.Activation("softmax"),
                                          name="mrcnn_class")(self.mrcnn_class_logits)
 
@@ -288,7 +288,7 @@ class MaskRCNN():
         # with tf.variable_scope('mrcnn_bbox'):
         x = KL.TimeDistributed(KL.Dense(self.num_classes * 4, activation='linear'),
                                name='mrcnn_bbox_fc')(self.shared)
-        print('5 popripoweiropwiropiowperipewir ', x.get_shape().as_list())
+        # print('5 popripoweiropwiropiowperipewir ', x.get_shape().as_list())
         # Reshape to [batch, boxes, num_classes, (dy, dx, log(dh), log(dw))]
         s = K.shape(x)
         self.mrcnn_bbox = KL.Reshape((s[1], self.num_classes, 4), name="mrcnn_bbox")(x)

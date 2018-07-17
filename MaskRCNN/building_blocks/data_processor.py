@@ -272,6 +272,9 @@ class BuildDetectionTargets():
         self.rois = tf.pad(rois, [(0,num_pad), (0,0)])
         self.roi_gt_class_ids = tf.pad(roi_gt_class_ids, [(0,num_pad+neg_rois_cnt)])
         self.roi_gt_box_deltas = tf.pad(roi_gt_box_deltas, [(0, num_pad + neg_rois_cnt), (0, 0)])
+
+        # Reshape, to convert into nd array
+        self.roi_gt_class_ids = tf.reshape(self.roi_gt_class_ids, shape=[1,tf.shape(self.roi_gt_class_ids)[0]])
         
         if self.DEBUG:
             self.debug_dict = dict(a=prop, b=gt_boxes, c=gt_class_ids, d=iou, e=pos_rois,
