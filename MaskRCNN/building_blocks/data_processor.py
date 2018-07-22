@@ -102,7 +102,7 @@ def process_images(conf, list_of_images, list_of_image_ids):
 
 
 class BuildDetectionTargets():
-    def __init__(self, conf, proposals, gt_bboxes, gt_class_ids, DEBUG=False):
+    def __init__(self, conf, proposals, gt_class_ids, gt_bboxes, DEBUG=False):
         self.train_rois_per_image = conf.MRCNN_TRAIN_ROIS_PER_IMAGE
         self.box_stddev = conf.BBOX_STD_DEV
         
@@ -111,8 +111,10 @@ class BuildDetectionTargets():
         else:
             self.DEBUG = False
             
-        self.build_detection_target(proposals, gt_bboxes, gt_class_ids)
-
+        self.build_detection_target(proposals, gt_class_ids, gt_bboxes)
+        # self.detection_targets_graph(proposals, gt_bboxes, gt_class_ids)
+        
+        
     def box_refinement_tf(self, box, gt_box):
         """Compute refinement needed to transform box to gt_box.
         box and gt_box are [N, (y1, x1, y2, x2)]
@@ -185,8 +187,25 @@ class BuildDetectionTargets():
         
     
     
-    def build_detection_target(self,proposals, gt_bboxes, gt_class_ids):
+    def build_detection_target(self, proposals, gt_class_ids, gt_bboxes):
         '''
+        
+        :param proposals:       [batch_size, 2000, 4], 2000-> when training, 1000 -> when testing, Are Zero Padded
+        :param gt_bboxes:       [batch_size, 100, 4], 100 -> max_gt_instances, Are Zero padded
+        :param gt_class_ids:    [batch_size, 100], 100 -> max_gt_instances, Are Zero padded
+        :return:
+                                rois: [batch_size, MRCNN_TRAIN_ROIS_PER_IMAGE]
+                                    We require equall number of +ve and -ve rois to do roi pooling and get
+                                    predictions.  Using the prediction "logits" and "box" we compute the loss between
+                                    the prediction and "roi_gt_class_ids" and "roi_gt_box_deltas"
+                                roi_gt_class_ids: [batch_size, MRCNN_TRAIN_ROIS_PER_IMAGE], -> [batch_size, object_id]
+                                    Used in Classification Loss.
+                                roi_gt_box_deltas: [batch_size, MRCNN_TRAIN_ROIS_PER_IMAGE]
+                                    Used in regression (bounding box) loss. Uses only positive ROI's. Proposal (ROIs)
+                                    that have +ive iou with gt_bboxes
+                                
+        
+        
         The proposals we receive from the proposal layer are :
                 [num_batch, num_proposals, (y1, x1, y2, x2)]
         Also, we have ground_truth (gt_boxes).
@@ -201,15 +220,11 @@ class BuildDetectionTargets():
             3. Fetch proportional +ve and -ve boxes based on the iou
             4. Fetch roi_class_id (class_id of proposals) and roi_bboxes for +ve boxes
             5. Fetch all gt_boxes, gt_class_ids that have most IOU with each +ve Proposals
-            
-        TO Note:
-            1. Proposals are zero padded.
-            2. The class_id and
-        :return:
+
         '''
         
         
-        prcntg_pos_instances = 0.3
+        prcntg_pos_instances = 0.33
         # prcntg_neg_instances = 0.7
     
         gt_bboxes = tf.cast(gt_bboxes, dtype=tf.float32)
@@ -233,8 +248,8 @@ class BuildDetectionTargets():
         roi_iou_max = tf.reduce_max(iou, axis=1)
         
         # Get Positive >0.5 and negative <0.3 anchors
-        pos_indices = tf.where(roi_iou_max >= 0.05)[:, 0]
-        neg_indices = tf.where(roi_iou_max < 0.05)[:, 0]
+        pos_indices = tf.where(roi_iou_max >= 0.5)[:, 0]
+        neg_indices = tf.where(roi_iou_max < 0.5)[:, 0]
         
         # Get Shuffle Positive and negative indices and select only a few of them
         num_pos_inst = int(self.train_rois_per_image * prcntg_pos_instances)
@@ -292,6 +307,8 @@ class BuildDetectionTargets():
 
 class PreprareTrainData():
     def __init__(self, conf, dataset):
+        # TODO: Handle the case where the output data has no class, but only background.
+        
         self.image_min_dim = conf.IMAGE_MIN_DIM
         self.image_max_dim = conf.IMAGE_MAX_DIM
         self.min_scale = conf.IMAGE_MIN_SCALE
@@ -453,7 +470,7 @@ class PreprareTrainData():
         rpn_target_bbox = np.zeros((self.max_rpn_targets, 4))
         pos_idx = np.where(rpn_target_class == 1)[0]
         for i, (idx, anchor_box) in enumerate(zip(pos_idx, self.anchors[pos_idx])):
-            # Convert bbox to scalled and shifted version
+            # Convert bbox to scaled and shifted version
             gt_box = batch_gt_boxes[anchor_iou_max_idx[idx]] # Select class 1 from gt boxes with high iou score
             # Get center, h, w of anchor boxes
             ah = anchor_box[2] - anchor_box[0]

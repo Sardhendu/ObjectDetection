@@ -66,7 +66,7 @@ class Train():
         batch_rois_gt_class_boxes = []
         for i in range(0, self.batch_size):
             rois, roi_gt_class_ids, roi_gt_box_deltas = data_processor.BuildDetectionTargets(
-                    self.conf, proposals_[i], input_gt_bboxes[i], input_gt_class_ids[i],
+                    self.conf, proposals_[i], input_gt_class_ids[i], input_gt_bboxes[i],
                     DEBUG=False).get_target_rois()
             batch_rois.append(rois)
             batch_rois_gt_class_ids.append(roi_gt_class_ids)
@@ -154,14 +154,14 @@ class Train():
         # CREATE THE PROPOSAL GRAPH
         proposals = Proposals(self.conf, self.batch_size,
                               rpn_pred_probs, rpn_pred_bbox,
-                              self.anchors, DEBUG=True).get_proposals()
+                              self.anchors, training=True, DEBUG=True).get_proposals()
         
         # BUILD MRCNN/DETECTION TARGET GRAPH
         (rois, mrcnn_target_class_ids, mrcnn_target_box) = self.get_detection_target_graph(
                 proposals,
                 self.input_gt_class_ids,
                 self.input_gt_bboxes)
-        
+
         # MRCNN GRAPH
         mrcnn_graph = MaskRCNN(self.conf.IMAGE_SHAPE,
                                pool_shape=[7, 7],
@@ -171,101 +171,105 @@ class Train():
                                feature_maps=[fpn_graph['fpn_p2'], fpn_graph['fpn_p3'],
                                              fpn_graph['fpn_p4'], fpn_graph['fpn_p5']],
                                type='keras', DEBUG=False).get_mrcnn_graph()
-        
+
         # TODO: DETECTION LAYER
         # RPN has two losses 1) Classification loss and 2) Regularization
-        
+
         # TODO: Create RPN LOSS
         # RPN has two losses 1) Classification loss and 2) Regularization
         rpn_class_loss = Loss.rpn_class_loss(self.rpn_target_class, rpn_pred_logits)
         rpn_target_bbox_nopad, rpn_pred_box_pos = Loss.rpn_box_loss(
                 self.rpn_target_bbox, rpn_pred_bbox, self.rpn_target_class,
                 batch_size=self.batch_size)
-        
+
         # TODO: DETECTION
-        
+
         # TODO: Create MRCNN Loss  (Hmm how would we do it, when we havent compute the ground truth)
-        
+
         return (fpn_graph, rpn_pred_logits, rpn_pred_probs, rpn_pred_bbox, proposals,
                 mrcnn_graph, rpn_class_loss, rpn_target_bbox_nopad, rpn_pred_box_pos,
                 mrcnn_target_class_ids, mrcnn_target_box)
-    
+
+        # return rpn_pred_logits, rpn_pred_probs, rpn_pred_bbox, proposals
+
+
+
+    # def exec_sess(self, data_dict, image_ids):
+    #     # TODO: Inputs anchors and xIN
+    #     tf.reset_default_graph()
+    #
+    #     # BUILD THE GRAPH
+    #     (rpn_pred_logits, rpn_pred_probs, rpn_pred_bbox, proposals) = self.build_train_graph()
+    #
+    #     # GET INPUT DATA
+    #     (batch_images, batch_gt_masks, batch_gt_class_ids, batch_gt_bboxes,
+    #      batch_image_metas, batch_rpn_target_class, batch_rpn_target_bbox,
+    #      anchors_) = self.transform_images(data_dict, image_ids)
+    #
+    #     batch_active_class_ids = batch_image_metas[:, -4:]  # 1 corresponds to the active level
+    #
+    #     print('batch_active_class_ids', batch_active_class_ids.shape)
+    #     print('batch_rpn_target_class ', batch_rpn_target_class.shape)
+    #
+    #
+    #     with tf.Session() as sess:
+    #         sess.run(tf.global_variables_initializer())
+    #
+    #         # PRINT ALL THE TRAINING VARIABLES
+    #         load_params.print_trainable_variable_names(sess)
+    #
+    #         # GET PRETRAINED WEIGHTS
+    #         if self.pretrained_weights_path:
+    #             load_params.set_pretrained_weights(sess, self.pretrained_weights_path,
+    #                                                train_nets='heads')
+    #
+    #
+    #         outputs_ = [rpn_pred_logits,
+    #                    rpn_pred_probs,
+    #                    rpn_pred_bbox,
+    #                    proposals,
+    #                    self.input_gt_class_ids,
+    #                    self.input_gt_bboxes]
+    #         (rpn_pred_logits_,
+    #          rpn_pred_probs_,
+    #          rpn_pred_bbox_,
+    #          proposals_,
+    #          input_gt_class_ids_,
+    #          input_gt_bboxes_) = sess.run(
+    #                 outputs_,
+    #                 feed_dict={self.xIN: batch_images,
+    #                            self.anchors: anchors_,
+    #                            self.input_gt_class_ids: batch_gt_class_ids,
+    #                            self.input_gt_bboxes: batch_gt_bboxes})
+    #
+    #
+    #         print('rpn_pred_logits_ ',rpn_pred_logits_.shape)
+    #         print('rpn_pred_probs_ ', rpn_pred_probs_.shape)
+    #         print('rpn_pred_bbox_: ', rpn_pred_bbox_.shape)
+    #         print('proposals_: ', proposals_.shape)
+    #         print('input_gt_class_ids_: ', input_gt_class_ids_.shape)
+    #         print('input_gt_bboxes_: ', input_gt_bboxes_.shape)
+    #
+        
     def exec_sess(self, data_dict, image_ids):
         # TODO: Inputs anchors and xIN
         tf.reset_default_graph()
-        
+
         # BUILD THE GRAPH
         (fpn_graph, rpn_pred_logits, rpn_pred_probs, rpn_pred_bbox, proposals,
          mrcnn_graph,  rpn_class_loss, rpn_target_bbox_nopad, rpn_pred_box_pos,
          mrcnn_target_class_ids, mrcnn_target_box_pos) = self.build_train_graph()
-        
+
         # GET INPUT DATA
         (batch_images, batch_gt_masks, batch_gt_class_ids, batch_gt_bboxes,
          batch_image_metas, batch_rpn_target_class, batch_rpn_target_bbox,
          anchors_) = self.transform_images(data_dict, image_ids)
-        
+
         batch_active_class_ids = batch_image_metas[:,-4:]  # 1 corresponds to the active level
-        
+
         print('batch_active_class_ids', batch_active_class_ids.shape)
         print('batch_rpn_target_class ', batch_rpn_target_class.shape)
-        
-        
-        
-        
-        
-        
-        # ######### ROUGH ###########################
-        # from MaskRCNN.building_blocks import data_processor
-        # proposal__ = np.array([[[1, 10, 1, 10], [23, 54, 155, 177], [10,10,167,170],
-        #                         [0, 0, 0, 0]],
-        #                        [[3, 2, 2, 2], [54, 22, 144, 171], [0,0,0,0],[0, 0, 0, 0]]])
-        #
-        # # proposals_ = tf.placeholder(shape=(2, 3, 4), dtype=tf.float32, name='proposals')
-        # proposals_ = tf.placeholder(shape=(2, 4, 4), dtype=tf.float32, name='proposals')
-        #
-        # batch_rois = []
-        # batch_rois_gt_class_ids = []
-        # batch_rois_gt_class_boxes = []
-        # for i in range(0, 2):
-        #     rois, roi_gt_class_ids, roi_gt_box_deltas = data_processor.BuildDetectionTargets(self.conf,
-        #             proposals_[i], batch_gt_bboxes[i], batch_gt_class_ids[i], DEBUG=False).get_target_rois()
-        #
-        #     batch_rois.append(rois)
-        #     batch_rois_gt_class_ids.append(roi_gt_class_ids)
-        #     batch_rois_gt_class_boxes.append(roi_gt_box_deltas)
-        #
-        # batch_rois = tf.stack(batch_rois, axis=0)
-        # batch_rois_gt_class_ids = tf.concat(batch_rois_gt_class_ids, axis=0)
-        # batch_rois_gt_class_boxes = tf.stack(batch_rois_gt_class_boxes, axis=0)
-        #
-        # print (batch_rois.get_shape().as_list())
-        # print(batch_rois_gt_class_ids.get_shape().as_list())
-        # print(batch_rois_gt_class_boxes.get_shape().as_list())
-        #
-        # # batch_rois = tf.stack([rois], )
-        # # break
-        # # batch_proposals.append(prop)
-        #
-        # with tf.Session() as sess:
-        #     sess.run(tf.global_variables_initializer())
-        #     #
-        #     a,b, c = sess.run([batch_rois, batch_rois_gt_class_ids, batch_rois_gt_class_boxes],
-        #              feed_dict={proposals_:proposal__})
-        #
-        #
-        #     # a, b, c= sess.run([rois, roi_gt_box_deltas],
-        #     #                       feed_dict={proposals_: proposal__})
-        #
-        #     print(a.shape)
-        #     print (b.shape)
-        #     print(c.shape)
-        #
-        # ##########################################
-        
-        
-        
-        
-        
+
         with tf.Session() as sess:
             sess.run(tf.global_variables_initializer())
 
@@ -277,16 +281,17 @@ class Train():
                 load_params.set_pretrained_weights(sess, self.pretrained_weights_path,
                                                    train_nets='heads')
 
-            (rpn_pred_logits_, rpn_pred_probs_, rpn_pred_bbox_, proposals_, mrcnn_target_class_ids_, mrcnn_target_box_, mrcnn_class_logits_, mrcnn_class_probs_, mrcnn_bbox_) = sess.run([
-                            rpn_pred_logits,
-                            rpn_pred_probs,
-                            rpn_pred_bbox,
-                            proposals,
-                            mrcnn_target_class_ids,
-                            mrcnn_target_box_pos,
-                            mrcnn_graph['mrcnn_class_logits'],
-                            mrcnn_graph['mrcnn_class_probs'],
-                            mrcnn_graph['mrcnn_bbox']],
+            (rpn_pred_logits_, rpn_pred_probs_, rpn_pred_bbox_, proposals_, mrcnn_target_class_ids_, mrcnn_target_box_,
+             mrcnn_class_logits_, mrcnn_class_probs_, mrcnn_bbox_) = sess.run([
+                rpn_pred_logits,
+                rpn_pred_probs,
+                rpn_pred_bbox,
+                proposals,
+                mrcnn_target_class_ids,
+                mrcnn_target_box_pos,
+                mrcnn_graph['mrcnn_class_logits'],
+                mrcnn_graph['mrcnn_class_probs'],
+                mrcnn_graph['mrcnn_bbox']],
                     feed_dict={self.xIN: batch_images,
                                self.anchors: anchors_,
                                self.input_gt_class_ids: batch_gt_class_ids,
@@ -319,16 +324,64 @@ class Train():
 
             print('rpn_class_loss_: ', rpn_class_loss_)
 
-            Loss.mrcnn_class_loss(mrcnn_target_class=batch_gt_class_ids,
+            Loss.mrcnn_class_loss(mrcnn_target_class_ids=mrcnn_target_class_ids_,
                                   mrcnn_pred_logits=mrcnn_class_logits_,
                                   batch_active_class_ids=batch_active_class_ids,
                                   sess=sess)
 
+            ######### ROUGH ###########################
+            # from MaskRCNN.building_blocks import data_processor
+            # proposal__ = np.array([[[1, 10, 1, 10], [23, 54, 155, 177], [10,10,167,170],
+            #                         [0, 0, 0, 0]],
+            #                        [[3, 2, 2, 2], [54, 22, 144, 171], [0,0,0,0],[0, 0, 0, 0]]])
+            #
+            # # proposals_ = tf.placeholder(shape=(2, 3, 4), dtype=tf.float32, name='proposals')
+            # proposals_ = tf.placeholder(shape=(2, 4, 4), dtype=tf.float32, name='proposals')
+            #
+            # batch_rois = []
+            # batch_rois_gt_class_ids = []
+            # batch_rois_gt_class_boxes = []
+            # for i in range(0, 2):
+            #     rois, roi_gt_class_ids, roi_gt_box_deltas = data_processor.BuildDetectionTargets(self.conf,
+            #             proposals_[i], batch_gt_bboxes[i], batch_gt_class_ids[i], DEBUG=False).get_target_rois()
+            #
+            #     batch_rois.append(rois)
+            #     batch_rois_gt_class_ids.append(roi_gt_class_ids)
+            #     batch_rois_gt_class_boxes.append(roi_gt_box_deltas)
+            #
+            # batch_rois = tf.stack(batch_rois, axis=0)
+            # batch_rois_gt_class_ids = tf.concat(batch_rois_gt_class_ids, axis=0)
+            # batch_rois_gt_class_boxes = tf.stack(batch_rois_gt_class_boxes, axis=0)
+            #
+            # print (batch_rois.get_shape().as_list())
+            # print(batch_rois_gt_class_ids.get_shape().as_list())
+            # print(batch_rois_gt_class_boxes.get_shape().as_list())
+            #
+            # # batch_rois = tf.stack([rois], )
+            # # break
+            # # batch_proposals.append(prop)
+            #
+            # with tf.Session() as sess:
+            #     sess.run(tf.global_variables_initializer())
+            #     #
+            #     a,b, c = sess.run([batch_rois, batch_rois_gt_class_ids, batch_rois_gt_class_boxes],
+            #              feed_dict={proposals_:proposal__})
+            #
+            #
+            #     # a, b, c= sess.run([rois, roi_gt_box_deltas],
+            #     #                       feed_dict={proposals_: proposal__})
+            #
+            #     print(a.shape)
+            #     print (b.shape)
+            #     print(c.shape)
+            #
+            # ##########################################
 
-        
-        
-        
-        ##### ROUGH
+
+
+
+
+            ##### ROUGH
             # print('')
             # print(rpn_box_loss_)
             # print('')

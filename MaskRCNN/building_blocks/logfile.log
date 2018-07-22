@@ -1,878 +1,878 @@
-2018-07-17 00:41:59,358 INFO     Anchors: running for..... scales=8, feature_map_shapes=[32 32], feature_map_strides=4
-2018-07-17 00:41:59,359 INFO     Anchors: Box width shape = (1024, 3)
-2018-07-17 00:41:59,359 INFO     Anchors: Box height shape = (1024, 3)
-2018-07-17 00:41:59,359 INFO     Anchors: Box center_x shape = (1024, 3)
-2018-07-17 00:41:59,359 INFO     Anchors: Box center_y shape = (1024, 3)
-2018-07-17 00:41:59,360 INFO     Anchors: Stacked Box corner coordinates shape = (3072, 4)
-2018-07-17 00:41:59,360 INFO     Anchors: running for..... scales=16, feature_map_shapes=[16 16], feature_map_strides=8
-2018-07-17 00:41:59,360 INFO     Anchors: Box width shape = (256, 3)
-2018-07-17 00:41:59,360 INFO     Anchors: Box height shape = (256, 3)
-2018-07-17 00:41:59,360 INFO     Anchors: Box center_x shape = (256, 3)
-2018-07-17 00:41:59,361 INFO     Anchors: Box center_y shape = (256, 3)
-2018-07-17 00:41:59,361 INFO     Anchors: Stacked Box corner coordinates shape = (768, 4)
-2018-07-17 00:41:59,361 INFO     Anchors: running for..... scales=32, feature_map_shapes=[8 8], feature_map_strides=16
-2018-07-17 00:41:59,361 INFO     Anchors: Box width shape = (64, 3)
-2018-07-17 00:41:59,361 INFO     Anchors: Box height shape = (64, 3)
-2018-07-17 00:41:59,361 INFO     Anchors: Box center_x shape = (64, 3)
-2018-07-17 00:41:59,361 INFO     Anchors: Box center_y shape = (64, 3)
-2018-07-17 00:41:59,361 INFO     Anchors: Stacked Box corner coordinates shape = (192, 4)
-2018-07-17 00:41:59,362 INFO     Anchors: running for..... scales=64, feature_map_shapes=[4 4], feature_map_strides=32
-2018-07-17 00:41:59,362 INFO     Anchors: Box width shape = (16, 3)
-2018-07-17 00:41:59,362 INFO     Anchors: Box height shape = (16, 3)
-2018-07-17 00:41:59,362 INFO     Anchors: Box center_x shape = (16, 3)
-2018-07-17 00:41:59,362 INFO     Anchors: Box center_y shape = (16, 3)
-2018-07-17 00:41:59,362 INFO     Anchors: Stacked Box corner coordinates shape = (48, 4)
-2018-07-17 00:41:59,362 INFO     Anchors: running for..... scales=128, feature_map_shapes=[2 2], feature_map_strides=64
-2018-07-17 00:41:59,363 INFO     Anchors: Box width shape = (4, 3)
-2018-07-17 00:41:59,363 INFO     Anchors: Box height shape = (4, 3)
-2018-07-17 00:41:59,363 INFO     Anchors: Box center_x shape = (4, 3)
-2018-07-17 00:41:59,363 INFO     Anchors: Box center_y shape = (4, 3)
-2018-07-17 00:41:59,363 INFO     Anchors: Stacked Box corner coordinates shape = (12, 4)
-2018-07-17 00:41:59,363 INFO     Anchors: concatenated for each stage: shape = (4092, 4)
-2018-07-17 00:41:59,488 INFO     Image height = 128, width = 128 ................
-2018-07-17 00:41:59,488 INFO     Initiating FPN BOTTOM-UP .................................
-2018-07-17 00:41:59,492 INFO     Zero_padded: [None, 134, 134, 3]
-2018-07-17 00:41:59,492 INFO     STAGE 1 ...........................
-2018-07-17 00:41:59,536 INFO     Conv2D: [None, 64, 64, 64]
-2018-07-17 00:41:59,539 INFO     MaxPool2d: [None, 32, 32, 64]
-2018-07-17 00:41:59,539 INFO     STAGE 2 ...........................
-2018-07-17 00:41:59,583 INFO     res2a_branch1: [None, 32, 32, 256]
-2018-07-17 00:41:59,626 INFO     res2a_branch2a: [None, 32, 32, 64]
-2018-07-17 00:41:59,670 INFO     res2a_branch2b: [None, 32, 32, 64]
-2018-07-17 00:41:59,713 INFO     res2a_branch2c: [None, 32, 32, 256]
-2018-07-17 00:41:59,715 INFO     relu2a_branch_out: [None, 32, 32, 256]
-2018-07-17 00:41:59,758 INFO     res2b_branch2a: [None, 32, 32, 64]
-2018-07-17 00:41:59,801 INFO     res2b_branch2b: [None, 32, 32, 64]
-2018-07-17 00:41:59,844 INFO     res2b_branch2c: [None, 32, 32, 256]
-2018-07-17 00:41:59,846 INFO     relu2b_branch_out: [None, 32, 32, 256]
-2018-07-17 00:41:59,889 INFO     res2c_branch2a: [None, 32, 32, 64]
-2018-07-17 00:41:59,932 INFO     res2c_branch2b: [None, 32, 32, 64]
-2018-07-17 00:41:59,975 INFO     res2c_branch2c: [None, 32, 32, 256]
-2018-07-17 00:41:59,977 INFO     relu2c_branch_out: [None, 32, 32, 256]
-2018-07-17 00:41:59,977 INFO     STAGE 3 ...........................
-2018-07-17 00:42:00,022 INFO     res3a_branch1: [None, 16, 16, 512]
-2018-07-17 00:42:00,065 INFO     res3a_branch2a: [None, 16, 16, 128]
-2018-07-17 00:42:00,108 INFO     res3a_branch2b: [None, 16, 16, 128]
-2018-07-17 00:42:00,151 INFO     res3a_branch2c: [None, 16, 16, 512]
-2018-07-17 00:42:00,153 INFO     relu3a_branch_out: [None, 16, 16, 512]
-2018-07-17 00:42:00,197 INFO     res3b_branch2a: [None, 16, 16, 128]
-2018-07-17 00:42:00,242 INFO     res3b_branch2b: [None, 16, 16, 128]
-2018-07-17 00:42:00,284 INFO     res3b_branch2c: [None, 16, 16, 512]
-2018-07-17 00:42:00,286 INFO     relu3b_branch_out: [None, 16, 16, 512]
-2018-07-17 00:42:00,329 INFO     res3c_branch2a: [None, 16, 16, 128]
-2018-07-17 00:42:00,372 INFO     res3c_branch2b: [None, 16, 16, 128]
-2018-07-17 00:42:00,414 INFO     res3c_branch2c: [None, 16, 16, 512]
-2018-07-17 00:42:00,417 INFO     relu3c_branch_out: [None, 16, 16, 512]
-2018-07-17 00:42:00,460 INFO     res3d_branch2a: [None, 16, 16, 128]
-2018-07-17 00:42:00,507 INFO     res3d_branch2b: [None, 16, 16, 128]
-2018-07-17 00:42:00,554 INFO     res3d_branch2c: [None, 16, 16, 512]
-2018-07-17 00:42:00,556 INFO     relu3d_branch_out: [None, 16, 16, 512]
-2018-07-17 00:42:00,557 INFO     STAGE 4 ...........................
-2018-07-17 00:42:00,665 INFO     res4a_branch1: [None, 8, 8, 1024]
-2018-07-17 00:42:00,708 INFO     res4a_branch2a: [None, 8, 8, 256]
-2018-07-17 00:42:00,752 INFO     res4a_branch2b: [None, 8, 8, 256]
-2018-07-17 00:42:00,794 INFO     res4a_branch2c: [None, 8, 8, 1024]
-2018-07-17 00:42:00,796 INFO     relu4a_branch_out: [None, 8, 8, 1024]
-2018-07-17 00:42:00,839 INFO     res4b_branch2a: [None, 8, 8, 256]
-2018-07-17 00:42:00,883 INFO     res4b_branch2b: [None, 8, 8, 256]
-2018-07-17 00:42:00,925 INFO     res4b_branch2c: [None, 8, 8, 1024]
-2018-07-17 00:42:00,927 INFO     relu4b_branch_out: [None, 8, 8, 1024]
-2018-07-17 00:42:00,971 INFO     res4c_branch2a: [None, 8, 8, 256]
-2018-07-17 00:42:01,014 INFO     res4c_branch2b: [None, 8, 8, 256]
-2018-07-17 00:42:01,058 INFO     res4c_branch2c: [None, 8, 8, 1024]
-2018-07-17 00:42:01,060 INFO     relu4c_branch_out: [None, 8, 8, 1024]
-2018-07-17 00:42:01,103 INFO     res4d_branch2a: [None, 8, 8, 256]
-2018-07-17 00:42:01,146 INFO     res4d_branch2b: [None, 8, 8, 256]
-2018-07-17 00:42:01,191 INFO     res4d_branch2c: [None, 8, 8, 1024]
-2018-07-17 00:42:01,193 INFO     relu4d_branch_out: [None, 8, 8, 1024]
-2018-07-17 00:42:01,237 INFO     res4e_branch2a: [None, 8, 8, 256]
-2018-07-17 00:42:01,282 INFO     res4e_branch2b: [None, 8, 8, 256]
-2018-07-17 00:42:01,325 INFO     res4e_branch2c: [None, 8, 8, 1024]
-2018-07-17 00:42:01,327 INFO     relu4e_branch_out: [None, 8, 8, 1024]
-2018-07-17 00:42:01,372 INFO     res4f_branch2a: [None, 8, 8, 256]
-2018-07-17 00:42:01,416 INFO     res4f_branch2b: [None, 8, 8, 256]
-2018-07-17 00:42:01,460 INFO     res4f_branch2c: [None, 8, 8, 1024]
-2018-07-17 00:42:01,462 INFO     relu4f_branch_out: [None, 8, 8, 1024]
-2018-07-17 00:42:01,507 INFO     res4g_branch2a: [None, 8, 8, 256]
-2018-07-17 00:42:01,551 INFO     res4g_branch2b: [None, 8, 8, 256]
-2018-07-17 00:42:01,595 INFO     res4g_branch2c: [None, 8, 8, 1024]
-2018-07-17 00:42:01,597 INFO     relu4g_branch_out: [None, 8, 8, 1024]
-2018-07-17 00:42:01,640 INFO     res4h_branch2a: [None, 8, 8, 256]
-2018-07-17 00:42:01,687 INFO     res4h_branch2b: [None, 8, 8, 256]
-2018-07-17 00:42:01,730 INFO     res4h_branch2c: [None, 8, 8, 1024]
-2018-07-17 00:42:01,732 INFO     relu4h_branch_out: [None, 8, 8, 1024]
-2018-07-17 00:42:01,777 INFO     res4i_branch2a: [None, 8, 8, 256]
-2018-07-17 00:42:01,923 INFO     res4i_branch2b: [None, 8, 8, 256]
-2018-07-17 00:42:01,967 INFO     res4i_branch2c: [None, 8, 8, 1024]
-2018-07-17 00:42:01,969 INFO     relu4i_branch_out: [None, 8, 8, 1024]
-2018-07-17 00:42:02,013 INFO     res4j_branch2a: [None, 8, 8, 256]
-2018-07-17 00:42:02,058 INFO     res4j_branch2b: [None, 8, 8, 256]
-2018-07-17 00:42:02,101 INFO     res4j_branch2c: [None, 8, 8, 1024]
-2018-07-17 00:42:02,104 INFO     relu4j_branch_out: [None, 8, 8, 1024]
-2018-07-17 00:42:02,148 INFO     res4k_branch2a: [None, 8, 8, 256]
-2018-07-17 00:42:02,194 INFO     res4k_branch2b: [None, 8, 8, 256]
-2018-07-17 00:42:02,237 INFO     res4k_branch2c: [None, 8, 8, 1024]
-2018-07-17 00:42:02,239 INFO     relu4k_branch_out: [None, 8, 8, 1024]
-2018-07-17 00:42:02,285 INFO     res4l_branch2a: [None, 8, 8, 256]
-2018-07-17 00:42:02,328 INFO     res4l_branch2b: [None, 8, 8, 256]
-2018-07-17 00:42:02,373 INFO     res4l_branch2c: [None, 8, 8, 1024]
-2018-07-17 00:42:02,375 INFO     relu4l_branch_out: [None, 8, 8, 1024]
-2018-07-17 00:42:02,418 INFO     res4m_branch2a: [None, 8, 8, 256]
-2018-07-17 00:42:02,463 INFO     res4m_branch2b: [None, 8, 8, 256]
-2018-07-17 00:42:02,506 INFO     res4m_branch2c: [None, 8, 8, 1024]
-2018-07-17 00:42:02,509 INFO     relu4m_branch_out: [None, 8, 8, 1024]
-2018-07-17 00:42:02,553 INFO     res4n_branch2a: [None, 8, 8, 256]
-2018-07-17 00:42:02,599 INFO     res4n_branch2b: [None, 8, 8, 256]
-2018-07-17 00:42:02,641 INFO     res4n_branch2c: [None, 8, 8, 1024]
-2018-07-17 00:42:02,643 INFO     relu4n_branch_out: [None, 8, 8, 1024]
-2018-07-17 00:42:02,690 INFO     res4o_branch2a: [None, 8, 8, 256]
-2018-07-17 00:42:02,734 INFO     res4o_branch2b: [None, 8, 8, 256]
-2018-07-17 00:42:02,778 INFO     res4o_branch2c: [None, 8, 8, 1024]
-2018-07-17 00:42:02,780 INFO     relu4o_branch_out: [None, 8, 8, 1024]
-2018-07-17 00:42:02,824 INFO     res4p_branch2a: [None, 8, 8, 256]
-2018-07-17 00:42:02,869 INFO     res4p_branch2b: [None, 8, 8, 256]
-2018-07-17 00:42:02,913 INFO     res4p_branch2c: [None, 8, 8, 1024]
-2018-07-17 00:42:02,915 INFO     relu4p_branch_out: [None, 8, 8, 1024]
-2018-07-17 00:42:02,959 INFO     res4q_branch2a: [None, 8, 8, 256]
-2018-07-17 00:42:03,004 INFO     res4q_branch2b: [None, 8, 8, 256]
-2018-07-17 00:42:03,047 INFO     res4q_branch2c: [None, 8, 8, 1024]
-2018-07-17 00:42:03,049 INFO     relu4q_branch_out: [None, 8, 8, 1024]
-2018-07-17 00:42:03,094 INFO     res4r_branch2a: [None, 8, 8, 256]
-2018-07-17 00:42:03,138 INFO     res4r_branch2b: [None, 8, 8, 256]
-2018-07-17 00:42:03,183 INFO     res4r_branch2c: [None, 8, 8, 1024]
-2018-07-17 00:42:03,187 INFO     relu4r_branch_out: [None, 8, 8, 1024]
-2018-07-17 00:42:03,233 INFO     res4s_branch2a: [None, 8, 8, 256]
-2018-07-17 00:42:03,278 INFO     res4s_branch2b: [None, 8, 8, 256]
-2018-07-17 00:42:03,321 INFO     res4s_branch2c: [None, 8, 8, 1024]
-2018-07-17 00:42:03,323 INFO     relu4s_branch_out: [None, 8, 8, 1024]
-2018-07-17 00:42:03,486 INFO     res4t_branch2a: [None, 8, 8, 256]
-2018-07-17 00:42:03,530 INFO     res4t_branch2b: [None, 8, 8, 256]
-2018-07-17 00:42:03,578 INFO     res4t_branch2c: [None, 8, 8, 1024]
-2018-07-17 00:42:03,581 INFO     relu4t_branch_out: [None, 8, 8, 1024]
-2018-07-17 00:42:03,628 INFO     res4u_branch2a: [None, 8, 8, 256]
-2018-07-17 00:42:03,674 INFO     res4u_branch2b: [None, 8, 8, 256]
-2018-07-17 00:42:03,718 INFO     res4u_branch2c: [None, 8, 8, 1024]
-2018-07-17 00:42:03,720 INFO     relu4u_branch_out: [None, 8, 8, 1024]
-2018-07-17 00:42:03,765 INFO     res4v_branch2a: [None, 8, 8, 256]
-2018-07-17 00:42:03,810 INFO     res4v_branch2b: [None, 8, 8, 256]
-2018-07-17 00:42:03,853 INFO     res4v_branch2c: [None, 8, 8, 1024]
-2018-07-17 00:42:03,855 INFO     relu4v_branch_out: [None, 8, 8, 1024]
-2018-07-17 00:42:03,900 INFO     res4w_branch2a: [None, 8, 8, 256]
-2018-07-17 00:42:03,944 INFO     res4w_branch2b: [None, 8, 8, 256]
-2018-07-17 00:42:03,988 INFO     res4w_branch2c: [None, 8, 8, 1024]
-2018-07-17 00:42:03,990 INFO     relu4w_branch_out: [None, 8, 8, 1024]
-2018-07-17 00:42:03,990 INFO     STAGE 5 ...........................
-2018-07-17 00:42:04,034 INFO     res5a_branch1: [None, 4, 4, 2048]
-2018-07-17 00:42:04,081 INFO     res5a_branch2a: [None, 4, 4, 512]
-2018-07-17 00:42:04,125 INFO     res5a_branch2b: [None, 4, 4, 512]
-2018-07-17 00:42:04,171 INFO     res5a_branch2c: [None, 4, 4, 2048]
-2018-07-17 00:42:04,173 INFO     relu5a_branch_out: [None, 4, 4, 2048]
-2018-07-17 00:42:04,217 INFO     res5b_branch2a: [None, 4, 4, 512]
-2018-07-17 00:42:04,262 INFO     res5b_branch2b: [None, 4, 4, 512]
-2018-07-17 00:42:04,305 INFO     res5b_branch2c: [None, 4, 4, 2048]
-2018-07-17 00:42:04,308 INFO     relu5b_branch_out: [None, 4, 4, 2048]
-2018-07-17 00:42:04,352 INFO     res5c_branch2a: [None, 4, 4, 512]
-2018-07-17 00:42:04,397 INFO     res5c_branch2b: [None, 4, 4, 512]
-2018-07-17 00:42:04,441 INFO     res5c_branch2c: [None, 4, 4, 2048]
-2018-07-17 00:42:04,444 INFO     relu5c_branch_out: [None, 4, 4, 2048]
-2018-07-17 00:42:04,444 INFO     Initiating FPN TOP-DOWN .................................
-2018-07-17 00:42:04,466 INFO     FPN - M5: [None, 4, 4, 256]
-2018-07-17 00:42:04,499 INFO     FPN - M4: [None, 8, 8, 256]
-2018-07-17 00:42:04,531 INFO     FPN - M3: [None, 16, 16, 256]
-2018-07-17 00:42:04,564 INFO     FPN - M2: [None, 32, 32, 256]
-2018-07-17 00:42:04,647 INFO     FPN - P2 = [None, 32, 32, 256], P3 = [None, 16, 16, 256], P4 = [None, 8, 8, 256], P5 = [None, 4, 4, 256], P6 = [None, 2, 2, 256]:
-2018-07-17 00:42:04,671 INFO     RPN - Shared_conv: [None, 32, 32, 512]
-2018-07-17 00:42:04,692 INFO     RPN - Conv Class: [None, 32, 32, 6]
-2018-07-17 00:42:04,704 INFO     rpn_class_logits: [None, None, 2]
-2018-07-17 00:42:04,721 INFO     rpn_class_probs: [None, None, 2]
-2018-07-17 00:42:04,742 INFO     RPN - Conv Bbox: [None, 32, 32, 12]
-2018-07-17 00:42:04,754 INFO     rpn_bbox: [None, None, 4]
-2018-07-17 00:42:04,759 INFO     RPN - Shared_conv: [None, 16, 16, 512]
-2018-07-17 00:42:04,763 INFO     RPN - Conv Class: [None, 16, 16, 6]
-2018-07-17 00:42:04,775 INFO     rpn_class_logits: [None, None, 2]
-2018-07-17 00:42:04,791 INFO     rpn_class_probs: [None, None, 2]
-2018-07-17 00:42:04,795 INFO     RPN - Conv Bbox: [None, 16, 16, 12]
-2018-07-17 00:42:04,807 INFO     rpn_bbox: [None, None, 4]
-2018-07-17 00:42:04,811 INFO     RPN - Shared_conv: [None, 8, 8, 512]
-2018-07-17 00:42:04,814 INFO     RPN - Conv Class: [None, 8, 8, 6]
-2018-07-17 00:42:04,826 INFO     rpn_class_logits: [None, None, 2]
-2018-07-17 00:42:04,843 INFO     rpn_class_probs: [None, None, 2]
-2018-07-17 00:42:04,847 INFO     RPN - Conv Bbox: [None, 8, 8, 12]
-2018-07-17 00:42:04,860 INFO     rpn_bbox: [None, None, 4]
-2018-07-17 00:42:04,865 INFO     RPN - Shared_conv: [None, 4, 4, 512]
-2018-07-17 00:42:04,870 INFO     RPN - Conv Class: [None, 4, 4, 6]
-2018-07-17 00:42:04,882 INFO     rpn_class_logits: [None, None, 2]
-2018-07-17 00:42:04,898 INFO     rpn_class_probs: [None, None, 2]
-2018-07-17 00:42:04,902 INFO     RPN - Conv Bbox: [None, 4, 4, 12]
-2018-07-17 00:42:04,913 INFO     rpn_bbox: [None, None, 4]
-2018-07-17 00:42:04,918 INFO     RPN - Shared_conv: [None, 2, 2, 512]
-2018-07-17 00:42:04,921 INFO     RPN - Conv Class: [None, 2, 2, 6]
-2018-07-17 00:42:04,933 INFO     rpn_class_logits: [None, None, 2]
-2018-07-17 00:42:04,950 INFO     rpn_class_probs: [None, None, 2]
-2018-07-17 00:42:04,954 INFO     RPN - Conv Bbox: [None, 2, 2, 12]
-2018-07-17 00:42:04,966 INFO     rpn_bbox: [None, None, 4]
-2018-07-17 00:42:04,986 INFO     Foreground_probs shape: (?, ?)
-2018-07-17 00:42:04,988 INFO     bbox_delta shape: (?, ?, 4)
-2018-07-17 00:42:04,988 INFO     anchors shape: (?, ?, 4)
-2018-07-17 00:42:04,996 INFO     max_anc_before_nms shape: Tensor("Minimum:0", shape=(), dtype=int32)
-2018-07-17 00:42:04,998 INFO     ix shape: [None, None]
-2018-07-17 00:42:05,039 INFO     scores shape = (?, ?)
-2018-07-17 00:42:05,040 INFO     Box delta shape = (?, ?, 4)
-2018-07-17 00:42:05,042 INFO     anchors shape = (?, ?, 4)
-2018-07-17 00:42:05,194 INFO     bx_nw shape: [1, None, None]
-2018-07-17 00:42:06,667 INFO     Anchors: running for..... scales=8, feature_map_shapes=[32 32], feature_map_strides=4
-2018-07-17 00:42:06,667 INFO     Anchors: Box width shape = (1024, 3)
-2018-07-17 00:42:06,667 INFO     Anchors: Box height shape = (1024, 3)
-2018-07-17 00:42:06,667 INFO     Anchors: Box center_x shape = (1024, 3)
-2018-07-17 00:42:06,668 INFO     Anchors: Box center_y shape = (1024, 3)
-2018-07-17 00:42:06,668 INFO     Anchors: Stacked Box corner coordinates shape = (3072, 4)
-2018-07-17 00:42:06,668 INFO     Anchors: running for..... scales=16, feature_map_shapes=[16 16], feature_map_strides=8
-2018-07-17 00:42:06,668 INFO     Anchors: Box width shape = (256, 3)
-2018-07-17 00:42:06,668 INFO     Anchors: Box height shape = (256, 3)
-2018-07-17 00:42:06,669 INFO     Anchors: Box center_x shape = (256, 3)
-2018-07-17 00:42:06,669 INFO     Anchors: Box center_y shape = (256, 3)
-2018-07-17 00:42:06,669 INFO     Anchors: Stacked Box corner coordinates shape = (768, 4)
-2018-07-17 00:42:06,669 INFO     Anchors: running for..... scales=32, feature_map_shapes=[8 8], feature_map_strides=16
-2018-07-17 00:42:06,669 INFO     Anchors: Box width shape = (64, 3)
-2018-07-17 00:42:06,669 INFO     Anchors: Box height shape = (64, 3)
-2018-07-17 00:42:06,669 INFO     Anchors: Box center_x shape = (64, 3)
-2018-07-17 00:42:06,669 INFO     Anchors: Box center_y shape = (64, 3)
-2018-07-17 00:42:06,670 INFO     Anchors: Stacked Box corner coordinates shape = (192, 4)
-2018-07-17 00:42:06,670 INFO     Anchors: running for..... scales=64, feature_map_shapes=[4 4], feature_map_strides=32
-2018-07-17 00:42:06,670 INFO     Anchors: Box width shape = (16, 3)
-2018-07-17 00:42:06,670 INFO     Anchors: Box height shape = (16, 3)
-2018-07-17 00:42:06,670 INFO     Anchors: Box center_x shape = (16, 3)
-2018-07-17 00:42:06,670 INFO     Anchors: Box center_y shape = (16, 3)
-2018-07-17 00:42:06,670 INFO     Anchors: Stacked Box corner coordinates shape = (48, 4)
-2018-07-17 00:42:06,670 INFO     Anchors: running for..... scales=128, feature_map_shapes=[2 2], feature_map_strides=64
-2018-07-17 00:42:06,671 INFO     Anchors: Box width shape = (4, 3)
-2018-07-17 00:42:06,671 INFO     Anchors: Box height shape = (4, 3)
-2018-07-17 00:42:06,671 INFO     Anchors: Box center_x shape = (4, 3)
-2018-07-17 00:42:06,671 INFO     Anchors: Box center_y shape = (4, 3)
-2018-07-17 00:42:06,671 INFO     Anchors: Stacked Box corner coordinates shape = (12, 4)
-2018-07-17 00:42:06,671 INFO     Anchors: concatenated for each stage: shape = (4092, 4)
-2018-07-17 00:42:06,671 INFO     Anchors: Broadcast to num_batches: shape = (1, 4092, 4)
-2018-07-17 00:42:11,204 INFO     w:0, scope_name = conv1, pre-trained.shape = (7, 7, 3, 64), variable.shape = (7, 7, 3, 64)
-2018-07-17 00:42:11,315 INFO     b:0, scope_name = conv1, pre-trained.shape = (64,), variable.shape = (64,)
-2018-07-17 00:42:11,430 INFO     gamma:0, scope_name = bn_conv1, pre-trained.shape = (64,), variable.shape = (64,)
-2018-07-17 00:42:11,542 INFO     beta:0, scope_name = bn_conv1, pre-trained.shape = (64,), variable.shape = (64,)
-2018-07-17 00:42:11,655 INFO     m:0, scope_name = bn_conv1, pre-trained.shape = (64,), variable.shape = (64,)
-2018-07-17 00:42:11,763 INFO     v:0, scope_name = bn_conv1, pre-trained.shape = (64,), variable.shape = (64,)
-2018-07-17 00:42:11,885 INFO     w:0, scope_name = res2a_branch1, pre-trained.shape = (1, 1, 64, 256), variable.shape = (1, 1, 64, 256)
-2018-07-17 00:42:12,000 INFO     b:0, scope_name = res2a_branch1, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:12,113 INFO     gamma:0, scope_name = bn2a_branch1, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:12,231 INFO     beta:0, scope_name = bn2a_branch1, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:12,340 INFO     m:0, scope_name = bn2a_branch1, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:12,449 INFO     v:0, scope_name = bn2a_branch1, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:12,560 INFO     w:0, scope_name = res2a_branch2a, pre-trained.shape = (1, 1, 64, 64), variable.shape = (1, 1, 64, 64)
-2018-07-17 00:42:12,678 INFO     b:0, scope_name = res2a_branch2a, pre-trained.shape = (64,), variable.shape = (64,)
-2018-07-17 00:42:12,791 INFO     gamma:0, scope_name = bn2a_branch2a, pre-trained.shape = (64,), variable.shape = (64,)
-2018-07-17 00:42:12,897 INFO     beta:0, scope_name = bn2a_branch2a, pre-trained.shape = (64,), variable.shape = (64,)
-2018-07-17 00:42:13,004 INFO     m:0, scope_name = bn2a_branch2a, pre-trained.shape = (64,), variable.shape = (64,)
-2018-07-17 00:42:13,115 INFO     v:0, scope_name = bn2a_branch2a, pre-trained.shape = (64,), variable.shape = (64,)
-2018-07-17 00:42:13,238 INFO     w:0, scope_name = res2a_branch2b, pre-trained.shape = (3, 3, 64, 64), variable.shape = (3, 3, 64, 64)
-2018-07-17 00:42:13,356 INFO     b:0, scope_name = res2a_branch2b, pre-trained.shape = (64,), variable.shape = (64,)
-2018-07-17 00:42:13,466 INFO     gamma:0, scope_name = bn2a_branch2b, pre-trained.shape = (64,), variable.shape = (64,)
-2018-07-17 00:42:13,579 INFO     beta:0, scope_name = bn2a_branch2b, pre-trained.shape = (64,), variable.shape = (64,)
-2018-07-17 00:42:13,688 INFO     m:0, scope_name = bn2a_branch2b, pre-trained.shape = (64,), variable.shape = (64,)
-2018-07-17 00:42:13,808 INFO     v:0, scope_name = bn2a_branch2b, pre-trained.shape = (64,), variable.shape = (64,)
-2018-07-17 00:42:13,916 INFO     w:0, scope_name = res2a_branch2c, pre-trained.shape = (1, 1, 64, 256), variable.shape = (1, 1, 64, 256)
-2018-07-17 00:42:14,038 INFO     b:0, scope_name = res2a_branch2c, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:14,149 INFO     gamma:0, scope_name = bn2a_branch2c, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:14,258 INFO     beta:0, scope_name = bn2a_branch2c, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:14,369 INFO     m:0, scope_name = bn2a_branch2c, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:14,484 INFO     v:0, scope_name = bn2a_branch2c, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:14,602 INFO     w:0, scope_name = res2b_branch2a, pre-trained.shape = (1, 1, 256, 64), variable.shape = (1, 1, 256, 64)
-2018-07-17 00:42:14,720 INFO     b:0, scope_name = res2b_branch2a, pre-trained.shape = (64,), variable.shape = (64,)
-2018-07-17 00:42:14,839 INFO     gamma:0, scope_name = bn2b_branch2a, pre-trained.shape = (64,), variable.shape = (64,)
-2018-07-17 00:42:14,948 INFO     beta:0, scope_name = bn2b_branch2a, pre-trained.shape = (64,), variable.shape = (64,)
-2018-07-17 00:42:15,057 INFO     m:0, scope_name = bn2b_branch2a, pre-trained.shape = (64,), variable.shape = (64,)
-2018-07-17 00:42:15,176 INFO     v:0, scope_name = bn2b_branch2a, pre-trained.shape = (64,), variable.shape = (64,)
-2018-07-17 00:42:15,293 INFO     w:0, scope_name = res2b_branch2b, pre-trained.shape = (3, 3, 64, 64), variable.shape = (3, 3, 64, 64)
-2018-07-17 00:42:15,412 INFO     b:0, scope_name = res2b_branch2b, pre-trained.shape = (64,), variable.shape = (64,)
-2018-07-17 00:42:15,527 INFO     gamma:0, scope_name = bn2b_branch2b, pre-trained.shape = (64,), variable.shape = (64,)
-2018-07-17 00:42:15,644 INFO     beta:0, scope_name = bn2b_branch2b, pre-trained.shape = (64,), variable.shape = (64,)
-2018-07-17 00:42:15,768 INFO     m:0, scope_name = bn2b_branch2b, pre-trained.shape = (64,), variable.shape = (64,)
-2018-07-17 00:42:15,881 INFO     v:0, scope_name = bn2b_branch2b, pre-trained.shape = (64,), variable.shape = (64,)
-2018-07-17 00:42:15,995 INFO     w:0, scope_name = res2b_branch2c, pre-trained.shape = (1, 1, 64, 256), variable.shape = (1, 1, 64, 256)
-2018-07-17 00:42:16,114 INFO     b:0, scope_name = res2b_branch2c, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:16,235 INFO     gamma:0, scope_name = bn2b_branch2c, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:16,351 INFO     beta:0, scope_name = bn2b_branch2c, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:16,463 INFO     m:0, scope_name = bn2b_branch2c, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:16,577 INFO     v:0, scope_name = bn2b_branch2c, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:16,693 INFO     w:0, scope_name = res2c_branch2a, pre-trained.shape = (1, 1, 256, 64), variable.shape = (1, 1, 256, 64)
-2018-07-17 00:42:16,809 INFO     b:0, scope_name = res2c_branch2a, pre-trained.shape = (64,), variable.shape = (64,)
-2018-07-17 00:42:16,928 INFO     gamma:0, scope_name = bn2c_branch2a, pre-trained.shape = (64,), variable.shape = (64,)
-2018-07-17 00:42:17,041 INFO     beta:0, scope_name = bn2c_branch2a, pre-trained.shape = (64,), variable.shape = (64,)
-2018-07-17 00:42:17,158 INFO     m:0, scope_name = bn2c_branch2a, pre-trained.shape = (64,), variable.shape = (64,)
-2018-07-17 00:42:17,275 INFO     v:0, scope_name = bn2c_branch2a, pre-trained.shape = (64,), variable.shape = (64,)
-2018-07-17 00:42:17,392 INFO     w:0, scope_name = res2c_branch2b, pre-trained.shape = (3, 3, 64, 64), variable.shape = (3, 3, 64, 64)
-2018-07-17 00:42:17,513 INFO     b:0, scope_name = res2c_branch2b, pre-trained.shape = (64,), variable.shape = (64,)
-2018-07-17 00:42:17,629 INFO     gamma:0, scope_name = bn2c_branch2b, pre-trained.shape = (64,), variable.shape = (64,)
-2018-07-17 00:42:17,742 INFO     beta:0, scope_name = bn2c_branch2b, pre-trained.shape = (64,), variable.shape = (64,)
-2018-07-17 00:42:17,857 INFO     m:0, scope_name = bn2c_branch2b, pre-trained.shape = (64,), variable.shape = (64,)
-2018-07-17 00:42:17,971 INFO     v:0, scope_name = bn2c_branch2b, pre-trained.shape = (64,), variable.shape = (64,)
-2018-07-17 00:42:18,088 INFO     w:0, scope_name = res2c_branch2c, pre-trained.shape = (1, 1, 64, 256), variable.shape = (1, 1, 64, 256)
-2018-07-17 00:42:18,206 INFO     b:0, scope_name = res2c_branch2c, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:18,322 INFO     gamma:0, scope_name = bn2c_branch2c, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:18,433 INFO     beta:0, scope_name = bn2c_branch2c, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:18,559 INFO     m:0, scope_name = bn2c_branch2c, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:18,681 INFO     v:0, scope_name = bn2c_branch2c, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:18,802 INFO     w:0, scope_name = res3a_branch1, pre-trained.shape = (1, 1, 256, 512), variable.shape = (1, 1, 256, 512)
-2018-07-17 00:42:18,921 INFO     b:0, scope_name = res3a_branch1, pre-trained.shape = (512,), variable.shape = (512,)
-2018-07-17 00:42:19,042 INFO     gamma:0, scope_name = bn3a_branch1, pre-trained.shape = (512,), variable.shape = (512,)
-2018-07-17 00:42:19,155 INFO     beta:0, scope_name = bn3a_branch1, pre-trained.shape = (512,), variable.shape = (512,)
-2018-07-17 00:42:19,271 INFO     m:0, scope_name = bn3a_branch1, pre-trained.shape = (512,), variable.shape = (512,)
-2018-07-17 00:42:19,384 INFO     v:0, scope_name = bn3a_branch1, pre-trained.shape = (512,), variable.shape = (512,)
-2018-07-17 00:42:19,507 INFO     w:0, scope_name = res3a_branch2a, pre-trained.shape = (1, 1, 256, 128), variable.shape = (1, 1, 256, 128)
-2018-07-17 00:42:19,631 INFO     b:0, scope_name = res3a_branch2a, pre-trained.shape = (128,), variable.shape = (128,)
-2018-07-17 00:42:19,752 INFO     gamma:0, scope_name = bn3a_branch2a, pre-trained.shape = (128,), variable.shape = (128,)
-2018-07-17 00:42:19,871 INFO     beta:0, scope_name = bn3a_branch2a, pre-trained.shape = (128,), variable.shape = (128,)
-2018-07-17 00:42:19,992 INFO     m:0, scope_name = bn3a_branch2a, pre-trained.shape = (128,), variable.shape = (128,)
-2018-07-17 00:42:20,110 INFO     v:0, scope_name = bn3a_branch2a, pre-trained.shape = (128,), variable.shape = (128,)
-2018-07-17 00:42:20,228 INFO     w:0, scope_name = res3a_branch2b, pre-trained.shape = (3, 3, 128, 128), variable.shape = (3, 3, 128, 128)
-2018-07-17 00:42:20,354 INFO     b:0, scope_name = res3a_branch2b, pre-trained.shape = (128,), variable.shape = (128,)
-2018-07-17 00:42:20,471 INFO     gamma:0, scope_name = bn3a_branch2b, pre-trained.shape = (128,), variable.shape = (128,)
-2018-07-17 00:42:20,590 INFO     beta:0, scope_name = bn3a_branch2b, pre-trained.shape = (128,), variable.shape = (128,)
-2018-07-17 00:42:20,712 INFO     m:0, scope_name = bn3a_branch2b, pre-trained.shape = (128,), variable.shape = (128,)
-2018-07-17 00:42:20,833 INFO     v:0, scope_name = bn3a_branch2b, pre-trained.shape = (128,), variable.shape = (128,)
-2018-07-17 00:42:20,949 INFO     w:0, scope_name = res3a_branch2c, pre-trained.shape = (1, 1, 128, 512), variable.shape = (1, 1, 128, 512)
-2018-07-17 00:42:21,070 INFO     b:0, scope_name = res3a_branch2c, pre-trained.shape = (512,), variable.shape = (512,)
-2018-07-17 00:42:21,187 INFO     gamma:0, scope_name = bn3a_branch2c, pre-trained.shape = (512,), variable.shape = (512,)
-2018-07-17 00:42:21,304 INFO     beta:0, scope_name = bn3a_branch2c, pre-trained.shape = (512,), variable.shape = (512,)
-2018-07-17 00:42:21,423 INFO     m:0, scope_name = bn3a_branch2c, pre-trained.shape = (512,), variable.shape = (512,)
-2018-07-17 00:42:21,547 INFO     v:0, scope_name = bn3a_branch2c, pre-trained.shape = (512,), variable.shape = (512,)
-2018-07-17 00:42:21,670 INFO     w:0, scope_name = res3b_branch2a, pre-trained.shape = (1, 1, 512, 128), variable.shape = (1, 1, 512, 128)
-2018-07-17 00:42:21,794 INFO     b:0, scope_name = res3b_branch2a, pre-trained.shape = (128,), variable.shape = (128,)
-2018-07-17 00:42:21,918 INFO     gamma:0, scope_name = bn3b_branch2a, pre-trained.shape = (128,), variable.shape = (128,)
-2018-07-17 00:42:22,040 INFO     beta:0, scope_name = bn3b_branch2a, pre-trained.shape = (128,), variable.shape = (128,)
-2018-07-17 00:42:22,165 INFO     m:0, scope_name = bn3b_branch2a, pre-trained.shape = (128,), variable.shape = (128,)
-2018-07-17 00:42:22,285 INFO     v:0, scope_name = bn3b_branch2a, pre-trained.shape = (128,), variable.shape = (128,)
-2018-07-17 00:42:22,409 INFO     w:0, scope_name = res3b_branch2b, pre-trained.shape = (3, 3, 128, 128), variable.shape = (3, 3, 128, 128)
-2018-07-17 00:42:22,532 INFO     b:0, scope_name = res3b_branch2b, pre-trained.shape = (128,), variable.shape = (128,)
-2018-07-17 00:42:22,659 INFO     gamma:0, scope_name = bn3b_branch2b, pre-trained.shape = (128,), variable.shape = (128,)
-2018-07-17 00:42:22,780 INFO     beta:0, scope_name = bn3b_branch2b, pre-trained.shape = (128,), variable.shape = (128,)
-2018-07-17 00:42:22,900 INFO     m:0, scope_name = bn3b_branch2b, pre-trained.shape = (128,), variable.shape = (128,)
-2018-07-17 00:42:23,017 INFO     v:0, scope_name = bn3b_branch2b, pre-trained.shape = (128,), variable.shape = (128,)
-2018-07-17 00:42:23,146 INFO     w:0, scope_name = res3b_branch2c, pre-trained.shape = (1, 1, 128, 512), variable.shape = (1, 1, 128, 512)
-2018-07-17 00:42:23,270 INFO     b:0, scope_name = res3b_branch2c, pre-trained.shape = (512,), variable.shape = (512,)
-2018-07-17 00:42:23,387 INFO     gamma:0, scope_name = bn3b_branch2c, pre-trained.shape = (512,), variable.shape = (512,)
-2018-07-17 00:42:23,507 INFO     beta:0, scope_name = bn3b_branch2c, pre-trained.shape = (512,), variable.shape = (512,)
-2018-07-17 00:42:23,628 INFO     m:0, scope_name = bn3b_branch2c, pre-trained.shape = (512,), variable.shape = (512,)
-2018-07-17 00:42:23,746 INFO     v:0, scope_name = bn3b_branch2c, pre-trained.shape = (512,), variable.shape = (512,)
-2018-07-17 00:42:23,868 INFO     w:0, scope_name = res3c_branch2a, pre-trained.shape = (1, 1, 512, 128), variable.shape = (1, 1, 512, 128)
-2018-07-17 00:42:23,986 INFO     b:0, scope_name = res3c_branch2a, pre-trained.shape = (128,), variable.shape = (128,)
-2018-07-17 00:42:24,104 INFO     gamma:0, scope_name = bn3c_branch2a, pre-trained.shape = (128,), variable.shape = (128,)
-2018-07-17 00:42:24,227 INFO     beta:0, scope_name = bn3c_branch2a, pre-trained.shape = (128,), variable.shape = (128,)
-2018-07-17 00:42:24,352 INFO     m:0, scope_name = bn3c_branch2a, pre-trained.shape = (128,), variable.shape = (128,)
-2018-07-17 00:42:24,471 INFO     v:0, scope_name = bn3c_branch2a, pre-trained.shape = (128,), variable.shape = (128,)
-2018-07-17 00:42:24,595 INFO     w:0, scope_name = res3c_branch2b, pre-trained.shape = (3, 3, 128, 128), variable.shape = (3, 3, 128, 128)
-2018-07-17 00:42:24,721 INFO     b:0, scope_name = res3c_branch2b, pre-trained.shape = (128,), variable.shape = (128,)
-2018-07-17 00:42:24,846 INFO     gamma:0, scope_name = bn3c_branch2b, pre-trained.shape = (128,), variable.shape = (128,)
-2018-07-17 00:42:24,970 INFO     beta:0, scope_name = bn3c_branch2b, pre-trained.shape = (128,), variable.shape = (128,)
-2018-07-17 00:42:25,095 INFO     m:0, scope_name = bn3c_branch2b, pre-trained.shape = (128,), variable.shape = (128,)
-2018-07-17 00:42:25,221 INFO     v:0, scope_name = bn3c_branch2b, pre-trained.shape = (128,), variable.shape = (128,)
-2018-07-17 00:42:25,346 INFO     w:0, scope_name = res3c_branch2c, pre-trained.shape = (1, 1, 128, 512), variable.shape = (1, 1, 128, 512)
-2018-07-17 00:42:25,467 INFO     b:0, scope_name = res3c_branch2c, pre-trained.shape = (512,), variable.shape = (512,)
-2018-07-17 00:42:25,588 INFO     gamma:0, scope_name = bn3c_branch2c, pre-trained.shape = (512,), variable.shape = (512,)
-2018-07-17 00:42:25,709 INFO     beta:0, scope_name = bn3c_branch2c, pre-trained.shape = (512,), variable.shape = (512,)
-2018-07-17 00:42:25,828 INFO     m:0, scope_name = bn3c_branch2c, pre-trained.shape = (512,), variable.shape = (512,)
-2018-07-17 00:42:25,945 INFO     v:0, scope_name = bn3c_branch2c, pre-trained.shape = (512,), variable.shape = (512,)
-2018-07-17 00:42:26,066 INFO     w:0, scope_name = res3d_branch2a, pre-trained.shape = (1, 1, 512, 128), variable.shape = (1, 1, 512, 128)
-2018-07-17 00:42:26,189 INFO     b:0, scope_name = res3d_branch2a, pre-trained.shape = (128,), variable.shape = (128,)
-2018-07-17 00:42:26,308 INFO     gamma:0, scope_name = bn3d_branch2a, pre-trained.shape = (128,), variable.shape = (128,)
-2018-07-17 00:42:26,425 INFO     beta:0, scope_name = bn3d_branch2a, pre-trained.shape = (128,), variable.shape = (128,)
-2018-07-17 00:42:26,551 INFO     m:0, scope_name = bn3d_branch2a, pre-trained.shape = (128,), variable.shape = (128,)
-2018-07-17 00:42:26,667 INFO     v:0, scope_name = bn3d_branch2a, pre-trained.shape = (128,), variable.shape = (128,)
-2018-07-17 00:42:26,791 INFO     w:0, scope_name = res3d_branch2b, pre-trained.shape = (3, 3, 128, 128), variable.shape = (3, 3, 128, 128)
-2018-07-17 00:42:26,915 INFO     b:0, scope_name = res3d_branch2b, pre-trained.shape = (128,), variable.shape = (128,)
-2018-07-17 00:42:27,034 INFO     gamma:0, scope_name = bn3d_branch2b, pre-trained.shape = (128,), variable.shape = (128,)
-2018-07-17 00:42:27,159 INFO     beta:0, scope_name = bn3d_branch2b, pre-trained.shape = (128,), variable.shape = (128,)
-2018-07-17 00:42:27,282 INFO     m:0, scope_name = bn3d_branch2b, pre-trained.shape = (128,), variable.shape = (128,)
-2018-07-17 00:42:27,400 INFO     v:0, scope_name = bn3d_branch2b, pre-trained.shape = (128,), variable.shape = (128,)
-2018-07-17 00:42:27,517 INFO     w:0, scope_name = res3d_branch2c, pre-trained.shape = (1, 1, 128, 512), variable.shape = (1, 1, 128, 512)
-2018-07-17 00:42:27,640 INFO     b:0, scope_name = res3d_branch2c, pre-trained.shape = (512,), variable.shape = (512,)
-2018-07-17 00:42:27,762 INFO     gamma:0, scope_name = bn3d_branch2c, pre-trained.shape = (512,), variable.shape = (512,)
-2018-07-17 00:42:27,883 INFO     beta:0, scope_name = bn3d_branch2c, pre-trained.shape = (512,), variable.shape = (512,)
-2018-07-17 00:42:28,007 INFO     m:0, scope_name = bn3d_branch2c, pre-trained.shape = (512,), variable.shape = (512,)
-2018-07-17 00:42:28,129 INFO     v:0, scope_name = bn3d_branch2c, pre-trained.shape = (512,), variable.shape = (512,)
-2018-07-17 00:42:28,259 INFO     w:0, scope_name = res4a_branch1, pre-trained.shape = (1, 1, 512, 1024), variable.shape = (1, 1, 512, 1024)
-2018-07-17 00:42:28,387 INFO     b:0, scope_name = res4a_branch1, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:42:28,514 INFO     gamma:0, scope_name = bn4a_branch1, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:42:28,661 INFO     beta:0, scope_name = bn4a_branch1, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:42:28,784 INFO     m:0, scope_name = bn4a_branch1, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:42:28,905 INFO     v:0, scope_name = bn4a_branch1, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:42:29,026 INFO     w:0, scope_name = res4a_branch2a, pre-trained.shape = (1, 1, 512, 256), variable.shape = (1, 1, 512, 256)
-2018-07-17 00:42:29,151 INFO     b:0, scope_name = res4a_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:29,278 INFO     gamma:0, scope_name = bn4a_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:29,404 INFO     beta:0, scope_name = bn4a_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:29,524 INFO     m:0, scope_name = bn4a_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:29,644 INFO     v:0, scope_name = bn4a_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:29,773 INFO     w:0, scope_name = res4a_branch2b, pre-trained.shape = (3, 3, 256, 256), variable.shape = (3, 3, 256, 256)
-2018-07-17 00:42:29,899 INFO     b:0, scope_name = res4a_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:30,019 INFO     gamma:0, scope_name = bn4a_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:30,140 INFO     beta:0, scope_name = bn4a_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:30,252 INFO     m:0, scope_name = bn4a_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:30,372 INFO     v:0, scope_name = bn4a_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:30,502 INFO     w:0, scope_name = res4a_branch2c, pre-trained.shape = (1, 1, 256, 1024), variable.shape = (1, 1, 256, 1024)
-2018-07-17 00:42:30,629 INFO     b:0, scope_name = res4a_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:42:30,752 INFO     gamma:0, scope_name = bn4a_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:42:30,877 INFO     beta:0, scope_name = bn4a_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:42:31,002 INFO     m:0, scope_name = bn4a_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:42:31,123 INFO     v:0, scope_name = bn4a_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:42:31,247 INFO     w:0, scope_name = res4b_branch2a, pre-trained.shape = (1, 1, 1024, 256), variable.shape = (1, 1, 1024, 256)
-2018-07-17 00:42:31,375 INFO     b:0, scope_name = res4b_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:31,498 INFO     gamma:0, scope_name = bn4b_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:31,620 INFO     beta:0, scope_name = bn4b_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:31,739 INFO     m:0, scope_name = bn4b_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:31,854 INFO     v:0, scope_name = bn4b_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:31,976 INFO     w:0, scope_name = res4b_branch2b, pre-trained.shape = (3, 3, 256, 256), variable.shape = (3, 3, 256, 256)
-2018-07-17 00:42:32,104 INFO     b:0, scope_name = res4b_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:32,224 INFO     gamma:0, scope_name = bn4b_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:32,349 INFO     beta:0, scope_name = bn4b_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:32,469 INFO     m:0, scope_name = bn4b_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:32,592 INFO     v:0, scope_name = bn4b_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:32,714 INFO     w:0, scope_name = res4b_branch2c, pre-trained.shape = (1, 1, 256, 1024), variable.shape = (1, 1, 256, 1024)
-2018-07-17 00:42:32,844 INFO     b:0, scope_name = res4b_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:42:32,970 INFO     gamma:0, scope_name = bn4b_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:42:33,094 INFO     beta:0, scope_name = bn4b_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:42:33,221 INFO     m:0, scope_name = bn4b_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:42:33,354 INFO     v:0, scope_name = bn4b_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:42:33,480 INFO     w:0, scope_name = res4c_branch2a, pre-trained.shape = (1, 1, 1024, 256), variable.shape = (1, 1, 1024, 256)
-2018-07-17 00:42:33,604 INFO     b:0, scope_name = res4c_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:33,731 INFO     gamma:0, scope_name = bn4c_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:33,855 INFO     beta:0, scope_name = bn4c_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:33,985 INFO     m:0, scope_name = bn4c_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:34,107 INFO     v:0, scope_name = bn4c_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:34,237 INFO     w:0, scope_name = res4c_branch2b, pre-trained.shape = (3, 3, 256, 256), variable.shape = (3, 3, 256, 256)
-2018-07-17 00:42:34,365 INFO     b:0, scope_name = res4c_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:34,490 INFO     gamma:0, scope_name = bn4c_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:34,613 INFO     beta:0, scope_name = bn4c_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:34,737 INFO     m:0, scope_name = bn4c_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:34,874 INFO     v:0, scope_name = bn4c_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:34,999 INFO     w:0, scope_name = res4c_branch2c, pre-trained.shape = (1, 1, 256, 1024), variable.shape = (1, 1, 256, 1024)
-2018-07-17 00:42:35,141 INFO     b:0, scope_name = res4c_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:42:35,274 INFO     gamma:0, scope_name = bn4c_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:42:35,392 INFO     beta:0, scope_name = bn4c_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:42:35,517 INFO     m:0, scope_name = bn4c_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:42:35,641 INFO     v:0, scope_name = bn4c_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:42:35,771 INFO     w:0, scope_name = res4d_branch2a, pre-trained.shape = (1, 1, 1024, 256), variable.shape = (1, 1, 1024, 256)
-2018-07-17 00:42:35,897 INFO     b:0, scope_name = res4d_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:36,021 INFO     gamma:0, scope_name = bn4d_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:36,148 INFO     beta:0, scope_name = bn4d_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:36,272 INFO     m:0, scope_name = bn4d_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:36,399 INFO     v:0, scope_name = bn4d_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:36,531 INFO     w:0, scope_name = res4d_branch2b, pre-trained.shape = (3, 3, 256, 256), variable.shape = (3, 3, 256, 256)
-2018-07-17 00:42:36,657 INFO     b:0, scope_name = res4d_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:36,786 INFO     gamma:0, scope_name = bn4d_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:36,914 INFO     beta:0, scope_name = bn4d_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:37,038 INFO     m:0, scope_name = bn4d_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:37,166 INFO     v:0, scope_name = bn4d_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:37,295 INFO     w:0, scope_name = res4d_branch2c, pre-trained.shape = (1, 1, 256, 1024), variable.shape = (1, 1, 256, 1024)
-2018-07-17 00:42:37,427 INFO     b:0, scope_name = res4d_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:42:37,555 INFO     gamma:0, scope_name = bn4d_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:42:37,680 INFO     beta:0, scope_name = bn4d_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:42:37,809 INFO     m:0, scope_name = bn4d_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:42:37,943 INFO     v:0, scope_name = bn4d_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:42:38,068 INFO     w:0, scope_name = res4e_branch2a, pre-trained.shape = (1, 1, 1024, 256), variable.shape = (1, 1, 1024, 256)
-2018-07-17 00:42:38,192 INFO     b:0, scope_name = res4e_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:38,320 INFO     gamma:0, scope_name = bn4e_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:38,448 INFO     beta:0, scope_name = bn4e_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:38,579 INFO     m:0, scope_name = bn4e_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:38,702 INFO     v:0, scope_name = bn4e_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:38,828 INFO     w:0, scope_name = res4e_branch2b, pre-trained.shape = (3, 3, 256, 256), variable.shape = (3, 3, 256, 256)
-2018-07-17 00:42:38,959 INFO     b:0, scope_name = res4e_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:39,083 INFO     gamma:0, scope_name = bn4e_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:39,206 INFO     beta:0, scope_name = bn4e_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:39,327 INFO     m:0, scope_name = bn4e_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:39,464 INFO     v:0, scope_name = bn4e_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:39,591 INFO     w:0, scope_name = res4e_branch2c, pre-trained.shape = (1, 1, 256, 1024), variable.shape = (1, 1, 256, 1024)
-2018-07-17 00:42:39,718 INFO     b:0, scope_name = res4e_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:42:39,850 INFO     gamma:0, scope_name = bn4e_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:42:39,977 INFO     beta:0, scope_name = bn4e_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:42:40,100 INFO     m:0, scope_name = bn4e_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:42:40,221 INFO     v:0, scope_name = bn4e_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:42:40,349 INFO     w:0, scope_name = res4f_branch2a, pre-trained.shape = (1, 1, 1024, 256), variable.shape = (1, 1, 1024, 256)
-2018-07-17 00:42:40,481 INFO     b:0, scope_name = res4f_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:40,609 INFO     gamma:0, scope_name = bn4f_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:40,730 INFO     beta:0, scope_name = bn4f_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:40,855 INFO     m:0, scope_name = bn4f_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:40,978 INFO     v:0, scope_name = bn4f_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:41,110 INFO     w:0, scope_name = res4f_branch2b, pre-trained.shape = (3, 3, 256, 256), variable.shape = (3, 3, 256, 256)
-2018-07-17 00:42:41,237 INFO     b:0, scope_name = res4f_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:41,358 INFO     gamma:0, scope_name = bn4f_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:41,482 INFO     beta:0, scope_name = bn4f_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:41,607 INFO     m:0, scope_name = bn4f_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:41,732 INFO     v:0, scope_name = bn4f_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:41,860 INFO     w:0, scope_name = res4f_branch2c, pre-trained.shape = (1, 1, 256, 1024), variable.shape = (1, 1, 256, 1024)
-2018-07-17 00:42:41,990 INFO     b:0, scope_name = res4f_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:42:42,120 INFO     gamma:0, scope_name = bn4f_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:42:42,245 INFO     beta:0, scope_name = bn4f_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:42:42,371 INFO     m:0, scope_name = bn4f_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:42:42,497 INFO     v:0, scope_name = bn4f_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:42:42,626 INFO     w:0, scope_name = res4g_branch2a, pre-trained.shape = (1, 1, 1024, 256), variable.shape = (1, 1, 1024, 256)
-2018-07-17 00:42:42,752 INFO     b:0, scope_name = res4g_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:42,879 INFO     gamma:0, scope_name = bn4g_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:43,005 INFO     beta:0, scope_name = bn4g_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:43,134 INFO     m:0, scope_name = bn4g_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:43,260 INFO     v:0, scope_name = bn4g_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:43,385 INFO     w:0, scope_name = res4g_branch2b, pre-trained.shape = (3, 3, 256, 256), variable.shape = (3, 3, 256, 256)
-2018-07-17 00:42:43,509 INFO     b:0, scope_name = res4g_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:43,631 INFO     gamma:0, scope_name = bn4g_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:43,752 INFO     beta:0, scope_name = bn4g_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:43,877 INFO     m:0, scope_name = bn4g_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:43,998 INFO     v:0, scope_name = bn4g_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:44,125 INFO     w:0, scope_name = res4g_branch2c, pre-trained.shape = (1, 1, 256, 1024), variable.shape = (1, 1, 256, 1024)
-2018-07-17 00:42:44,258 INFO     b:0, scope_name = res4g_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:42:44,386 INFO     gamma:0, scope_name = bn4g_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:42:44,514 INFO     beta:0, scope_name = bn4g_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:42:44,646 INFO     m:0, scope_name = bn4g_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:42:44,778 INFO     v:0, scope_name = bn4g_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:42:44,907 INFO     w:0, scope_name = res4h_branch2a, pre-trained.shape = (1, 1, 1024, 256), variable.shape = (1, 1, 1024, 256)
-2018-07-17 00:42:45,035 INFO     b:0, scope_name = res4h_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:45,164 INFO     gamma:0, scope_name = bn4h_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:45,290 INFO     beta:0, scope_name = bn4h_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:45,420 INFO     m:0, scope_name = bn4h_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:45,548 INFO     v:0, scope_name = bn4h_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:45,676 INFO     w:0, scope_name = res4h_branch2b, pre-trained.shape = (3, 3, 256, 256), variable.shape = (3, 3, 256, 256)
-2018-07-17 00:42:45,805 INFO     b:0, scope_name = res4h_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:45,933 INFO     gamma:0, scope_name = bn4h_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:46,057 INFO     beta:0, scope_name = bn4h_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:46,185 INFO     m:0, scope_name = bn4h_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:46,308 INFO     v:0, scope_name = bn4h_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:46,433 INFO     w:0, scope_name = res4h_branch2c, pre-trained.shape = (1, 1, 256, 1024), variable.shape = (1, 1, 256, 1024)
-2018-07-17 00:42:46,563 INFO     b:0, scope_name = res4h_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:42:46,687 INFO     gamma:0, scope_name = bn4h_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:42:46,810 INFO     beta:0, scope_name = bn4h_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:42:46,933 INFO     m:0, scope_name = bn4h_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:42:47,058 INFO     v:0, scope_name = bn4h_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:42:47,184 INFO     w:0, scope_name = res4i_branch2a, pre-trained.shape = (1, 1, 1024, 256), variable.shape = (1, 1, 1024, 256)
-2018-07-17 00:42:47,308 INFO     b:0, scope_name = res4i_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:47,437 INFO     gamma:0, scope_name = bn4i_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:47,571 INFO     beta:0, scope_name = bn4i_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:47,700 INFO     m:0, scope_name = bn4i_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:47,824 INFO     v:0, scope_name = bn4i_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:47,956 INFO     w:0, scope_name = res4i_branch2b, pre-trained.shape = (3, 3, 256, 256), variable.shape = (3, 3, 256, 256)
-2018-07-17 00:42:48,085 INFO     b:0, scope_name = res4i_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:48,208 INFO     gamma:0, scope_name = bn4i_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:48,330 INFO     beta:0, scope_name = bn4i_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:48,454 INFO     m:0, scope_name = bn4i_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:48,577 INFO     v:0, scope_name = bn4i_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:48,700 INFO     w:0, scope_name = res4i_branch2c, pre-trained.shape = (1, 1, 256, 1024), variable.shape = (1, 1, 256, 1024)
-2018-07-17 00:42:48,826 INFO     b:0, scope_name = res4i_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:42:48,958 INFO     gamma:0, scope_name = bn4i_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:42:49,087 INFO     beta:0, scope_name = bn4i_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:42:49,211 INFO     m:0, scope_name = bn4i_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:42:49,338 INFO     v:0, scope_name = bn4i_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:42:49,468 INFO     w:0, scope_name = res4j_branch2a, pre-trained.shape = (1, 1, 1024, 256), variable.shape = (1, 1, 1024, 256)
-2018-07-17 00:42:49,598 INFO     b:0, scope_name = res4j_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:49,726 INFO     gamma:0, scope_name = bn4j_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:49,851 INFO     beta:0, scope_name = bn4j_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:49,978 INFO     m:0, scope_name = bn4j_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:50,107 INFO     v:0, scope_name = bn4j_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:50,239 INFO     w:0, scope_name = res4j_branch2b, pre-trained.shape = (3, 3, 256, 256), variable.shape = (3, 3, 256, 256)
-2018-07-17 00:42:50,371 INFO     b:0, scope_name = res4j_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:50,504 INFO     gamma:0, scope_name = bn4j_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:50,632 INFO     beta:0, scope_name = bn4j_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:50,764 INFO     m:0, scope_name = bn4j_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:50,887 INFO     v:0, scope_name = bn4j_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:51,017 INFO     w:0, scope_name = res4j_branch2c, pre-trained.shape = (1, 1, 256, 1024), variable.shape = (1, 1, 256, 1024)
-2018-07-17 00:42:51,144 INFO     b:0, scope_name = res4j_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:42:51,269 INFO     gamma:0, scope_name = bn4j_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:42:51,399 INFO     beta:0, scope_name = bn4j_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:42:51,532 INFO     m:0, scope_name = bn4j_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:42:51,658 INFO     v:0, scope_name = bn4j_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:42:51,785 INFO     w:0, scope_name = res4k_branch2a, pre-trained.shape = (1, 1, 1024, 256), variable.shape = (1, 1, 1024, 256)
-2018-07-17 00:42:51,914 INFO     b:0, scope_name = res4k_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:52,046 INFO     gamma:0, scope_name = bn4k_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:52,178 INFO     beta:0, scope_name = bn4k_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:52,307 INFO     m:0, scope_name = bn4k_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:52,435 INFO     v:0, scope_name = bn4k_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:52,568 INFO     w:0, scope_name = res4k_branch2b, pre-trained.shape = (3, 3, 256, 256), variable.shape = (3, 3, 256, 256)
-2018-07-17 00:42:52,700 INFO     b:0, scope_name = res4k_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:52,828 INFO     gamma:0, scope_name = bn4k_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:52,958 INFO     beta:0, scope_name = bn4k_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:53,086 INFO     m:0, scope_name = bn4k_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:53,210 INFO     v:0, scope_name = bn4k_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:53,341 INFO     w:0, scope_name = res4k_branch2c, pre-trained.shape = (1, 1, 256, 1024), variable.shape = (1, 1, 256, 1024)
-2018-07-17 00:42:53,471 INFO     b:0, scope_name = res4k_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:42:53,602 INFO     gamma:0, scope_name = bn4k_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:42:53,731 INFO     beta:0, scope_name = bn4k_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:42:53,857 INFO     m:0, scope_name = bn4k_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:42:53,981 INFO     v:0, scope_name = bn4k_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:42:54,111 INFO     w:0, scope_name = res4l_branch2a, pre-trained.shape = (1, 1, 1024, 256), variable.shape = (1, 1, 1024, 256)
-2018-07-17 00:42:54,238 INFO     b:0, scope_name = res4l_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:54,365 INFO     gamma:0, scope_name = bn4l_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:54,499 INFO     beta:0, scope_name = bn4l_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:54,628 INFO     m:0, scope_name = bn4l_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:54,756 INFO     v:0, scope_name = bn4l_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:54,888 INFO     w:0, scope_name = res4l_branch2b, pre-trained.shape = (3, 3, 256, 256), variable.shape = (3, 3, 256, 256)
-2018-07-17 00:42:55,022 INFO     b:0, scope_name = res4l_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:55,150 INFO     gamma:0, scope_name = bn4l_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:55,280 INFO     beta:0, scope_name = bn4l_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:55,408 INFO     m:0, scope_name = bn4l_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:55,543 INFO     v:0, scope_name = bn4l_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:55,669 INFO     w:0, scope_name = res4l_branch2c, pre-trained.shape = (1, 1, 256, 1024), variable.shape = (1, 1, 256, 1024)
-2018-07-17 00:42:55,800 INFO     b:0, scope_name = res4l_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:42:55,941 INFO     gamma:0, scope_name = bn4l_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:42:56,069 INFO     beta:0, scope_name = bn4l_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:42:56,203 INFO     m:0, scope_name = bn4l_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:42:56,332 INFO     v:0, scope_name = bn4l_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:42:56,467 INFO     w:0, scope_name = res4m_branch2a, pre-trained.shape = (1, 1, 1024, 256), variable.shape = (1, 1, 1024, 256)
-2018-07-17 00:42:56,599 INFO     b:0, scope_name = res4m_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:56,730 INFO     gamma:0, scope_name = bn4m_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:56,863 INFO     beta:0, scope_name = bn4m_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:57,000 INFO     m:0, scope_name = bn4m_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:57,131 INFO     v:0, scope_name = bn4m_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:57,259 INFO     w:0, scope_name = res4m_branch2b, pre-trained.shape = (3, 3, 256, 256), variable.shape = (3, 3, 256, 256)
-2018-07-17 00:42:57,389 INFO     b:0, scope_name = res4m_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:57,521 INFO     gamma:0, scope_name = bn4m_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:57,649 INFO     beta:0, scope_name = bn4m_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:57,789 INFO     m:0, scope_name = bn4m_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:57,916 INFO     v:0, scope_name = bn4m_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:58,053 INFO     w:0, scope_name = res4m_branch2c, pre-trained.shape = (1, 1, 256, 1024), variable.shape = (1, 1, 256, 1024)
-2018-07-17 00:42:58,187 INFO     b:0, scope_name = res4m_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:42:58,319 INFO     gamma:0, scope_name = bn4m_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:42:58,447 INFO     beta:0, scope_name = bn4m_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:42:58,573 INFO     m:0, scope_name = bn4m_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:42:58,710 INFO     v:0, scope_name = bn4m_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:42:58,843 INFO     w:0, scope_name = res4n_branch2a, pre-trained.shape = (1, 1, 1024, 256), variable.shape = (1, 1, 1024, 256)
-2018-07-17 00:42:58,975 INFO     b:0, scope_name = res4n_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:59,107 INFO     gamma:0, scope_name = bn4n_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:59,233 INFO     beta:0, scope_name = bn4n_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:59,358 INFO     m:0, scope_name = bn4n_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:59,481 INFO     v:0, scope_name = bn4n_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:59,615 INFO     w:0, scope_name = res4n_branch2b, pre-trained.shape = (3, 3, 256, 256), variable.shape = (3, 3, 256, 256)
-2018-07-17 00:42:59,747 INFO     b:0, scope_name = res4n_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:42:59,883 INFO     gamma:0, scope_name = bn4n_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:43:00,017 INFO     beta:0, scope_name = bn4n_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:43:00,151 INFO     m:0, scope_name = bn4n_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:43:00,281 INFO     v:0, scope_name = bn4n_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:43:00,413 INFO     w:0, scope_name = res4n_branch2c, pre-trained.shape = (1, 1, 256, 1024), variable.shape = (1, 1, 256, 1024)
-2018-07-17 00:43:00,546 INFO     b:0, scope_name = res4n_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:43:00,678 INFO     gamma:0, scope_name = bn4n_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:43:00,805 INFO     beta:0, scope_name = bn4n_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:43:00,935 INFO     m:0, scope_name = bn4n_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:43:01,073 INFO     v:0, scope_name = bn4n_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:43:01,204 INFO     w:0, scope_name = res4o_branch2a, pre-trained.shape = (1, 1, 1024, 256), variable.shape = (1, 1, 1024, 256)
-2018-07-17 00:43:01,339 INFO     b:0, scope_name = res4o_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:43:01,469 INFO     gamma:0, scope_name = bn4o_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:43:01,609 INFO     beta:0, scope_name = bn4o_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:43:01,742 INFO     m:0, scope_name = bn4o_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:43:01,877 INFO     v:0, scope_name = bn4o_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:43:02,018 INFO     w:0, scope_name = res4o_branch2b, pre-trained.shape = (3, 3, 256, 256), variable.shape = (3, 3, 256, 256)
-2018-07-17 00:43:02,155 INFO     b:0, scope_name = res4o_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:43:02,286 INFO     gamma:0, scope_name = bn4o_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:43:02,416 INFO     beta:0, scope_name = bn4o_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:43:02,556 INFO     m:0, scope_name = bn4o_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:43:02,688 INFO     v:0, scope_name = bn4o_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:43:02,817 INFO     w:0, scope_name = res4o_branch2c, pre-trained.shape = (1, 1, 256, 1024), variable.shape = (1, 1, 256, 1024)
-2018-07-17 00:43:02,952 INFO     b:0, scope_name = res4o_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:43:03,086 INFO     gamma:0, scope_name = bn4o_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:43:03,219 INFO     beta:0, scope_name = bn4o_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:43:03,352 INFO     m:0, scope_name = bn4o_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:43:03,487 INFO     v:0, scope_name = bn4o_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:43:03,626 INFO     w:0, scope_name = res4p_branch2a, pre-trained.shape = (1, 1, 1024, 256), variable.shape = (1, 1, 1024, 256)
-2018-07-17 00:43:03,760 INFO     b:0, scope_name = res4p_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:43:03,890 INFO     gamma:0, scope_name = bn4p_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:43:04,028 INFO     beta:0, scope_name = bn4p_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:43:04,163 INFO     m:0, scope_name = bn4p_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:43:04,292 INFO     v:0, scope_name = bn4p_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:43:04,431 INFO     w:0, scope_name = res4p_branch2b, pre-trained.shape = (3, 3, 256, 256), variable.shape = (3, 3, 256, 256)
-2018-07-17 00:43:04,568 INFO     b:0, scope_name = res4p_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:43:04,701 INFO     gamma:0, scope_name = bn4p_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:43:04,837 INFO     beta:0, scope_name = bn4p_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:43:04,965 INFO     m:0, scope_name = bn4p_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:43:05,100 INFO     v:0, scope_name = bn4p_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:43:05,231 INFO     w:0, scope_name = res4p_branch2c, pre-trained.shape = (1, 1, 256, 1024), variable.shape = (1, 1, 256, 1024)
-2018-07-17 00:43:05,369 INFO     b:0, scope_name = res4p_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:43:05,505 INFO     gamma:0, scope_name = bn4p_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:43:05,639 INFO     beta:0, scope_name = bn4p_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:43:05,774 INFO     m:0, scope_name = bn4p_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:43:05,908 INFO     v:0, scope_name = bn4p_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:43:06,042 INFO     w:0, scope_name = res4q_branch2a, pre-trained.shape = (1, 1, 1024, 256), variable.shape = (1, 1, 1024, 256)
-2018-07-17 00:43:06,173 INFO     b:0, scope_name = res4q_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:43:06,304 INFO     gamma:0, scope_name = bn4q_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:43:06,435 INFO     beta:0, scope_name = bn4q_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:43:06,571 INFO     m:0, scope_name = bn4q_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:43:06,706 INFO     v:0, scope_name = bn4q_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:43:06,849 INFO     w:0, scope_name = res4q_branch2b, pre-trained.shape = (3, 3, 256, 256), variable.shape = (3, 3, 256, 256)
-2018-07-17 00:43:06,984 INFO     b:0, scope_name = res4q_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:43:07,121 INFO     gamma:0, scope_name = bn4q_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:43:07,256 INFO     beta:0, scope_name = bn4q_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:43:07,392 INFO     m:0, scope_name = bn4q_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:43:07,522 INFO     v:0, scope_name = bn4q_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:43:07,665 INFO     w:0, scope_name = res4q_branch2c, pre-trained.shape = (1, 1, 256, 1024), variable.shape = (1, 1, 256, 1024)
-2018-07-17 00:43:07,803 INFO     b:0, scope_name = res4q_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:43:07,950 INFO     gamma:0, scope_name = bn4q_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:43:08,086 INFO     beta:0, scope_name = bn4q_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:43:08,220 INFO     m:0, scope_name = bn4q_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:43:08,353 INFO     v:0, scope_name = bn4q_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:43:08,486 INFO     w:0, scope_name = res4r_branch2a, pre-trained.shape = (1, 1, 1024, 256), variable.shape = (1, 1, 1024, 256)
-2018-07-17 00:43:08,626 INFO     b:0, scope_name = res4r_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:43:08,759 INFO     gamma:0, scope_name = bn4r_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:43:08,892 INFO     beta:0, scope_name = bn4r_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:43:09,028 INFO     m:0, scope_name = bn4r_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:43:09,164 INFO     v:0, scope_name = bn4r_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:43:09,307 INFO     w:0, scope_name = res4r_branch2b, pre-trained.shape = (3, 3, 256, 256), variable.shape = (3, 3, 256, 256)
-2018-07-17 00:43:09,443 INFO     b:0, scope_name = res4r_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:43:09,577 INFO     gamma:0, scope_name = bn4r_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:43:09,713 INFO     beta:0, scope_name = bn4r_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:43:09,851 INFO     m:0, scope_name = bn4r_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:43:10,164 INFO     v:0, scope_name = bn4r_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:43:10,296 INFO     w:0, scope_name = res4r_branch2c, pre-trained.shape = (1, 1, 256, 1024), variable.shape = (1, 1, 256, 1024)
-2018-07-17 00:43:10,428 INFO     b:0, scope_name = res4r_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:43:10,569 INFO     gamma:0, scope_name = bn4r_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:43:10,714 INFO     beta:0, scope_name = bn4r_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:43:10,848 INFO     m:0, scope_name = bn4r_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:43:10,975 INFO     v:0, scope_name = bn4r_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:43:11,120 INFO     w:0, scope_name = res4s_branch2a, pre-trained.shape = (1, 1, 1024, 256), variable.shape = (1, 1, 1024, 256)
-2018-07-17 00:43:11,256 INFO     b:0, scope_name = res4s_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:43:11,388 INFO     gamma:0, scope_name = bn4s_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:43:11,521 INFO     beta:0, scope_name = bn4s_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:43:11,655 INFO     m:0, scope_name = bn4s_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:43:11,793 INFO     v:0, scope_name = bn4s_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:43:11,934 INFO     w:0, scope_name = res4s_branch2b, pre-trained.shape = (3, 3, 256, 256), variable.shape = (3, 3, 256, 256)
-2018-07-17 00:43:12,075 INFO     b:0, scope_name = res4s_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:43:12,211 INFO     gamma:0, scope_name = bn4s_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:43:12,343 INFO     beta:0, scope_name = bn4s_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:43:12,470 INFO     m:0, scope_name = bn4s_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:43:12,609 INFO     v:0, scope_name = bn4s_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:43:12,740 INFO     w:0, scope_name = res4s_branch2c, pre-trained.shape = (1, 1, 256, 1024), variable.shape = (1, 1, 256, 1024)
-2018-07-17 00:43:12,879 INFO     b:0, scope_name = res4s_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:43:13,016 INFO     gamma:0, scope_name = bn4s_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:43:13,157 INFO     beta:0, scope_name = bn4s_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:43:13,290 INFO     m:0, scope_name = bn4s_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:43:13,433 INFO     v:0, scope_name = bn4s_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:43:13,568 INFO     w:0, scope_name = res4t_branch2a, pre-trained.shape = (1, 1, 1024, 256), variable.shape = (1, 1, 1024, 256)
-2018-07-17 00:43:13,706 INFO     b:0, scope_name = res4t_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:43:13,838 INFO     gamma:0, scope_name = bn4t_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:43:13,977 INFO     beta:0, scope_name = bn4t_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:43:14,109 INFO     m:0, scope_name = bn4t_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:43:14,251 INFO     v:0, scope_name = bn4t_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:43:14,396 INFO     w:0, scope_name = res4t_branch2b, pre-trained.shape = (3, 3, 256, 256), variable.shape = (3, 3, 256, 256)
-2018-07-17 00:43:14,539 INFO     b:0, scope_name = res4t_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:43:14,682 INFO     gamma:0, scope_name = bn4t_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:43:14,818 INFO     beta:0, scope_name = bn4t_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:43:14,959 INFO     m:0, scope_name = bn4t_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:43:15,099 INFO     v:0, scope_name = bn4t_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:43:15,238 INFO     w:0, scope_name = res4t_branch2c, pre-trained.shape = (1, 1, 256, 1024), variable.shape = (1, 1, 256, 1024)
-2018-07-17 00:43:15,375 INFO     b:0, scope_name = res4t_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:43:15,514 INFO     gamma:0, scope_name = bn4t_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:43:15,655 INFO     beta:0, scope_name = bn4t_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:43:15,789 INFO     m:0, scope_name = bn4t_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:43:15,925 INFO     v:0, scope_name = bn4t_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:43:16,069 INFO     w:0, scope_name = res4u_branch2a, pre-trained.shape = (1, 1, 1024, 256), variable.shape = (1, 1, 1024, 256)
-2018-07-17 00:43:16,208 INFO     b:0, scope_name = res4u_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:43:16,347 INFO     gamma:0, scope_name = bn4u_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:43:16,484 INFO     beta:0, scope_name = bn4u_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:43:16,626 INFO     m:0, scope_name = bn4u_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:43:16,764 INFO     v:0, scope_name = bn4u_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:43:16,907 INFO     w:0, scope_name = res4u_branch2b, pre-trained.shape = (3, 3, 256, 256), variable.shape = (3, 3, 256, 256)
-2018-07-17 00:43:17,050 INFO     b:0, scope_name = res4u_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:43:17,215 INFO     gamma:0, scope_name = bn4u_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:43:17,360 INFO     beta:0, scope_name = bn4u_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:43:17,499 INFO     m:0, scope_name = bn4u_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:43:17,645 INFO     v:0, scope_name = bn4u_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:43:17,781 INFO     w:0, scope_name = res4u_branch2c, pre-trained.shape = (1, 1, 256, 1024), variable.shape = (1, 1, 256, 1024)
-2018-07-17 00:43:17,920 INFO     b:0, scope_name = res4u_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:43:18,065 INFO     gamma:0, scope_name = bn4u_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:43:18,217 INFO     beta:0, scope_name = bn4u_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:43:18,357 INFO     m:0, scope_name = bn4u_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:43:18,498 INFO     v:0, scope_name = bn4u_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:43:18,649 INFO     w:0, scope_name = res4v_branch2a, pre-trained.shape = (1, 1, 1024, 256), variable.shape = (1, 1, 1024, 256)
-2018-07-17 00:43:18,812 INFO     b:0, scope_name = res4v_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:43:18,950 INFO     gamma:0, scope_name = bn4v_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:43:19,096 INFO     beta:0, scope_name = bn4v_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:43:19,233 INFO     m:0, scope_name = bn4v_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:43:19,375 INFO     v:0, scope_name = bn4v_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:43:19,513 INFO     w:0, scope_name = res4v_branch2b, pre-trained.shape = (3, 3, 256, 256), variable.shape = (3, 3, 256, 256)
-2018-07-17 00:43:19,656 INFO     b:0, scope_name = res4v_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:43:19,801 INFO     gamma:0, scope_name = bn4v_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:43:19,949 INFO     beta:0, scope_name = bn4v_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:43:20,091 INFO     m:0, scope_name = bn4v_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:43:20,235 INFO     v:0, scope_name = bn4v_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:43:20,377 INFO     w:0, scope_name = res4v_branch2c, pre-trained.shape = (1, 1, 256, 1024), variable.shape = (1, 1, 256, 1024)
-2018-07-17 00:43:20,514 INFO     b:0, scope_name = res4v_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:43:20,647 INFO     gamma:0, scope_name = bn4v_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:43:20,784 INFO     beta:0, scope_name = bn4v_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:43:20,928 INFO     m:0, scope_name = bn4v_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:43:21,071 INFO     v:0, scope_name = bn4v_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:43:21,217 INFO     w:0, scope_name = res4w_branch2a, pre-trained.shape = (1, 1, 1024, 256), variable.shape = (1, 1, 1024, 256)
-2018-07-17 00:43:21,358 INFO     b:0, scope_name = res4w_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:43:21,498 INFO     gamma:0, scope_name = bn4w_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:43:21,637 INFO     beta:0, scope_name = bn4w_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:43:21,781 INFO     m:0, scope_name = bn4w_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:43:21,922 INFO     v:0, scope_name = bn4w_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:43:22,070 INFO     w:0, scope_name = res4w_branch2b, pre-trained.shape = (3, 3, 256, 256), variable.shape = (3, 3, 256, 256)
-2018-07-17 00:43:22,217 INFO     b:0, scope_name = res4w_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:43:22,360 INFO     gamma:0, scope_name = bn4w_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:43:22,505 INFO     beta:0, scope_name = bn4w_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:43:22,651 INFO     m:0, scope_name = bn4w_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:43:22,791 INFO     v:0, scope_name = bn4w_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
-2018-07-17 00:43:22,929 INFO     w:0, scope_name = res4w_branch2c, pre-trained.shape = (1, 1, 256, 1024), variable.shape = (1, 1, 256, 1024)
-2018-07-17 00:43:23,068 INFO     b:0, scope_name = res4w_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:43:23,207 INFO     gamma:0, scope_name = bn4w_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:43:23,350 INFO     beta:0, scope_name = bn4w_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:43:23,488 INFO     m:0, scope_name = bn4w_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:43:23,637 INFO     v:0, scope_name = bn4w_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
-2018-07-17 00:43:23,787 INFO     w:0, scope_name = res5a_branch1, pre-trained.shape = (1, 1, 1024, 2048), variable.shape = (1, 1, 1024, 2048)
-2018-07-17 00:43:23,940 INFO     b:0, scope_name = res5a_branch1, pre-trained.shape = (2048,), variable.shape = (2048,)
-2018-07-17 00:43:24,081 INFO     gamma:0, scope_name = bn5a_branch1, pre-trained.shape = (2048,), variable.shape = (2048,)
-2018-07-17 00:43:24,306 INFO     beta:0, scope_name = bn5a_branch1, pre-trained.shape = (2048,), variable.shape = (2048,)
-2018-07-17 00:43:24,480 INFO     m:0, scope_name = bn5a_branch1, pre-trained.shape = (2048,), variable.shape = (2048,)
-2018-07-17 00:43:24,626 INFO     v:0, scope_name = bn5a_branch1, pre-trained.shape = (2048,), variable.shape = (2048,)
-2018-07-17 00:43:24,771 INFO     w:0, scope_name = res5a_branch2a, pre-trained.shape = (1, 1, 1024, 512), variable.shape = (1, 1, 1024, 512)
-2018-07-17 00:43:24,912 INFO     b:0, scope_name = res5a_branch2a, pre-trained.shape = (512,), variable.shape = (512,)
-2018-07-17 00:43:25,055 INFO     gamma:0, scope_name = bn5a_branch2a, pre-trained.shape = (512,), variable.shape = (512,)
-2018-07-17 00:43:25,192 INFO     beta:0, scope_name = bn5a_branch2a, pre-trained.shape = (512,), variable.shape = (512,)
-2018-07-17 00:43:25,338 INFO     m:0, scope_name = bn5a_branch2a, pre-trained.shape = (512,), variable.shape = (512,)
-2018-07-17 00:43:25,495 INFO     v:0, scope_name = bn5a_branch2a, pre-trained.shape = (512,), variable.shape = (512,)
-2018-07-17 00:43:25,647 INFO     w:0, scope_name = res5a_branch2b, pre-trained.shape = (3, 3, 512, 512), variable.shape = (3, 3, 512, 512)
-2018-07-17 00:43:25,805 INFO     b:0, scope_name = res5a_branch2b, pre-trained.shape = (512,), variable.shape = (512,)
-2018-07-17 00:43:25,998 INFO     gamma:0, scope_name = bn5a_branch2b, pre-trained.shape = (512,), variable.shape = (512,)
-2018-07-17 00:43:26,156 INFO     beta:0, scope_name = bn5a_branch2b, pre-trained.shape = (512,), variable.shape = (512,)
-2018-07-17 00:43:26,295 INFO     m:0, scope_name = bn5a_branch2b, pre-trained.shape = (512,), variable.shape = (512,)
-2018-07-17 00:43:26,454 INFO     v:0, scope_name = bn5a_branch2b, pre-trained.shape = (512,), variable.shape = (512,)
-2018-07-17 00:43:26,618 INFO     w:0, scope_name = res5a_branch2c, pre-trained.shape = (1, 1, 512, 2048), variable.shape = (1, 1, 512, 2048)
-2018-07-17 00:43:26,763 INFO     b:0, scope_name = res5a_branch2c, pre-trained.shape = (2048,), variable.shape = (2048,)
-2018-07-17 00:43:26,941 INFO     gamma:0, scope_name = bn5a_branch2c, pre-trained.shape = (2048,), variable.shape = (2048,)
-2018-07-17 00:43:27,082 INFO     beta:0, scope_name = bn5a_branch2c, pre-trained.shape = (2048,), variable.shape = (2048,)
-2018-07-17 00:43:27,246 INFO     m:0, scope_name = bn5a_branch2c, pre-trained.shape = (2048,), variable.shape = (2048,)
-2018-07-17 00:43:27,389 INFO     v:0, scope_name = bn5a_branch2c, pre-trained.shape = (2048,), variable.shape = (2048,)
-2018-07-17 00:43:27,566 INFO     w:0, scope_name = res5b_branch2a, pre-trained.shape = (1, 1, 2048, 512), variable.shape = (1, 1, 2048, 512)
-2018-07-17 00:43:27,720 INFO     b:0, scope_name = res5b_branch2a, pre-trained.shape = (512,), variable.shape = (512,)
-2018-07-17 00:43:27,879 INFO     gamma:0, scope_name = bn5b_branch2a, pre-trained.shape = (512,), variable.shape = (512,)
-2018-07-17 00:43:28,075 INFO     beta:0, scope_name = bn5b_branch2a, pre-trained.shape = (512,), variable.shape = (512,)
-2018-07-17 00:43:28,234 INFO     m:0, scope_name = bn5b_branch2a, pre-trained.shape = (512,), variable.shape = (512,)
-2018-07-17 00:43:28,523 INFO     v:0, scope_name = bn5b_branch2a, pre-trained.shape = (512,), variable.shape = (512,)
-2018-07-17 00:43:28,704 INFO     w:0, scope_name = res5b_branch2b, pre-trained.shape = (3, 3, 512, 512), variable.shape = (3, 3, 512, 512)
-2018-07-17 00:43:28,925 INFO     b:0, scope_name = res5b_branch2b, pre-trained.shape = (512,), variable.shape = (512,)
-2018-07-17 00:43:29,081 INFO     gamma:0, scope_name = bn5b_branch2b, pre-trained.shape = (512,), variable.shape = (512,)
-2018-07-17 00:43:29,228 INFO     beta:0, scope_name = bn5b_branch2b, pre-trained.shape = (512,), variable.shape = (512,)
-2018-07-17 00:43:29,373 INFO     m:0, scope_name = bn5b_branch2b, pre-trained.shape = (512,), variable.shape = (512,)
-2018-07-17 00:43:29,519 INFO     v:0, scope_name = bn5b_branch2b, pre-trained.shape = (512,), variable.shape = (512,)
-2018-07-17 00:43:29,673 INFO     w:0, scope_name = res5b_branch2c, pre-trained.shape = (1, 1, 512, 2048), variable.shape = (1, 1, 512, 2048)
-2018-07-17 00:43:29,824 INFO     b:0, scope_name = res5b_branch2c, pre-trained.shape = (2048,), variable.shape = (2048,)
-2018-07-17 00:43:29,969 INFO     gamma:0, scope_name = bn5b_branch2c, pre-trained.shape = (2048,), variable.shape = (2048,)
-2018-07-17 00:43:30,112 INFO     beta:0, scope_name = bn5b_branch2c, pre-trained.shape = (2048,), variable.shape = (2048,)
-2018-07-17 00:43:30,267 INFO     m:0, scope_name = bn5b_branch2c, pre-trained.shape = (2048,), variable.shape = (2048,)
-2018-07-17 00:43:30,413 INFO     v:0, scope_name = bn5b_branch2c, pre-trained.shape = (2048,), variable.shape = (2048,)
-2018-07-17 00:43:30,560 INFO     w:0, scope_name = res5c_branch2a, pre-trained.shape = (1, 1, 2048, 512), variable.shape = (1, 1, 2048, 512)
-2018-07-17 00:43:30,726 INFO     b:0, scope_name = res5c_branch2a, pre-trained.shape = (512,), variable.shape = (512,)
-2018-07-17 00:43:30,887 INFO     gamma:0, scope_name = bn5c_branch2a, pre-trained.shape = (512,), variable.shape = (512,)
-2018-07-17 00:43:31,027 INFO     beta:0, scope_name = bn5c_branch2a, pre-trained.shape = (512,), variable.shape = (512,)
-2018-07-17 00:43:31,187 INFO     m:0, scope_name = bn5c_branch2a, pre-trained.shape = (512,), variable.shape = (512,)
-2018-07-17 00:43:31,334 INFO     v:0, scope_name = bn5c_branch2a, pre-trained.shape = (512,), variable.shape = (512,)
-2018-07-17 00:43:31,487 INFO     w:0, scope_name = res5c_branch2b, pre-trained.shape = (3, 3, 512, 512), variable.shape = (3, 3, 512, 512)
-2018-07-17 00:43:31,640 INFO     b:0, scope_name = res5c_branch2b, pre-trained.shape = (512,), variable.shape = (512,)
-2018-07-17 00:43:31,807 INFO     gamma:0, scope_name = bn5c_branch2b, pre-trained.shape = (512,), variable.shape = (512,)
-2018-07-17 00:43:31,965 INFO     beta:0, scope_name = bn5c_branch2b, pre-trained.shape = (512,), variable.shape = (512,)
-2018-07-17 00:43:32,109 INFO     m:0, scope_name = bn5c_branch2b, pre-trained.shape = (512,), variable.shape = (512,)
-2018-07-17 00:43:32,273 INFO     v:0, scope_name = bn5c_branch2b, pre-trained.shape = (512,), variable.shape = (512,)
-2018-07-17 00:43:32,457 INFO     w:0, scope_name = res5c_branch2c, pre-trained.shape = (1, 1, 512, 2048), variable.shape = (1, 1, 512, 2048)
-2018-07-17 00:43:32,630 INFO     b:0, scope_name = res5c_branch2c, pre-trained.shape = (2048,), variable.shape = (2048,)
-2018-07-17 00:43:32,776 INFO     gamma:0, scope_name = bn5c_branch2c, pre-trained.shape = (2048,), variable.shape = (2048,)
-2018-07-17 00:43:32,918 INFO     beta:0, scope_name = bn5c_branch2c, pre-trained.shape = (2048,), variable.shape = (2048,)
-2018-07-17 00:43:33,068 INFO     m:0, scope_name = bn5c_branch2c, pre-trained.shape = (2048,), variable.shape = (2048,)
-2018-07-17 00:43:33,216 INFO     v:0, scope_name = bn5c_branch2c, pre-trained.shape = (2048,), variable.shape = (2048,)
+2018-07-21 18:52:47,860 INFO     Anchors: running for..... scales=8, feature_map_shapes=[32 32], feature_map_strides=4
+2018-07-21 18:52:47,860 INFO     Anchors: Box width shape = (1024, 3)
+2018-07-21 18:52:47,924 INFO     Anchors: Box height shape = (1024, 3)
+2018-07-21 18:52:47,924 INFO     Anchors: Box center_x shape = (1024, 3)
+2018-07-21 18:52:47,924 INFO     Anchors: Box center_y shape = (1024, 3)
+2018-07-21 18:52:47,925 INFO     Anchors: Stacked Box corner coordinates shape = (3072, 4)
+2018-07-21 18:52:47,925 INFO     Anchors: running for..... scales=16, feature_map_shapes=[16 16], feature_map_strides=8
+2018-07-21 18:52:47,925 INFO     Anchors: Box width shape = (256, 3)
+2018-07-21 18:52:47,925 INFO     Anchors: Box height shape = (256, 3)
+2018-07-21 18:52:47,925 INFO     Anchors: Box center_x shape = (256, 3)
+2018-07-21 18:52:47,925 INFO     Anchors: Box center_y shape = (256, 3)
+2018-07-21 18:52:47,926 INFO     Anchors: Stacked Box corner coordinates shape = (768, 4)
+2018-07-21 18:52:47,926 INFO     Anchors: running for..... scales=32, feature_map_shapes=[8 8], feature_map_strides=16
+2018-07-21 18:52:47,926 INFO     Anchors: Box width shape = (64, 3)
+2018-07-21 18:52:47,926 INFO     Anchors: Box height shape = (64, 3)
+2018-07-21 18:52:47,926 INFO     Anchors: Box center_x shape = (64, 3)
+2018-07-21 18:52:47,926 INFO     Anchors: Box center_y shape = (64, 3)
+2018-07-21 18:52:47,926 INFO     Anchors: Stacked Box corner coordinates shape = (192, 4)
+2018-07-21 18:52:47,926 INFO     Anchors: running for..... scales=64, feature_map_shapes=[4 4], feature_map_strides=32
+2018-07-21 18:52:47,927 INFO     Anchors: Box width shape = (16, 3)
+2018-07-21 18:52:47,927 INFO     Anchors: Box height shape = (16, 3)
+2018-07-21 18:52:47,927 INFO     Anchors: Box center_x shape = (16, 3)
+2018-07-21 18:52:47,927 INFO     Anchors: Box center_y shape = (16, 3)
+2018-07-21 18:52:47,927 INFO     Anchors: Stacked Box corner coordinates shape = (48, 4)
+2018-07-21 18:52:47,927 INFO     Anchors: running for..... scales=128, feature_map_shapes=[2 2], feature_map_strides=64
+2018-07-21 18:52:47,928 INFO     Anchors: Box width shape = (4, 3)
+2018-07-21 18:52:47,928 INFO     Anchors: Box height shape = (4, 3)
+2018-07-21 18:52:47,928 INFO     Anchors: Box center_x shape = (4, 3)
+2018-07-21 18:52:47,928 INFO     Anchors: Box center_y shape = (4, 3)
+2018-07-21 18:52:47,928 INFO     Anchors: Stacked Box corner coordinates shape = (12, 4)
+2018-07-21 18:52:47,928 INFO     Anchors: concatenated for each stage: shape = (4092, 4)
+2018-07-21 18:52:47,993 INFO     Image height = 128, width = 128 ................
+2018-07-21 18:52:47,993 INFO     Initiating FPN BOTTOM-UP .................................
+2018-07-21 18:52:47,996 INFO     Zero_padded: [None, 134, 134, 3]
+2018-07-21 18:52:47,996 INFO     STAGE 1 ...........................
+2018-07-21 18:52:48,043 INFO     Conv2D: [None, 64, 64, 64]
+2018-07-21 18:52:48,046 INFO     MaxPool2d: [None, 32, 32, 64]
+2018-07-21 18:52:48,046 INFO     STAGE 2 ...........................
+2018-07-21 18:52:48,093 INFO     res2a_branch1: [None, 32, 32, 256]
+2018-07-21 18:52:48,137 INFO     res2a_branch2a: [None, 32, 32, 64]
+2018-07-21 18:52:48,180 INFO     res2a_branch2b: [None, 32, 32, 64]
+2018-07-21 18:52:48,229 INFO     res2a_branch2c: [None, 32, 32, 256]
+2018-07-21 18:52:48,232 INFO     relu2a_branch_out: [None, 32, 32, 256]
+2018-07-21 18:52:48,279 INFO     res2b_branch2a: [None, 32, 32, 64]
+2018-07-21 18:52:48,328 INFO     res2b_branch2b: [None, 32, 32, 64]
+2018-07-21 18:52:48,371 INFO     res2b_branch2c: [None, 32, 32, 256]
+2018-07-21 18:52:48,374 INFO     relu2b_branch_out: [None, 32, 32, 256]
+2018-07-21 18:52:48,419 INFO     res2c_branch2a: [None, 32, 32, 64]
+2018-07-21 18:52:48,466 INFO     res2c_branch2b: [None, 32, 32, 64]
+2018-07-21 18:52:48,526 INFO     res2c_branch2c: [None, 32, 32, 256]
+2018-07-21 18:52:48,529 INFO     relu2c_branch_out: [None, 32, 32, 256]
+2018-07-21 18:52:48,529 INFO     STAGE 3 ...........................
+2018-07-21 18:52:48,589 INFO     res3a_branch1: [None, 16, 16, 512]
+2018-07-21 18:52:48,640 INFO     res3a_branch2a: [None, 16, 16, 128]
+2018-07-21 18:52:48,688 INFO     res3a_branch2b: [None, 16, 16, 128]
+2018-07-21 18:52:48,737 INFO     res3a_branch2c: [None, 16, 16, 512]
+2018-07-21 18:52:48,739 INFO     relu3a_branch_out: [None, 16, 16, 512]
+2018-07-21 18:52:48,782 INFO     res3b_branch2a: [None, 16, 16, 128]
+2018-07-21 18:52:48,828 INFO     res3b_branch2b: [None, 16, 16, 128]
+2018-07-21 18:52:48,872 INFO     res3b_branch2c: [None, 16, 16, 512]
+2018-07-21 18:52:48,875 INFO     relu3b_branch_out: [None, 16, 16, 512]
+2018-07-21 18:52:48,924 INFO     res3c_branch2a: [None, 16, 16, 128]
+2018-07-21 18:52:48,971 INFO     res3c_branch2b: [None, 16, 16, 128]
+2018-07-21 18:52:49,015 INFO     res3c_branch2c: [None, 16, 16, 512]
+2018-07-21 18:52:49,017 INFO     relu3c_branch_out: [None, 16, 16, 512]
+2018-07-21 18:52:49,060 INFO     res3d_branch2a: [None, 16, 16, 128]
+2018-07-21 18:52:49,104 INFO     res3d_branch2b: [None, 16, 16, 128]
+2018-07-21 18:52:49,228 INFO     res3d_branch2c: [None, 16, 16, 512]
+2018-07-21 18:52:49,231 INFO     relu3d_branch_out: [None, 16, 16, 512]
+2018-07-21 18:52:49,231 INFO     STAGE 4 ...........................
+2018-07-21 18:52:49,273 INFO     res4a_branch1: [None, 8, 8, 1024]
+2018-07-21 18:52:49,318 INFO     res4a_branch2a: [None, 8, 8, 256]
+2018-07-21 18:52:49,361 INFO     res4a_branch2b: [None, 8, 8, 256]
+2018-07-21 18:52:49,405 INFO     res4a_branch2c: [None, 8, 8, 1024]
+2018-07-21 18:52:49,407 INFO     relu4a_branch_out: [None, 8, 8, 1024]
+2018-07-21 18:52:49,450 INFO     res4b_branch2a: [None, 8, 8, 256]
+2018-07-21 18:52:49,494 INFO     res4b_branch2b: [None, 8, 8, 256]
+2018-07-21 18:52:49,537 INFO     res4b_branch2c: [None, 8, 8, 1024]
+2018-07-21 18:52:49,539 INFO     relu4b_branch_out: [None, 8, 8, 1024]
+2018-07-21 18:52:49,583 INFO     res4c_branch2a: [None, 8, 8, 256]
+2018-07-21 18:52:49,627 INFO     res4c_branch2b: [None, 8, 8, 256]
+2018-07-21 18:52:49,670 INFO     res4c_branch2c: [None, 8, 8, 1024]
+2018-07-21 18:52:49,673 INFO     relu4c_branch_out: [None, 8, 8, 1024]
+2018-07-21 18:52:49,719 INFO     res4d_branch2a: [None, 8, 8, 256]
+2018-07-21 18:52:49,763 INFO     res4d_branch2b: [None, 8, 8, 256]
+2018-07-21 18:52:49,808 INFO     res4d_branch2c: [None, 8, 8, 1024]
+2018-07-21 18:52:49,811 INFO     relu4d_branch_out: [None, 8, 8, 1024]
+2018-07-21 18:52:49,856 INFO     res4e_branch2a: [None, 8, 8, 256]
+2018-07-21 18:52:49,903 INFO     res4e_branch2b: [None, 8, 8, 256]
+2018-07-21 18:52:49,946 INFO     res4e_branch2c: [None, 8, 8, 1024]
+2018-07-21 18:52:49,948 INFO     relu4e_branch_out: [None, 8, 8, 1024]
+2018-07-21 18:52:49,994 INFO     res4f_branch2a: [None, 8, 8, 256]
+2018-07-21 18:52:50,039 INFO     res4f_branch2b: [None, 8, 8, 256]
+2018-07-21 18:52:50,084 INFO     res4f_branch2c: [None, 8, 8, 1024]
+2018-07-21 18:52:50,087 INFO     relu4f_branch_out: [None, 8, 8, 1024]
+2018-07-21 18:52:50,134 INFO     res4g_branch2a: [None, 8, 8, 256]
+2018-07-21 18:52:50,179 INFO     res4g_branch2b: [None, 8, 8, 256]
+2018-07-21 18:52:50,228 INFO     res4g_branch2c: [None, 8, 8, 1024]
+2018-07-21 18:52:50,231 INFO     relu4g_branch_out: [None, 8, 8, 1024]
+2018-07-21 18:52:50,274 INFO     res4h_branch2a: [None, 8, 8, 256]
+2018-07-21 18:52:50,319 INFO     res4h_branch2b: [None, 8, 8, 256]
+2018-07-21 18:52:50,362 INFO     res4h_branch2c: [None, 8, 8, 1024]
+2018-07-21 18:52:50,365 INFO     relu4h_branch_out: [None, 8, 8, 1024]
+2018-07-21 18:52:50,409 INFO     res4i_branch2a: [None, 8, 8, 256]
+2018-07-21 18:52:50,555 INFO     res4i_branch2b: [None, 8, 8, 256]
+2018-07-21 18:52:50,603 INFO     res4i_branch2c: [None, 8, 8, 1024]
+2018-07-21 18:52:50,606 INFO     relu4i_branch_out: [None, 8, 8, 1024]
+2018-07-21 18:52:50,654 INFO     res4j_branch2a: [None, 8, 8, 256]
+2018-07-21 18:52:50,704 INFO     res4j_branch2b: [None, 8, 8, 256]
+2018-07-21 18:52:50,751 INFO     res4j_branch2c: [None, 8, 8, 1024]
+2018-07-21 18:52:50,754 INFO     relu4j_branch_out: [None, 8, 8, 1024]
+2018-07-21 18:52:50,803 INFO     res4k_branch2a: [None, 8, 8, 256]
+2018-07-21 18:52:50,853 INFO     res4k_branch2b: [None, 8, 8, 256]
+2018-07-21 18:52:50,907 INFO     res4k_branch2c: [None, 8, 8, 1024]
+2018-07-21 18:52:50,909 INFO     relu4k_branch_out: [None, 8, 8, 1024]
+2018-07-21 18:52:50,958 INFO     res4l_branch2a: [None, 8, 8, 256]
+2018-07-21 18:52:51,010 INFO     res4l_branch2b: [None, 8, 8, 256]
+2018-07-21 18:52:51,056 INFO     res4l_branch2c: [None, 8, 8, 1024]
+2018-07-21 18:52:51,059 INFO     relu4l_branch_out: [None, 8, 8, 1024]
+2018-07-21 18:52:51,106 INFO     res4m_branch2a: [None, 8, 8, 256]
+2018-07-21 18:52:51,155 INFO     res4m_branch2b: [None, 8, 8, 256]
+2018-07-21 18:52:51,202 INFO     res4m_branch2c: [None, 8, 8, 1024]
+2018-07-21 18:52:51,205 INFO     relu4m_branch_out: [None, 8, 8, 1024]
+2018-07-21 18:52:51,249 INFO     res4n_branch2a: [None, 8, 8, 256]
+2018-07-21 18:52:51,294 INFO     res4n_branch2b: [None, 8, 8, 256]
+2018-07-21 18:52:51,338 INFO     res4n_branch2c: [None, 8, 8, 1024]
+2018-07-21 18:52:51,340 INFO     relu4n_branch_out: [None, 8, 8, 1024]
+2018-07-21 18:52:51,386 INFO     res4o_branch2a: [None, 8, 8, 256]
+2018-07-21 18:52:51,431 INFO     res4o_branch2b: [None, 8, 8, 256]
+2018-07-21 18:52:51,475 INFO     res4o_branch2c: [None, 8, 8, 1024]
+2018-07-21 18:52:51,477 INFO     relu4o_branch_out: [None, 8, 8, 1024]
+2018-07-21 18:52:51,524 INFO     res4p_branch2a: [None, 8, 8, 256]
+2018-07-21 18:52:51,569 INFO     res4p_branch2b: [None, 8, 8, 256]
+2018-07-21 18:52:51,616 INFO     res4p_branch2c: [None, 8, 8, 1024]
+2018-07-21 18:52:51,618 INFO     relu4p_branch_out: [None, 8, 8, 1024]
+2018-07-21 18:52:51,663 INFO     res4q_branch2a: [None, 8, 8, 256]
+2018-07-21 18:52:51,715 INFO     res4q_branch2b: [None, 8, 8, 256]
+2018-07-21 18:52:51,761 INFO     res4q_branch2c: [None, 8, 8, 1024]
+2018-07-21 18:52:51,764 INFO     relu4q_branch_out: [None, 8, 8, 1024]
+2018-07-21 18:52:51,812 INFO     res4r_branch2a: [None, 8, 8, 256]
+2018-07-21 18:52:51,863 INFO     res4r_branch2b: [None, 8, 8, 256]
+2018-07-21 18:52:51,913 INFO     res4r_branch2c: [None, 8, 8, 1024]
+2018-07-21 18:52:51,915 INFO     relu4r_branch_out: [None, 8, 8, 1024]
+2018-07-21 18:52:51,964 INFO     res4s_branch2a: [None, 8, 8, 256]
+2018-07-21 18:52:52,015 INFO     res4s_branch2b: [None, 8, 8, 256]
+2018-07-21 18:52:52,060 INFO     res4s_branch2c: [None, 8, 8, 1024]
+2018-07-21 18:52:52,063 INFO     relu4s_branch_out: [None, 8, 8, 1024]
+2018-07-21 18:52:52,235 INFO     res4t_branch2a: [None, 8, 8, 256]
+2018-07-21 18:52:52,281 INFO     res4t_branch2b: [None, 8, 8, 256]
+2018-07-21 18:52:52,328 INFO     res4t_branch2c: [None, 8, 8, 1024]
+2018-07-21 18:52:52,331 INFO     relu4t_branch_out: [None, 8, 8, 1024]
+2018-07-21 18:52:52,377 INFO     res4u_branch2a: [None, 8, 8, 256]
+2018-07-21 18:52:52,425 INFO     res4u_branch2b: [None, 8, 8, 256]
+2018-07-21 18:52:52,468 INFO     res4u_branch2c: [None, 8, 8, 1024]
+2018-07-21 18:52:52,471 INFO     relu4u_branch_out: [None, 8, 8, 1024]
+2018-07-21 18:52:52,517 INFO     res4v_branch2a: [None, 8, 8, 256]
+2018-07-21 18:52:52,566 INFO     res4v_branch2b: [None, 8, 8, 256]
+2018-07-21 18:52:52,610 INFO     res4v_branch2c: [None, 8, 8, 1024]
+2018-07-21 18:52:52,613 INFO     relu4v_branch_out: [None, 8, 8, 1024]
+2018-07-21 18:52:52,658 INFO     res4w_branch2a: [None, 8, 8, 256]
+2018-07-21 18:52:52,702 INFO     res4w_branch2b: [None, 8, 8, 256]
+2018-07-21 18:52:52,746 INFO     res4w_branch2c: [None, 8, 8, 1024]
+2018-07-21 18:52:52,749 INFO     relu4w_branch_out: [None, 8, 8, 1024]
+2018-07-21 18:52:52,749 INFO     STAGE 5 ...........................
+2018-07-21 18:52:52,793 INFO     res5a_branch1: [None, 4, 4, 2048]
+2018-07-21 18:52:52,838 INFO     res5a_branch2a: [None, 4, 4, 512]
+2018-07-21 18:52:52,890 INFO     res5a_branch2b: [None, 4, 4, 512]
+2018-07-21 18:52:52,937 INFO     res5a_branch2c: [None, 4, 4, 2048]
+2018-07-21 18:52:52,940 INFO     relu5a_branch_out: [None, 4, 4, 2048]
+2018-07-21 18:52:52,986 INFO     res5b_branch2a: [None, 4, 4, 512]
+2018-07-21 18:52:53,033 INFO     res5b_branch2b: [None, 4, 4, 512]
+2018-07-21 18:52:53,080 INFO     res5b_branch2c: [None, 4, 4, 2048]
+2018-07-21 18:52:53,082 INFO     relu5b_branch_out: [None, 4, 4, 2048]
+2018-07-21 18:52:53,129 INFO     res5c_branch2a: [None, 4, 4, 512]
+2018-07-21 18:52:53,176 INFO     res5c_branch2b: [None, 4, 4, 512]
+2018-07-21 18:52:53,222 INFO     res5c_branch2c: [None, 4, 4, 2048]
+2018-07-21 18:52:53,225 INFO     relu5c_branch_out: [None, 4, 4, 2048]
+2018-07-21 18:52:53,225 INFO     Initiating FPN TOP-DOWN .................................
+2018-07-21 18:52:53,246 INFO     FPN - M5: [None, 4, 4, 256]
+2018-07-21 18:52:53,280 INFO     FPN - M4: [None, 8, 8, 256]
+2018-07-21 18:52:53,314 INFO     FPN - M3: [None, 16, 16, 256]
+2018-07-21 18:52:53,348 INFO     FPN - M2: [None, 32, 32, 256]
+2018-07-21 18:52:53,435 INFO     FPN - P2 = [None, 32, 32, 256], P3 = [None, 16, 16, 256], P4 = [None, 8, 8, 256], P5 = [None, 4, 4, 256], P6 = [None, 2, 2, 256]:
+2018-07-21 18:52:53,458 INFO     RPN - Shared_conv: [None, 32, 32, 512]
+2018-07-21 18:52:53,481 INFO     RPN - Conv Class: [None, 32, 32, 6]
+2018-07-21 18:52:53,495 INFO     rpn_class_logits: [None, None, 2]
+2018-07-21 18:52:53,514 INFO     rpn_class_probs: [None, None, 2]
+2018-07-21 18:52:53,536 INFO     RPN - Conv Bbox: [None, 32, 32, 12]
+2018-07-21 18:52:53,550 INFO     rpn_bbox: [None, None, 4]
+2018-07-21 18:52:53,555 INFO     RPN - Shared_conv: [None, 16, 16, 512]
+2018-07-21 18:52:53,559 INFO     RPN - Conv Class: [None, 16, 16, 6]
+2018-07-21 18:52:53,571 INFO     rpn_class_logits: [None, None, 2]
+2018-07-21 18:52:53,589 INFO     rpn_class_probs: [None, None, 2]
+2018-07-21 18:52:53,592 INFO     RPN - Conv Bbox: [None, 16, 16, 12]
+2018-07-21 18:52:53,604 INFO     rpn_bbox: [None, None, 4]
+2018-07-21 18:52:53,609 INFO     RPN - Shared_conv: [None, 8, 8, 512]
+2018-07-21 18:52:53,612 INFO     RPN - Conv Class: [None, 8, 8, 6]
+2018-07-21 18:52:53,625 INFO     rpn_class_logits: [None, None, 2]
+2018-07-21 18:52:53,640 INFO     rpn_class_probs: [None, None, 2]
+2018-07-21 18:52:53,645 INFO     RPN - Conv Bbox: [None, 8, 8, 12]
+2018-07-21 18:52:53,658 INFO     rpn_bbox: [None, None, 4]
+2018-07-21 18:52:53,663 INFO     RPN - Shared_conv: [None, 4, 4, 512]
+2018-07-21 18:52:53,667 INFO     RPN - Conv Class: [None, 4, 4, 6]
+2018-07-21 18:52:53,679 INFO     rpn_class_logits: [None, None, 2]
+2018-07-21 18:52:53,697 INFO     rpn_class_probs: [None, None, 2]
+2018-07-21 18:52:53,702 INFO     RPN - Conv Bbox: [None, 4, 4, 12]
+2018-07-21 18:52:53,715 INFO     rpn_bbox: [None, None, 4]
+2018-07-21 18:52:53,720 INFO     RPN - Shared_conv: [None, 2, 2, 512]
+2018-07-21 18:52:53,724 INFO     RPN - Conv Class: [None, 2, 2, 6]
+2018-07-21 18:52:53,738 INFO     rpn_class_logits: [None, None, 2]
+2018-07-21 18:52:53,758 INFO     rpn_class_probs: [None, None, 2]
+2018-07-21 18:52:53,762 INFO     RPN - Conv Bbox: [None, 2, 2, 12]
+2018-07-21 18:52:53,775 INFO     rpn_bbox: [None, None, 4]
+2018-07-21 18:52:53,797 INFO     Foreground_probs shape: (?, ?)
+2018-07-21 18:52:53,799 INFO     bbox_delta shape: (?, ?, 4)
+2018-07-21 18:52:53,799 INFO     anchors shape: (?, ?, 4)
+2018-07-21 18:52:53,809 INFO     max_anc_before_nms shape: Tensor("Minimum:0", shape=(), dtype=int32)
+2018-07-21 18:52:53,811 INFO     ix shape: [None, None]
+2018-07-21 18:52:53,857 INFO     scores shape = (?, ?)
+2018-07-21 18:52:53,859 INFO     Box delta shape = (?, ?, 4)
+2018-07-21 18:52:53,860 INFO     anchors shape = (?, ?, 4)
+2018-07-21 18:52:54,017 INFO     bx_nw shape: [1, None, None]
+2018-07-21 18:52:55,461 INFO     Anchors: running for..... scales=8, feature_map_shapes=[32 32], feature_map_strides=4
+2018-07-21 18:52:55,462 INFO     Anchors: Box width shape = (1024, 3)
+2018-07-21 18:52:55,462 INFO     Anchors: Box height shape = (1024, 3)
+2018-07-21 18:52:55,462 INFO     Anchors: Box center_x shape = (1024, 3)
+2018-07-21 18:52:55,462 INFO     Anchors: Box center_y shape = (1024, 3)
+2018-07-21 18:52:55,462 INFO     Anchors: Stacked Box corner coordinates shape = (3072, 4)
+2018-07-21 18:52:55,462 INFO     Anchors: running for..... scales=16, feature_map_shapes=[16 16], feature_map_strides=8
+2018-07-21 18:52:55,463 INFO     Anchors: Box width shape = (256, 3)
+2018-07-21 18:52:55,463 INFO     Anchors: Box height shape = (256, 3)
+2018-07-21 18:52:55,463 INFO     Anchors: Box center_x shape = (256, 3)
+2018-07-21 18:52:55,463 INFO     Anchors: Box center_y shape = (256, 3)
+2018-07-21 18:52:55,463 INFO     Anchors: Stacked Box corner coordinates shape = (768, 4)
+2018-07-21 18:52:55,463 INFO     Anchors: running for..... scales=32, feature_map_shapes=[8 8], feature_map_strides=16
+2018-07-21 18:52:55,464 INFO     Anchors: Box width shape = (64, 3)
+2018-07-21 18:52:55,464 INFO     Anchors: Box height shape = (64, 3)
+2018-07-21 18:52:55,464 INFO     Anchors: Box center_x shape = (64, 3)
+2018-07-21 18:52:55,464 INFO     Anchors: Box center_y shape = (64, 3)
+2018-07-21 18:52:55,464 INFO     Anchors: Stacked Box corner coordinates shape = (192, 4)
+2018-07-21 18:52:55,464 INFO     Anchors: running for..... scales=64, feature_map_shapes=[4 4], feature_map_strides=32
+2018-07-21 18:52:55,464 INFO     Anchors: Box width shape = (16, 3)
+2018-07-21 18:52:55,464 INFO     Anchors: Box height shape = (16, 3)
+2018-07-21 18:52:55,464 INFO     Anchors: Box center_x shape = (16, 3)
+2018-07-21 18:52:55,464 INFO     Anchors: Box center_y shape = (16, 3)
+2018-07-21 18:52:55,465 INFO     Anchors: Stacked Box corner coordinates shape = (48, 4)
+2018-07-21 18:52:55,465 INFO     Anchors: running for..... scales=128, feature_map_shapes=[2 2], feature_map_strides=64
+2018-07-21 18:52:55,465 INFO     Anchors: Box width shape = (4, 3)
+2018-07-21 18:52:55,465 INFO     Anchors: Box height shape = (4, 3)
+2018-07-21 18:52:55,465 INFO     Anchors: Box center_x shape = (4, 3)
+2018-07-21 18:52:55,465 INFO     Anchors: Box center_y shape = (4, 3)
+2018-07-21 18:52:55,465 INFO     Anchors: Stacked Box corner coordinates shape = (12, 4)
+2018-07-21 18:52:55,465 INFO     Anchors: concatenated for each stage: shape = (4092, 4)
+2018-07-21 18:52:55,466 INFO     Anchors: Broadcast to num_batches: shape = (1, 4092, 4)
+2018-07-21 18:53:00,013 INFO     w:0, scope_name = conv1, pre-trained.shape = (7, 7, 3, 64), variable.shape = (7, 7, 3, 64)
+2018-07-21 18:53:00,127 INFO     b:0, scope_name = conv1, pre-trained.shape = (64,), variable.shape = (64,)
+2018-07-21 18:53:00,236 INFO     gamma:0, scope_name = bn_conv1, pre-trained.shape = (64,), variable.shape = (64,)
+2018-07-21 18:53:00,344 INFO     beta:0, scope_name = bn_conv1, pre-trained.shape = (64,), variable.shape = (64,)
+2018-07-21 18:53:00,456 INFO     m:0, scope_name = bn_conv1, pre-trained.shape = (64,), variable.shape = (64,)
+2018-07-21 18:53:00,566 INFO     v:0, scope_name = bn_conv1, pre-trained.shape = (64,), variable.shape = (64,)
+2018-07-21 18:53:00,677 INFO     w:0, scope_name = res2a_branch1, pre-trained.shape = (1, 1, 64, 256), variable.shape = (1, 1, 64, 256)
+2018-07-21 18:53:00,791 INFO     b:0, scope_name = res2a_branch1, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:00,904 INFO     gamma:0, scope_name = bn2a_branch1, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:01,016 INFO     beta:0, scope_name = bn2a_branch1, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:01,127 INFO     m:0, scope_name = bn2a_branch1, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:01,236 INFO     v:0, scope_name = bn2a_branch1, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:01,349 INFO     w:0, scope_name = res2a_branch2a, pre-trained.shape = (1, 1, 64, 64), variable.shape = (1, 1, 64, 64)
+2018-07-21 18:53:01,459 INFO     b:0, scope_name = res2a_branch2a, pre-trained.shape = (64,), variable.shape = (64,)
+2018-07-21 18:53:01,571 INFO     gamma:0, scope_name = bn2a_branch2a, pre-trained.shape = (64,), variable.shape = (64,)
+2018-07-21 18:53:01,682 INFO     beta:0, scope_name = bn2a_branch2a, pre-trained.shape = (64,), variable.shape = (64,)
+2018-07-21 18:53:01,794 INFO     m:0, scope_name = bn2a_branch2a, pre-trained.shape = (64,), variable.shape = (64,)
+2018-07-21 18:53:01,905 INFO     v:0, scope_name = bn2a_branch2a, pre-trained.shape = (64,), variable.shape = (64,)
+2018-07-21 18:53:02,010 INFO     w:0, scope_name = res2a_branch2b, pre-trained.shape = (3, 3, 64, 64), variable.shape = (3, 3, 64, 64)
+2018-07-21 18:53:02,117 INFO     b:0, scope_name = res2a_branch2b, pre-trained.shape = (64,), variable.shape = (64,)
+2018-07-21 18:53:02,229 INFO     gamma:0, scope_name = bn2a_branch2b, pre-trained.shape = (64,), variable.shape = (64,)
+2018-07-21 18:53:02,338 INFO     beta:0, scope_name = bn2a_branch2b, pre-trained.shape = (64,), variable.shape = (64,)
+2018-07-21 18:53:02,447 INFO     m:0, scope_name = bn2a_branch2b, pre-trained.shape = (64,), variable.shape = (64,)
+2018-07-21 18:53:02,559 INFO     v:0, scope_name = bn2a_branch2b, pre-trained.shape = (64,), variable.shape = (64,)
+2018-07-21 18:53:02,671 INFO     w:0, scope_name = res2a_branch2c, pre-trained.shape = (1, 1, 64, 256), variable.shape = (1, 1, 64, 256)
+2018-07-21 18:53:02,784 INFO     b:0, scope_name = res2a_branch2c, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:02,889 INFO     gamma:0, scope_name = bn2a_branch2c, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:03,002 INFO     beta:0, scope_name = bn2a_branch2c, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:03,111 INFO     m:0, scope_name = bn2a_branch2c, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:03,220 INFO     v:0, scope_name = bn2a_branch2c, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:03,332 INFO     w:0, scope_name = res2b_branch2a, pre-trained.shape = (1, 1, 256, 64), variable.shape = (1, 1, 256, 64)
+2018-07-21 18:53:03,445 INFO     b:0, scope_name = res2b_branch2a, pre-trained.shape = (64,), variable.shape = (64,)
+2018-07-21 18:53:03,556 INFO     gamma:0, scope_name = bn2b_branch2a, pre-trained.shape = (64,), variable.shape = (64,)
+2018-07-21 18:53:03,669 INFO     beta:0, scope_name = bn2b_branch2a, pre-trained.shape = (64,), variable.shape = (64,)
+2018-07-21 18:53:03,772 INFO     m:0, scope_name = bn2b_branch2a, pre-trained.shape = (64,), variable.shape = (64,)
+2018-07-21 18:53:03,880 INFO     v:0, scope_name = bn2b_branch2a, pre-trained.shape = (64,), variable.shape = (64,)
+2018-07-21 18:53:03,992 INFO     w:0, scope_name = res2b_branch2b, pre-trained.shape = (3, 3, 64, 64), variable.shape = (3, 3, 64, 64)
+2018-07-21 18:53:04,110 INFO     b:0, scope_name = res2b_branch2b, pre-trained.shape = (64,), variable.shape = (64,)
+2018-07-21 18:53:04,223 INFO     gamma:0, scope_name = bn2b_branch2b, pre-trained.shape = (64,), variable.shape = (64,)
+2018-07-21 18:53:04,332 INFO     beta:0, scope_name = bn2b_branch2b, pre-trained.shape = (64,), variable.shape = (64,)
+2018-07-21 18:53:04,440 INFO     m:0, scope_name = bn2b_branch2b, pre-trained.shape = (64,), variable.shape = (64,)
+2018-07-21 18:53:04,556 INFO     v:0, scope_name = bn2b_branch2b, pre-trained.shape = (64,), variable.shape = (64,)
+2018-07-21 18:53:04,662 INFO     w:0, scope_name = res2b_branch2c, pre-trained.shape = (1, 1, 64, 256), variable.shape = (1, 1, 64, 256)
+2018-07-21 18:53:04,773 INFO     b:0, scope_name = res2b_branch2c, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:04,886 INFO     gamma:0, scope_name = bn2b_branch2c, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:04,998 INFO     beta:0, scope_name = bn2b_branch2c, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:05,108 INFO     m:0, scope_name = bn2b_branch2c, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:05,224 INFO     v:0, scope_name = bn2b_branch2c, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:05,335 INFO     w:0, scope_name = res2c_branch2a, pre-trained.shape = (1, 1, 256, 64), variable.shape = (1, 1, 256, 64)
+2018-07-21 18:53:05,447 INFO     b:0, scope_name = res2c_branch2a, pre-trained.shape = (64,), variable.shape = (64,)
+2018-07-21 18:53:05,556 INFO     gamma:0, scope_name = bn2c_branch2a, pre-trained.shape = (64,), variable.shape = (64,)
+2018-07-21 18:53:05,667 INFO     beta:0, scope_name = bn2c_branch2a, pre-trained.shape = (64,), variable.shape = (64,)
+2018-07-21 18:53:05,777 INFO     m:0, scope_name = bn2c_branch2a, pre-trained.shape = (64,), variable.shape = (64,)
+2018-07-21 18:53:05,893 INFO     v:0, scope_name = bn2c_branch2a, pre-trained.shape = (64,), variable.shape = (64,)
+2018-07-21 18:53:06,005 INFO     w:0, scope_name = res2c_branch2b, pre-trained.shape = (3, 3, 64, 64), variable.shape = (3, 3, 64, 64)
+2018-07-21 18:53:06,122 INFO     b:0, scope_name = res2c_branch2b, pre-trained.shape = (64,), variable.shape = (64,)
+2018-07-21 18:53:06,232 INFO     gamma:0, scope_name = bn2c_branch2b, pre-trained.shape = (64,), variable.shape = (64,)
+2018-07-21 18:53:06,345 INFO     beta:0, scope_name = bn2c_branch2b, pre-trained.shape = (64,), variable.shape = (64,)
+2018-07-21 18:53:06,452 INFO     m:0, scope_name = bn2c_branch2b, pre-trained.shape = (64,), variable.shape = (64,)
+2018-07-21 18:53:06,568 INFO     v:0, scope_name = bn2c_branch2b, pre-trained.shape = (64,), variable.shape = (64,)
+2018-07-21 18:53:06,680 INFO     w:0, scope_name = res2c_branch2c, pre-trained.shape = (1, 1, 64, 256), variable.shape = (1, 1, 64, 256)
+2018-07-21 18:53:06,797 INFO     b:0, scope_name = res2c_branch2c, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:06,911 INFO     gamma:0, scope_name = bn2c_branch2c, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:07,023 INFO     beta:0, scope_name = bn2c_branch2c, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:07,136 INFO     m:0, scope_name = bn2c_branch2c, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:07,249 INFO     v:0, scope_name = bn2c_branch2c, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:07,364 INFO     w:0, scope_name = res3a_branch1, pre-trained.shape = (1, 1, 256, 512), variable.shape = (1, 1, 256, 512)
+2018-07-21 18:53:07,478 INFO     b:0, scope_name = res3a_branch1, pre-trained.shape = (512,), variable.shape = (512,)
+2018-07-21 18:53:07,596 INFO     gamma:0, scope_name = bn3a_branch1, pre-trained.shape = (512,), variable.shape = (512,)
+2018-07-21 18:53:07,712 INFO     beta:0, scope_name = bn3a_branch1, pre-trained.shape = (512,), variable.shape = (512,)
+2018-07-21 18:53:07,831 INFO     m:0, scope_name = bn3a_branch1, pre-trained.shape = (512,), variable.shape = (512,)
+2018-07-21 18:53:07,950 INFO     v:0, scope_name = bn3a_branch1, pre-trained.shape = (512,), variable.shape = (512,)
+2018-07-21 18:53:08,066 INFO     w:0, scope_name = res3a_branch2a, pre-trained.shape = (1, 1, 256, 128), variable.shape = (1, 1, 256, 128)
+2018-07-21 18:53:08,189 INFO     b:0, scope_name = res3a_branch2a, pre-trained.shape = (128,), variable.shape = (128,)
+2018-07-21 18:53:08,308 INFO     gamma:0, scope_name = bn3a_branch2a, pre-trained.shape = (128,), variable.shape = (128,)
+2018-07-21 18:53:08,440 INFO     beta:0, scope_name = bn3a_branch2a, pre-trained.shape = (128,), variable.shape = (128,)
+2018-07-21 18:53:08,554 INFO     m:0, scope_name = bn3a_branch2a, pre-trained.shape = (128,), variable.shape = (128,)
+2018-07-21 18:53:08,662 INFO     v:0, scope_name = bn3a_branch2a, pre-trained.shape = (128,), variable.shape = (128,)
+2018-07-21 18:53:08,770 INFO     w:0, scope_name = res3a_branch2b, pre-trained.shape = (3, 3, 128, 128), variable.shape = (3, 3, 128, 128)
+2018-07-21 18:53:08,890 INFO     b:0, scope_name = res3a_branch2b, pre-trained.shape = (128,), variable.shape = (128,)
+2018-07-21 18:53:09,007 INFO     gamma:0, scope_name = bn3a_branch2b, pre-trained.shape = (128,), variable.shape = (128,)
+2018-07-21 18:53:09,123 INFO     beta:0, scope_name = bn3a_branch2b, pre-trained.shape = (128,), variable.shape = (128,)
+2018-07-21 18:53:09,239 INFO     m:0, scope_name = bn3a_branch2b, pre-trained.shape = (128,), variable.shape = (128,)
+2018-07-21 18:53:09,353 INFO     v:0, scope_name = bn3a_branch2b, pre-trained.shape = (128,), variable.shape = (128,)
+2018-07-21 18:53:09,469 INFO     w:0, scope_name = res3a_branch2c, pre-trained.shape = (1, 1, 128, 512), variable.shape = (1, 1, 128, 512)
+2018-07-21 18:53:09,588 INFO     b:0, scope_name = res3a_branch2c, pre-trained.shape = (512,), variable.shape = (512,)
+2018-07-21 18:53:09,720 INFO     gamma:0, scope_name = bn3a_branch2c, pre-trained.shape = (512,), variable.shape = (512,)
+2018-07-21 18:53:09,836 INFO     beta:0, scope_name = bn3a_branch2c, pre-trained.shape = (512,), variable.shape = (512,)
+2018-07-21 18:53:09,951 INFO     m:0, scope_name = bn3a_branch2c, pre-trained.shape = (512,), variable.shape = (512,)
+2018-07-21 18:53:10,065 INFO     v:0, scope_name = bn3a_branch2c, pre-trained.shape = (512,), variable.shape = (512,)
+2018-07-21 18:53:10,179 INFO     w:0, scope_name = res3b_branch2a, pre-trained.shape = (1, 1, 512, 128), variable.shape = (1, 1, 512, 128)
+2018-07-21 18:53:10,293 INFO     b:0, scope_name = res3b_branch2a, pre-trained.shape = (128,), variable.shape = (128,)
+2018-07-21 18:53:10,409 INFO     gamma:0, scope_name = bn3b_branch2a, pre-trained.shape = (128,), variable.shape = (128,)
+2018-07-21 18:53:10,523 INFO     beta:0, scope_name = bn3b_branch2a, pre-trained.shape = (128,), variable.shape = (128,)
+2018-07-21 18:53:10,638 INFO     m:0, scope_name = bn3b_branch2a, pre-trained.shape = (128,), variable.shape = (128,)
+2018-07-21 18:53:10,754 INFO     v:0, scope_name = bn3b_branch2a, pre-trained.shape = (128,), variable.shape = (128,)
+2018-07-21 18:53:10,868 INFO     w:0, scope_name = res3b_branch2b, pre-trained.shape = (3, 3, 128, 128), variable.shape = (3, 3, 128, 128)
+2018-07-21 18:53:10,985 INFO     b:0, scope_name = res3b_branch2b, pre-trained.shape = (128,), variable.shape = (128,)
+2018-07-21 18:53:11,098 INFO     gamma:0, scope_name = bn3b_branch2b, pre-trained.shape = (128,), variable.shape = (128,)
+2018-07-21 18:53:11,215 INFO     beta:0, scope_name = bn3b_branch2b, pre-trained.shape = (128,), variable.shape = (128,)
+2018-07-21 18:53:11,328 INFO     m:0, scope_name = bn3b_branch2b, pre-trained.shape = (128,), variable.shape = (128,)
+2018-07-21 18:53:11,442 INFO     v:0, scope_name = bn3b_branch2b, pre-trained.shape = (128,), variable.shape = (128,)
+2018-07-21 18:53:11,555 INFO     w:0, scope_name = res3b_branch2c, pre-trained.shape = (1, 1, 128, 512), variable.shape = (1, 1, 128, 512)
+2018-07-21 18:53:11,670 INFO     b:0, scope_name = res3b_branch2c, pre-trained.shape = (512,), variable.shape = (512,)
+2018-07-21 18:53:11,787 INFO     gamma:0, scope_name = bn3b_branch2c, pre-trained.shape = (512,), variable.shape = (512,)
+2018-07-21 18:53:11,903 INFO     beta:0, scope_name = bn3b_branch2c, pre-trained.shape = (512,), variable.shape = (512,)
+2018-07-21 18:53:12,021 INFO     m:0, scope_name = bn3b_branch2c, pre-trained.shape = (512,), variable.shape = (512,)
+2018-07-21 18:53:12,137 INFO     v:0, scope_name = bn3b_branch2c, pre-trained.shape = (512,), variable.shape = (512,)
+2018-07-21 18:53:12,252 INFO     w:0, scope_name = res3c_branch2a, pre-trained.shape = (1, 1, 512, 128), variable.shape = (1, 1, 512, 128)
+2018-07-21 18:53:12,370 INFO     b:0, scope_name = res3c_branch2a, pre-trained.shape = (128,), variable.shape = (128,)
+2018-07-21 18:53:12,487 INFO     gamma:0, scope_name = bn3c_branch2a, pre-trained.shape = (128,), variable.shape = (128,)
+2018-07-21 18:53:12,600 INFO     beta:0, scope_name = bn3c_branch2a, pre-trained.shape = (128,), variable.shape = (128,)
+2018-07-21 18:53:12,716 INFO     m:0, scope_name = bn3c_branch2a, pre-trained.shape = (128,), variable.shape = (128,)
+2018-07-21 18:53:12,835 INFO     v:0, scope_name = bn3c_branch2a, pre-trained.shape = (128,), variable.shape = (128,)
+2018-07-21 18:53:12,952 INFO     w:0, scope_name = res3c_branch2b, pre-trained.shape = (3, 3, 128, 128), variable.shape = (3, 3, 128, 128)
+2018-07-21 18:53:13,070 INFO     b:0, scope_name = res3c_branch2b, pre-trained.shape = (128,), variable.shape = (128,)
+2018-07-21 18:53:13,185 INFO     gamma:0, scope_name = bn3c_branch2b, pre-trained.shape = (128,), variable.shape = (128,)
+2018-07-21 18:53:13,296 INFO     beta:0, scope_name = bn3c_branch2b, pre-trained.shape = (128,), variable.shape = (128,)
+2018-07-21 18:53:13,413 INFO     m:0, scope_name = bn3c_branch2b, pre-trained.shape = (128,), variable.shape = (128,)
+2018-07-21 18:53:13,562 INFO     v:0, scope_name = bn3c_branch2b, pre-trained.shape = (128,), variable.shape = (128,)
+2018-07-21 18:53:13,686 INFO     w:0, scope_name = res3c_branch2c, pre-trained.shape = (1, 1, 128, 512), variable.shape = (1, 1, 128, 512)
+2018-07-21 18:53:13,804 INFO     b:0, scope_name = res3c_branch2c, pre-trained.shape = (512,), variable.shape = (512,)
+2018-07-21 18:53:13,925 INFO     gamma:0, scope_name = bn3c_branch2c, pre-trained.shape = (512,), variable.shape = (512,)
+2018-07-21 18:53:14,048 INFO     beta:0, scope_name = bn3c_branch2c, pre-trained.shape = (512,), variable.shape = (512,)
+2018-07-21 18:53:14,168 INFO     m:0, scope_name = bn3c_branch2c, pre-trained.shape = (512,), variable.shape = (512,)
+2018-07-21 18:53:14,286 INFO     v:0, scope_name = bn3c_branch2c, pre-trained.shape = (512,), variable.shape = (512,)
+2018-07-21 18:53:14,409 INFO     w:0, scope_name = res3d_branch2a, pre-trained.shape = (1, 1, 512, 128), variable.shape = (1, 1, 512, 128)
+2018-07-21 18:53:14,526 INFO     b:0, scope_name = res3d_branch2a, pre-trained.shape = (128,), variable.shape = (128,)
+2018-07-21 18:53:14,647 INFO     gamma:0, scope_name = bn3d_branch2a, pre-trained.shape = (128,), variable.shape = (128,)
+2018-07-21 18:53:14,766 INFO     beta:0, scope_name = bn3d_branch2a, pre-trained.shape = (128,), variable.shape = (128,)
+2018-07-21 18:53:14,885 INFO     m:0, scope_name = bn3d_branch2a, pre-trained.shape = (128,), variable.shape = (128,)
+2018-07-21 18:53:15,005 INFO     v:0, scope_name = bn3d_branch2a, pre-trained.shape = (128,), variable.shape = (128,)
+2018-07-21 18:53:15,128 INFO     w:0, scope_name = res3d_branch2b, pre-trained.shape = (3, 3, 128, 128), variable.shape = (3, 3, 128, 128)
+2018-07-21 18:53:15,245 INFO     b:0, scope_name = res3d_branch2b, pre-trained.shape = (128,), variable.shape = (128,)
+2018-07-21 18:53:15,362 INFO     gamma:0, scope_name = bn3d_branch2b, pre-trained.shape = (128,), variable.shape = (128,)
+2018-07-21 18:53:15,483 INFO     beta:0, scope_name = bn3d_branch2b, pre-trained.shape = (128,), variable.shape = (128,)
+2018-07-21 18:53:15,604 INFO     m:0, scope_name = bn3d_branch2b, pre-trained.shape = (128,), variable.shape = (128,)
+2018-07-21 18:53:15,725 INFO     v:0, scope_name = bn3d_branch2b, pre-trained.shape = (128,), variable.shape = (128,)
+2018-07-21 18:53:15,842 INFO     w:0, scope_name = res3d_branch2c, pre-trained.shape = (1, 1, 128, 512), variable.shape = (1, 1, 128, 512)
+2018-07-21 18:53:15,965 INFO     b:0, scope_name = res3d_branch2c, pre-trained.shape = (512,), variable.shape = (512,)
+2018-07-21 18:53:16,084 INFO     gamma:0, scope_name = bn3d_branch2c, pre-trained.shape = (512,), variable.shape = (512,)
+2018-07-21 18:53:16,202 INFO     beta:0, scope_name = bn3d_branch2c, pre-trained.shape = (512,), variable.shape = (512,)
+2018-07-21 18:53:16,324 INFO     m:0, scope_name = bn3d_branch2c, pre-trained.shape = (512,), variable.shape = (512,)
+2018-07-21 18:53:16,443 INFO     v:0, scope_name = bn3d_branch2c, pre-trained.shape = (512,), variable.shape = (512,)
+2018-07-21 18:53:16,564 INFO     w:0, scope_name = res4a_branch1, pre-trained.shape = (1, 1, 512, 1024), variable.shape = (1, 1, 512, 1024)
+2018-07-21 18:53:16,686 INFO     b:0, scope_name = res4a_branch1, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:53:16,803 INFO     gamma:0, scope_name = bn4a_branch1, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:53:16,923 INFO     beta:0, scope_name = bn4a_branch1, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:53:17,043 INFO     m:0, scope_name = bn4a_branch1, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:53:17,161 INFO     v:0, scope_name = bn4a_branch1, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:53:17,281 INFO     w:0, scope_name = res4a_branch2a, pre-trained.shape = (1, 1, 512, 256), variable.shape = (1, 1, 512, 256)
+2018-07-21 18:53:17,406 INFO     b:0, scope_name = res4a_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:17,523 INFO     gamma:0, scope_name = bn4a_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:17,638 INFO     beta:0, scope_name = bn4a_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:17,758 INFO     m:0, scope_name = bn4a_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:17,877 INFO     v:0, scope_name = bn4a_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:17,999 INFO     w:0, scope_name = res4a_branch2b, pre-trained.shape = (3, 3, 256, 256), variable.shape = (3, 3, 256, 256)
+2018-07-21 18:53:18,117 INFO     b:0, scope_name = res4a_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:18,237 INFO     gamma:0, scope_name = bn4a_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:18,360 INFO     beta:0, scope_name = bn4a_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:18,484 INFO     m:0, scope_name = bn4a_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:18,603 INFO     v:0, scope_name = bn4a_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:18,720 INFO     w:0, scope_name = res4a_branch2c, pre-trained.shape = (1, 1, 256, 1024), variable.shape = (1, 1, 256, 1024)
+2018-07-21 18:53:18,842 INFO     b:0, scope_name = res4a_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:53:18,962 INFO     gamma:0, scope_name = bn4a_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:53:19,082 INFO     beta:0, scope_name = bn4a_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:53:19,201 INFO     m:0, scope_name = bn4a_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:53:19,321 INFO     v:0, scope_name = bn4a_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:53:19,440 INFO     w:0, scope_name = res4b_branch2a, pre-trained.shape = (1, 1, 1024, 256), variable.shape = (1, 1, 1024, 256)
+2018-07-21 18:53:19,559 INFO     b:0, scope_name = res4b_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:19,682 INFO     gamma:0, scope_name = bn4b_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:19,801 INFO     beta:0, scope_name = bn4b_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:19,919 INFO     m:0, scope_name = bn4b_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:20,041 INFO     v:0, scope_name = bn4b_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:20,158 INFO     w:0, scope_name = res4b_branch2b, pre-trained.shape = (3, 3, 256, 256), variable.shape = (3, 3, 256, 256)
+2018-07-21 18:53:20,281 INFO     b:0, scope_name = res4b_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:20,402 INFO     gamma:0, scope_name = bn4b_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:20,525 INFO     beta:0, scope_name = bn4b_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:20,647 INFO     m:0, scope_name = bn4b_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:20,771 INFO     v:0, scope_name = bn4b_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:20,892 INFO     w:0, scope_name = res4b_branch2c, pre-trained.shape = (1, 1, 256, 1024), variable.shape = (1, 1, 256, 1024)
+2018-07-21 18:53:21,018 INFO     b:0, scope_name = res4b_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:53:21,137 INFO     gamma:0, scope_name = bn4b_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:53:21,255 INFO     beta:0, scope_name = bn4b_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:53:21,374 INFO     m:0, scope_name = bn4b_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:53:21,497 INFO     v:0, scope_name = bn4b_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:53:21,621 INFO     w:0, scope_name = res4c_branch2a, pre-trained.shape = (1, 1, 1024, 256), variable.shape = (1, 1, 1024, 256)
+2018-07-21 18:53:21,741 INFO     b:0, scope_name = res4c_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:21,861 INFO     gamma:0, scope_name = bn4c_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:21,981 INFO     beta:0, scope_name = bn4c_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:22,100 INFO     m:0, scope_name = bn4c_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:22,222 INFO     v:0, scope_name = bn4c_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:22,344 INFO     w:0, scope_name = res4c_branch2b, pre-trained.shape = (3, 3, 256, 256), variable.shape = (3, 3, 256, 256)
+2018-07-21 18:53:22,465 INFO     b:0, scope_name = res4c_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:22,582 INFO     gamma:0, scope_name = bn4c_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:22,703 INFO     beta:0, scope_name = bn4c_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:22,825 INFO     m:0, scope_name = bn4c_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:22,944 INFO     v:0, scope_name = bn4c_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:23,064 INFO     w:0, scope_name = res4c_branch2c, pre-trained.shape = (1, 1, 256, 1024), variable.shape = (1, 1, 256, 1024)
+2018-07-21 18:53:23,183 INFO     b:0, scope_name = res4c_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:53:23,302 INFO     gamma:0, scope_name = bn4c_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:53:23,424 INFO     beta:0, scope_name = bn4c_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:53:23,543 INFO     m:0, scope_name = bn4c_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:53:23,660 INFO     v:0, scope_name = bn4c_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:53:23,784 INFO     w:0, scope_name = res4d_branch2a, pre-trained.shape = (1, 1, 1024, 256), variable.shape = (1, 1, 1024, 256)
+2018-07-21 18:53:23,904 INFO     b:0, scope_name = res4d_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:24,025 INFO     gamma:0, scope_name = bn4d_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:24,141 INFO     beta:0, scope_name = bn4d_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:24,260 INFO     m:0, scope_name = bn4d_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:24,382 INFO     v:0, scope_name = bn4d_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:24,503 INFO     w:0, scope_name = res4d_branch2b, pre-trained.shape = (3, 3, 256, 256), variable.shape = (3, 3, 256, 256)
+2018-07-21 18:53:24,616 INFO     b:0, scope_name = res4d_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:24,738 INFO     gamma:0, scope_name = bn4d_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:24,858 INFO     beta:0, scope_name = bn4d_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:24,982 INFO     m:0, scope_name = bn4d_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:25,103 INFO     v:0, scope_name = bn4d_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:25,221 INFO     w:0, scope_name = res4d_branch2c, pre-trained.shape = (1, 1, 256, 1024), variable.shape = (1, 1, 256, 1024)
+2018-07-21 18:53:25,343 INFO     b:0, scope_name = res4d_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:53:25,457 INFO     gamma:0, scope_name = bn4d_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:53:25,573 INFO     beta:0, scope_name = bn4d_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:53:25,696 INFO     m:0, scope_name = bn4d_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:53:25,815 INFO     v:0, scope_name = bn4d_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:53:25,934 INFO     w:0, scope_name = res4e_branch2a, pre-trained.shape = (1, 1, 1024, 256), variable.shape = (1, 1, 1024, 256)
+2018-07-21 18:53:26,056 INFO     b:0, scope_name = res4e_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:26,176 INFO     gamma:0, scope_name = bn4e_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:26,295 INFO     beta:0, scope_name = bn4e_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:26,414 INFO     m:0, scope_name = bn4e_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:26,532 INFO     v:0, scope_name = bn4e_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:26,652 INFO     w:0, scope_name = res4e_branch2b, pre-trained.shape = (3, 3, 256, 256), variable.shape = (3, 3, 256, 256)
+2018-07-21 18:53:26,774 INFO     b:0, scope_name = res4e_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:26,891 INFO     gamma:0, scope_name = bn4e_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:27,012 INFO     beta:0, scope_name = bn4e_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:27,136 INFO     m:0, scope_name = bn4e_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:27,265 INFO     v:0, scope_name = bn4e_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:27,391 INFO     w:0, scope_name = res4e_branch2c, pre-trained.shape = (1, 1, 256, 1024), variable.shape = (1, 1, 256, 1024)
+2018-07-21 18:53:27,514 INFO     b:0, scope_name = res4e_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:53:27,639 INFO     gamma:0, scope_name = bn4e_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:53:27,764 INFO     beta:0, scope_name = bn4e_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:53:27,894 INFO     m:0, scope_name = bn4e_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:53:28,022 INFO     v:0, scope_name = bn4e_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:53:28,155 INFO     w:0, scope_name = res4f_branch2a, pre-trained.shape = (1, 1, 1024, 256), variable.shape = (1, 1, 1024, 256)
+2018-07-21 18:53:28,282 INFO     b:0, scope_name = res4f_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:28,411 INFO     gamma:0, scope_name = bn4f_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:28,538 INFO     beta:0, scope_name = bn4f_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:28,675 INFO     m:0, scope_name = bn4f_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:28,801 INFO     v:0, scope_name = bn4f_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:28,924 INFO     w:0, scope_name = res4f_branch2b, pre-trained.shape = (3, 3, 256, 256), variable.shape = (3, 3, 256, 256)
+2018-07-21 18:53:29,044 INFO     b:0, scope_name = res4f_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:29,164 INFO     gamma:0, scope_name = bn4f_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:29,287 INFO     beta:0, scope_name = bn4f_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:29,411 INFO     m:0, scope_name = bn4f_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:29,542 INFO     v:0, scope_name = bn4f_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:29,686 INFO     w:0, scope_name = res4f_branch2c, pre-trained.shape = (1, 1, 256, 1024), variable.shape = (1, 1, 256, 1024)
+2018-07-21 18:53:29,843 INFO     b:0, scope_name = res4f_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:53:29,974 INFO     gamma:0, scope_name = bn4f_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:53:30,122 INFO     beta:0, scope_name = bn4f_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:53:30,252 INFO     m:0, scope_name = bn4f_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:53:30,380 INFO     v:0, scope_name = bn4f_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:53:30,510 INFO     w:0, scope_name = res4g_branch2a, pre-trained.shape = (1, 1, 1024, 256), variable.shape = (1, 1, 1024, 256)
+2018-07-21 18:53:30,636 INFO     b:0, scope_name = res4g_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:30,763 INFO     gamma:0, scope_name = bn4g_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:30,889 INFO     beta:0, scope_name = bn4g_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:31,015 INFO     m:0, scope_name = bn4g_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:31,136 INFO     v:0, scope_name = bn4g_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:31,272 INFO     w:0, scope_name = res4g_branch2b, pre-trained.shape = (3, 3, 256, 256), variable.shape = (3, 3, 256, 256)
+2018-07-21 18:53:31,408 INFO     b:0, scope_name = res4g_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:31,555 INFO     gamma:0, scope_name = bn4g_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:31,698 INFO     beta:0, scope_name = bn4g_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:31,835 INFO     m:0, scope_name = bn4g_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:31,976 INFO     v:0, scope_name = bn4g_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:32,118 INFO     w:0, scope_name = res4g_branch2c, pre-trained.shape = (1, 1, 256, 1024), variable.shape = (1, 1, 256, 1024)
+2018-07-21 18:53:32,265 INFO     b:0, scope_name = res4g_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:53:32,431 INFO     gamma:0, scope_name = bn4g_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:53:32,569 INFO     beta:0, scope_name = bn4g_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:53:32,712 INFO     m:0, scope_name = bn4g_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:53:32,848 INFO     v:0, scope_name = bn4g_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:53:32,994 INFO     w:0, scope_name = res4h_branch2a, pre-trained.shape = (1, 1, 1024, 256), variable.shape = (1, 1, 1024, 256)
+2018-07-21 18:53:33,137 INFO     b:0, scope_name = res4h_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:33,278 INFO     gamma:0, scope_name = bn4h_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:33,416 INFO     beta:0, scope_name = bn4h_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:33,560 INFO     m:0, scope_name = bn4h_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:33,705 INFO     v:0, scope_name = bn4h_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:33,847 INFO     w:0, scope_name = res4h_branch2b, pre-trained.shape = (3, 3, 256, 256), variable.shape = (3, 3, 256, 256)
+2018-07-21 18:53:33,989 INFO     b:0, scope_name = res4h_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:34,134 INFO     gamma:0, scope_name = bn4h_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:34,273 INFO     beta:0, scope_name = bn4h_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:34,431 INFO     m:0, scope_name = bn4h_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:34,576 INFO     v:0, scope_name = bn4h_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:34,725 INFO     w:0, scope_name = res4h_branch2c, pre-trained.shape = (1, 1, 256, 1024), variable.shape = (1, 1, 256, 1024)
+2018-07-21 18:53:34,861 INFO     b:0, scope_name = res4h_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:53:35,002 INFO     gamma:0, scope_name = bn4h_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:53:35,146 INFO     beta:0, scope_name = bn4h_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:53:35,302 INFO     m:0, scope_name = bn4h_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:53:35,450 INFO     v:0, scope_name = bn4h_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:53:35,601 INFO     w:0, scope_name = res4i_branch2a, pre-trained.shape = (1, 1, 1024, 256), variable.shape = (1, 1, 1024, 256)
+2018-07-21 18:53:35,747 INFO     b:0, scope_name = res4i_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:35,882 INFO     gamma:0, scope_name = bn4i_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:36,015 INFO     beta:0, scope_name = bn4i_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:36,143 INFO     m:0, scope_name = bn4i_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:36,268 INFO     v:0, scope_name = bn4i_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:36,425 INFO     w:0, scope_name = res4i_branch2b, pre-trained.shape = (3, 3, 256, 256), variable.shape = (3, 3, 256, 256)
+2018-07-21 18:53:36,586 INFO     b:0, scope_name = res4i_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:36,710 INFO     gamma:0, scope_name = bn4i_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:36,833 INFO     beta:0, scope_name = bn4i_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:36,983 INFO     m:0, scope_name = bn4i_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:37,149 INFO     v:0, scope_name = bn4i_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:37,283 INFO     w:0, scope_name = res4i_branch2c, pre-trained.shape = (1, 1, 256, 1024), variable.shape = (1, 1, 256, 1024)
+2018-07-21 18:53:37,416 INFO     b:0, scope_name = res4i_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:53:37,547 INFO     gamma:0, scope_name = bn4i_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:53:37,671 INFO     beta:0, scope_name = bn4i_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:53:37,791 INFO     m:0, scope_name = bn4i_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:53:37,914 INFO     v:0, scope_name = bn4i_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:53:38,037 INFO     w:0, scope_name = res4j_branch2a, pre-trained.shape = (1, 1, 1024, 256), variable.shape = (1, 1, 1024, 256)
+2018-07-21 18:53:38,163 INFO     b:0, scope_name = res4j_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:38,289 INFO     gamma:0, scope_name = bn4j_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:38,410 INFO     beta:0, scope_name = bn4j_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:38,540 INFO     m:0, scope_name = bn4j_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:38,663 INFO     v:0, scope_name = bn4j_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:38,786 INFO     w:0, scope_name = res4j_branch2b, pre-trained.shape = (3, 3, 256, 256), variable.shape = (3, 3, 256, 256)
+2018-07-21 18:53:38,913 INFO     b:0, scope_name = res4j_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:39,042 INFO     gamma:0, scope_name = bn4j_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:39,162 INFO     beta:0, scope_name = bn4j_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:39,286 INFO     m:0, scope_name = bn4j_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:39,410 INFO     v:0, scope_name = bn4j_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:39,532 INFO     w:0, scope_name = res4j_branch2c, pre-trained.shape = (1, 1, 256, 1024), variable.shape = (1, 1, 256, 1024)
+2018-07-21 18:53:39,658 INFO     b:0, scope_name = res4j_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:53:39,779 INFO     gamma:0, scope_name = bn4j_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:53:39,897 INFO     beta:0, scope_name = bn4j_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:53:40,027 INFO     m:0, scope_name = bn4j_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:53:40,146 INFO     v:0, scope_name = bn4j_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:53:40,271 INFO     w:0, scope_name = res4k_branch2a, pre-trained.shape = (1, 1, 1024, 256), variable.shape = (1, 1, 1024, 256)
+2018-07-21 18:53:40,396 INFO     b:0, scope_name = res4k_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:40,522 INFO     gamma:0, scope_name = bn4k_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:40,658 INFO     beta:0, scope_name = bn4k_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:40,785 INFO     m:0, scope_name = bn4k_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:40,920 INFO     v:0, scope_name = bn4k_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:41,043 INFO     w:0, scope_name = res4k_branch2b, pre-trained.shape = (3, 3, 256, 256), variable.shape = (3, 3, 256, 256)
+2018-07-21 18:53:41,175 INFO     b:0, scope_name = res4k_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:41,300 INFO     gamma:0, scope_name = bn4k_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:41,424 INFO     beta:0, scope_name = bn4k_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:41,543 INFO     m:0, scope_name = bn4k_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:41,669 INFO     v:0, scope_name = bn4k_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:41,794 INFO     w:0, scope_name = res4k_branch2c, pre-trained.shape = (1, 1, 256, 1024), variable.shape = (1, 1, 256, 1024)
+2018-07-21 18:53:41,922 INFO     b:0, scope_name = res4k_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:53:42,053 INFO     gamma:0, scope_name = bn4k_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:53:42,177 INFO     beta:0, scope_name = bn4k_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:53:42,300 INFO     m:0, scope_name = bn4k_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:53:42,430 INFO     v:0, scope_name = bn4k_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:53:42,559 INFO     w:0, scope_name = res4l_branch2a, pre-trained.shape = (1, 1, 1024, 256), variable.shape = (1, 1, 1024, 256)
+2018-07-21 18:53:42,688 INFO     b:0, scope_name = res4l_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:42,815 INFO     gamma:0, scope_name = bn4l_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:42,940 INFO     beta:0, scope_name = bn4l_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:43,066 INFO     m:0, scope_name = bn4l_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:43,190 INFO     v:0, scope_name = bn4l_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:43,321 INFO     w:0, scope_name = res4l_branch2b, pre-trained.shape = (3, 3, 256, 256), variable.shape = (3, 3, 256, 256)
+2018-07-21 18:53:43,446 INFO     b:0, scope_name = res4l_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:43,571 INFO     gamma:0, scope_name = bn4l_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:43,695 INFO     beta:0, scope_name = bn4l_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:43,820 INFO     m:0, scope_name = bn4l_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:43,944 INFO     v:0, scope_name = bn4l_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:44,065 INFO     w:0, scope_name = res4l_branch2c, pre-trained.shape = (1, 1, 256, 1024), variable.shape = (1, 1, 256, 1024)
+2018-07-21 18:53:44,193 INFO     b:0, scope_name = res4l_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:53:44,322 INFO     gamma:0, scope_name = bn4l_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:53:44,448 INFO     beta:0, scope_name = bn4l_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:53:44,576 INFO     m:0, scope_name = bn4l_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:53:44,699 INFO     v:0, scope_name = bn4l_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:53:44,833 INFO     w:0, scope_name = res4m_branch2a, pre-trained.shape = (1, 1, 1024, 256), variable.shape = (1, 1, 1024, 256)
+2018-07-21 18:53:44,963 INFO     b:0, scope_name = res4m_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:45,090 INFO     gamma:0, scope_name = bn4m_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:45,222 INFO     beta:0, scope_name = bn4m_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:45,353 INFO     m:0, scope_name = bn4m_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:45,471 INFO     v:0, scope_name = bn4m_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:45,596 INFO     w:0, scope_name = res4m_branch2b, pre-trained.shape = (3, 3, 256, 256), variable.shape = (3, 3, 256, 256)
+2018-07-21 18:53:45,725 INFO     b:0, scope_name = res4m_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:45,856 INFO     gamma:0, scope_name = bn4m_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:45,981 INFO     beta:0, scope_name = bn4m_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:46,106 INFO     m:0, scope_name = bn4m_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:46,229 INFO     v:0, scope_name = bn4m_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:46,356 INFO     w:0, scope_name = res4m_branch2c, pre-trained.shape = (1, 1, 256, 1024), variable.shape = (1, 1, 256, 1024)
+2018-07-21 18:53:46,481 INFO     b:0, scope_name = res4m_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:53:46,601 INFO     gamma:0, scope_name = bn4m_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:53:46,722 INFO     beta:0, scope_name = bn4m_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:53:46,856 INFO     m:0, scope_name = bn4m_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:53:46,983 INFO     v:0, scope_name = bn4m_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:53:47,108 INFO     w:0, scope_name = res4n_branch2a, pre-trained.shape = (1, 1, 1024, 256), variable.shape = (1, 1, 1024, 256)
+2018-07-21 18:53:47,235 INFO     b:0, scope_name = res4n_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:47,358 INFO     gamma:0, scope_name = bn4n_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:47,485 INFO     beta:0, scope_name = bn4n_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:47,613 INFO     m:0, scope_name = bn4n_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:47,738 INFO     v:0, scope_name = bn4n_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:47,870 INFO     w:0, scope_name = res4n_branch2b, pre-trained.shape = (3, 3, 256, 256), variable.shape = (3, 3, 256, 256)
+2018-07-21 18:53:47,993 INFO     b:0, scope_name = res4n_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:48,124 INFO     gamma:0, scope_name = bn4n_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:48,257 INFO     beta:0, scope_name = bn4n_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:48,384 INFO     m:0, scope_name = bn4n_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:48,511 INFO     v:0, scope_name = bn4n_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:48,639 INFO     w:0, scope_name = res4n_branch2c, pre-trained.shape = (1, 1, 256, 1024), variable.shape = (1, 1, 256, 1024)
+2018-07-21 18:53:48,767 INFO     b:0, scope_name = res4n_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:53:48,894 INFO     gamma:0, scope_name = bn4n_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:53:49,017 INFO     beta:0, scope_name = bn4n_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:53:49,142 INFO     m:0, scope_name = bn4n_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:53:49,265 INFO     v:0, scope_name = bn4n_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:53:49,390 INFO     w:0, scope_name = res4o_branch2a, pre-trained.shape = (1, 1, 1024, 256), variable.shape = (1, 1, 1024, 256)
+2018-07-21 18:53:49,525 INFO     b:0, scope_name = res4o_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:49,658 INFO     gamma:0, scope_name = bn4o_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:49,784 INFO     beta:0, scope_name = bn4o_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:49,914 INFO     m:0, scope_name = bn4o_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:50,039 INFO     v:0, scope_name = bn4o_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:50,165 INFO     w:0, scope_name = res4o_branch2b, pre-trained.shape = (3, 3, 256, 256), variable.shape = (3, 3, 256, 256)
+2018-07-21 18:53:50,298 INFO     b:0, scope_name = res4o_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:50,424 INFO     gamma:0, scope_name = bn4o_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:50,551 INFO     beta:0, scope_name = bn4o_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:50,677 INFO     m:0, scope_name = bn4o_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:50,803 INFO     v:0, scope_name = bn4o_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:50,928 INFO     w:0, scope_name = res4o_branch2c, pre-trained.shape = (1, 1, 256, 1024), variable.shape = (1, 1, 256, 1024)
+2018-07-21 18:53:51,050 INFO     b:0, scope_name = res4o_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:53:51,184 INFO     gamma:0, scope_name = bn4o_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:53:51,311 INFO     beta:0, scope_name = bn4o_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:53:51,440 INFO     m:0, scope_name = bn4o_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:53:51,567 INFO     v:0, scope_name = bn4o_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:53:51,698 INFO     w:0, scope_name = res4p_branch2a, pre-trained.shape = (1, 1, 1024, 256), variable.shape = (1, 1, 1024, 256)
+2018-07-21 18:53:51,830 INFO     b:0, scope_name = res4p_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:51,994 INFO     gamma:0, scope_name = bn4p_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:52,119 INFO     beta:0, scope_name = bn4p_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:52,239 INFO     m:0, scope_name = bn4p_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:52,363 INFO     v:0, scope_name = bn4p_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:52,491 INFO     w:0, scope_name = res4p_branch2b, pre-trained.shape = (3, 3, 256, 256), variable.shape = (3, 3, 256, 256)
+2018-07-21 18:53:52,623 INFO     b:0, scope_name = res4p_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:52,750 INFO     gamma:0, scope_name = bn4p_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:52,875 INFO     beta:0, scope_name = bn4p_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:52,999 INFO     m:0, scope_name = bn4p_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:53,123 INFO     v:0, scope_name = bn4p_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:53,256 INFO     w:0, scope_name = res4p_branch2c, pre-trained.shape = (1, 1, 256, 1024), variable.shape = (1, 1, 256, 1024)
+2018-07-21 18:53:53,385 INFO     b:0, scope_name = res4p_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:53:53,516 INFO     gamma:0, scope_name = bn4p_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:53:53,642 INFO     beta:0, scope_name = bn4p_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:53:53,773 INFO     m:0, scope_name = bn4p_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:53:53,903 INFO     v:0, scope_name = bn4p_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:53:54,034 INFO     w:0, scope_name = res4q_branch2a, pre-trained.shape = (1, 1, 1024, 256), variable.shape = (1, 1, 1024, 256)
+2018-07-21 18:53:54,169 INFO     b:0, scope_name = res4q_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:54,299 INFO     gamma:0, scope_name = bn4q_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:54,422 INFO     beta:0, scope_name = bn4q_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:54,548 INFO     m:0, scope_name = bn4q_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:54,678 INFO     v:0, scope_name = bn4q_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:54,803 INFO     w:0, scope_name = res4q_branch2b, pre-trained.shape = (3, 3, 256, 256), variable.shape = (3, 3, 256, 256)
+2018-07-21 18:53:54,941 INFO     b:0, scope_name = res4q_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:55,067 INFO     gamma:0, scope_name = bn4q_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:55,188 INFO     beta:0, scope_name = bn4q_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:55,319 INFO     m:0, scope_name = bn4q_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:55,447 INFO     v:0, scope_name = bn4q_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:55,577 INFO     w:0, scope_name = res4q_branch2c, pre-trained.shape = (1, 1, 256, 1024), variable.shape = (1, 1, 256, 1024)
+2018-07-21 18:53:55,711 INFO     b:0, scope_name = res4q_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:53:55,841 INFO     gamma:0, scope_name = bn4q_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:53:55,964 INFO     beta:0, scope_name = bn4q_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:53:56,096 INFO     m:0, scope_name = bn4q_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:53:56,226 INFO     v:0, scope_name = bn4q_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:53:56,356 INFO     w:0, scope_name = res4r_branch2a, pre-trained.shape = (1, 1, 1024, 256), variable.shape = (1, 1, 1024, 256)
+2018-07-21 18:53:56,487 INFO     b:0, scope_name = res4r_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:56,621 INFO     gamma:0, scope_name = bn4r_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:56,749 INFO     beta:0, scope_name = bn4r_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:56,885 INFO     m:0, scope_name = bn4r_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:57,010 INFO     v:0, scope_name = bn4r_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:57,141 INFO     w:0, scope_name = res4r_branch2b, pre-trained.shape = (3, 3, 256, 256), variable.shape = (3, 3, 256, 256)
+2018-07-21 18:53:57,445 INFO     b:0, scope_name = res4r_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:57,572 INFO     gamma:0, scope_name = bn4r_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:57,693 INFO     beta:0, scope_name = bn4r_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:57,828 INFO     m:0, scope_name = bn4r_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:57,950 INFO     v:0, scope_name = bn4r_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:58,081 INFO     w:0, scope_name = res4r_branch2c, pre-trained.shape = (1, 1, 256, 1024), variable.shape = (1, 1, 256, 1024)
+2018-07-21 18:53:58,218 INFO     b:0, scope_name = res4r_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:53:58,347 INFO     gamma:0, scope_name = bn4r_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:53:58,477 INFO     beta:0, scope_name = bn4r_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:53:58,608 INFO     m:0, scope_name = bn4r_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:53:58,741 INFO     v:0, scope_name = bn4r_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:53:58,874 INFO     w:0, scope_name = res4s_branch2a, pre-trained.shape = (1, 1, 1024, 256), variable.shape = (1, 1, 1024, 256)
+2018-07-21 18:53:59,006 INFO     b:0, scope_name = res4s_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:59,138 INFO     gamma:0, scope_name = bn4s_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:59,265 INFO     beta:0, scope_name = bn4s_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:59,399 INFO     m:0, scope_name = bn4s_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:59,523 INFO     v:0, scope_name = bn4s_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:59,659 INFO     w:0, scope_name = res4s_branch2b, pre-trained.shape = (3, 3, 256, 256), variable.shape = (3, 3, 256, 256)
+2018-07-21 18:53:59,787 INFO     b:0, scope_name = res4s_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:53:59,919 INFO     gamma:0, scope_name = bn4s_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:54:00,048 INFO     beta:0, scope_name = bn4s_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:54:00,181 INFO     m:0, scope_name = bn4s_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:54:00,307 INFO     v:0, scope_name = bn4s_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:54:00,437 INFO     w:0, scope_name = res4s_branch2c, pre-trained.shape = (1, 1, 256, 1024), variable.shape = (1, 1, 256, 1024)
+2018-07-21 18:54:00,572 INFO     b:0, scope_name = res4s_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:54:00,699 INFO     gamma:0, scope_name = bn4s_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:54:00,826 INFO     beta:0, scope_name = bn4s_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:54:00,948 INFO     m:0, scope_name = bn4s_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:54:01,071 INFO     v:0, scope_name = bn4s_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:54:01,205 INFO     w:0, scope_name = res4t_branch2a, pre-trained.shape = (1, 1, 1024, 256), variable.shape = (1, 1, 1024, 256)
+2018-07-21 18:54:01,342 INFO     b:0, scope_name = res4t_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:54:01,476 INFO     gamma:0, scope_name = bn4t_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:54:01,611 INFO     beta:0, scope_name = bn4t_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:54:01,735 INFO     m:0, scope_name = bn4t_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:54:01,874 INFO     v:0, scope_name = bn4t_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:54:02,003 INFO     w:0, scope_name = res4t_branch2b, pre-trained.shape = (3, 3, 256, 256), variable.shape = (3, 3, 256, 256)
+2018-07-21 18:54:02,133 INFO     b:0, scope_name = res4t_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:54:02,268 INFO     gamma:0, scope_name = bn4t_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:54:02,401 INFO     beta:0, scope_name = bn4t_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:54:02,530 INFO     m:0, scope_name = bn4t_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:54:02,658 INFO     v:0, scope_name = bn4t_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:54:02,787 INFO     w:0, scope_name = res4t_branch2c, pre-trained.shape = (1, 1, 256, 1024), variable.shape = (1, 1, 256, 1024)
+2018-07-21 18:54:02,913 INFO     b:0, scope_name = res4t_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:54:03,050 INFO     gamma:0, scope_name = bn4t_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:54:03,183 INFO     beta:0, scope_name = bn4t_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:54:03,311 INFO     m:0, scope_name = bn4t_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:54:03,446 INFO     v:0, scope_name = bn4t_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:54:03,580 INFO     w:0, scope_name = res4u_branch2a, pre-trained.shape = (1, 1, 1024, 256), variable.shape = (1, 1, 1024, 256)
+2018-07-21 18:54:03,715 INFO     b:0, scope_name = res4u_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:54:03,842 INFO     gamma:0, scope_name = bn4u_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:54:03,977 INFO     beta:0, scope_name = bn4u_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:54:04,108 INFO     m:0, scope_name = bn4u_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:54:04,243 INFO     v:0, scope_name = bn4u_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:54:04,374 INFO     w:0, scope_name = res4u_branch2b, pre-trained.shape = (3, 3, 256, 256), variable.shape = (3, 3, 256, 256)
+2018-07-21 18:54:04,507 INFO     b:0, scope_name = res4u_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:54:04,642 INFO     gamma:0, scope_name = bn4u_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:54:04,778 INFO     beta:0, scope_name = bn4u_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:54:04,911 INFO     m:0, scope_name = bn4u_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:54:05,040 INFO     v:0, scope_name = bn4u_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:54:05,173 INFO     w:0, scope_name = res4u_branch2c, pre-trained.shape = (1, 1, 256, 1024), variable.shape = (1, 1, 256, 1024)
+2018-07-21 18:54:05,303 INFO     b:0, scope_name = res4u_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:54:05,438 INFO     gamma:0, scope_name = bn4u_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:54:05,574 INFO     beta:0, scope_name = bn4u_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:54:05,709 INFO     m:0, scope_name = bn4u_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:54:05,848 INFO     v:0, scope_name = bn4u_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:54:05,971 INFO     w:0, scope_name = res4v_branch2a, pre-trained.shape = (1, 1, 1024, 256), variable.shape = (1, 1, 1024, 256)
+2018-07-21 18:54:06,114 INFO     b:0, scope_name = res4v_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:54:06,249 INFO     gamma:0, scope_name = bn4v_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:54:06,379 INFO     beta:0, scope_name = bn4v_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:54:06,513 INFO     m:0, scope_name = bn4v_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:54:06,647 INFO     v:0, scope_name = bn4v_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:54:06,778 INFO     w:0, scope_name = res4v_branch2b, pre-trained.shape = (3, 3, 256, 256), variable.shape = (3, 3, 256, 256)
+2018-07-21 18:54:06,916 INFO     b:0, scope_name = res4v_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:54:07,042 INFO     gamma:0, scope_name = bn4v_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:54:07,184 INFO     beta:0, scope_name = bn4v_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:54:07,317 INFO     m:0, scope_name = bn4v_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:54:07,446 INFO     v:0, scope_name = bn4v_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:54:07,584 INFO     w:0, scope_name = res4v_branch2c, pre-trained.shape = (1, 1, 256, 1024), variable.shape = (1, 1, 256, 1024)
+2018-07-21 18:54:07,716 INFO     b:0, scope_name = res4v_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:54:07,849 INFO     gamma:0, scope_name = bn4v_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:54:07,988 INFO     beta:0, scope_name = bn4v_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:54:08,118 INFO     m:0, scope_name = bn4v_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:54:08,246 INFO     v:0, scope_name = bn4v_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:54:08,387 INFO     w:0, scope_name = res4w_branch2a, pre-trained.shape = (1, 1, 1024, 256), variable.shape = (1, 1, 1024, 256)
+2018-07-21 18:54:08,518 INFO     b:0, scope_name = res4w_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:54:08,652 INFO     gamma:0, scope_name = bn4w_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:54:08,786 INFO     beta:0, scope_name = bn4w_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:54:08,911 INFO     m:0, scope_name = bn4w_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:54:09,045 INFO     v:0, scope_name = bn4w_branch2a, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:54:09,177 INFO     w:0, scope_name = res4w_branch2b, pre-trained.shape = (3, 3, 256, 256), variable.shape = (3, 3, 256, 256)
+2018-07-21 18:54:09,307 INFO     b:0, scope_name = res4w_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:54:09,434 INFO     gamma:0, scope_name = bn4w_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:54:09,574 INFO     beta:0, scope_name = bn4w_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:54:09,707 INFO     m:0, scope_name = bn4w_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:54:09,845 INFO     v:0, scope_name = bn4w_branch2b, pre-trained.shape = (256,), variable.shape = (256,)
+2018-07-21 18:54:09,981 INFO     w:0, scope_name = res4w_branch2c, pre-trained.shape = (1, 1, 256, 1024), variable.shape = (1, 1, 256, 1024)
+2018-07-21 18:54:10,116 INFO     b:0, scope_name = res4w_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:54:10,246 INFO     gamma:0, scope_name = bn4w_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:54:10,381 INFO     beta:0, scope_name = bn4w_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:54:10,517 INFO     m:0, scope_name = bn4w_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:54:10,650 INFO     v:0, scope_name = bn4w_branch2c, pre-trained.shape = (1024,), variable.shape = (1024,)
+2018-07-21 18:54:10,789 INFO     w:0, scope_name = res5a_branch1, pre-trained.shape = (1, 1, 1024, 2048), variable.shape = (1, 1, 1024, 2048)
+2018-07-21 18:54:10,932 INFO     b:0, scope_name = res5a_branch1, pre-trained.shape = (2048,), variable.shape = (2048,)
+2018-07-21 18:54:11,066 INFO     gamma:0, scope_name = bn5a_branch1, pre-trained.shape = (2048,), variable.shape = (2048,)
+2018-07-21 18:54:11,207 INFO     beta:0, scope_name = bn5a_branch1, pre-trained.shape = (2048,), variable.shape = (2048,)
+2018-07-21 18:54:11,340 INFO     m:0, scope_name = bn5a_branch1, pre-trained.shape = (2048,), variable.shape = (2048,)
+2018-07-21 18:54:11,469 INFO     v:0, scope_name = bn5a_branch1, pre-trained.shape = (2048,), variable.shape = (2048,)
+2018-07-21 18:54:11,595 INFO     w:0, scope_name = res5a_branch2a, pre-trained.shape = (1, 1, 1024, 512), variable.shape = (1, 1, 1024, 512)
+2018-07-21 18:54:11,722 INFO     b:0, scope_name = res5a_branch2a, pre-trained.shape = (512,), variable.shape = (512,)
+2018-07-21 18:54:11,865 INFO     gamma:0, scope_name = bn5a_branch2a, pre-trained.shape = (512,), variable.shape = (512,)
+2018-07-21 18:54:11,999 INFO     beta:0, scope_name = bn5a_branch2a, pre-trained.shape = (512,), variable.shape = (512,)
+2018-07-21 18:54:12,132 INFO     m:0, scope_name = bn5a_branch2a, pre-trained.shape = (512,), variable.shape = (512,)
+2018-07-21 18:54:12,263 INFO     v:0, scope_name = bn5a_branch2a, pre-trained.shape = (512,), variable.shape = (512,)
+2018-07-21 18:54:12,403 INFO     w:0, scope_name = res5a_branch2b, pre-trained.shape = (3, 3, 512, 512), variable.shape = (3, 3, 512, 512)
+2018-07-21 18:54:12,552 INFO     b:0, scope_name = res5a_branch2b, pre-trained.shape = (512,), variable.shape = (512,)
+2018-07-21 18:54:12,689 INFO     gamma:0, scope_name = bn5a_branch2b, pre-trained.shape = (512,), variable.shape = (512,)
+2018-07-21 18:54:12,818 INFO     beta:0, scope_name = bn5a_branch2b, pre-trained.shape = (512,), variable.shape = (512,)
+2018-07-21 18:54:12,946 INFO     m:0, scope_name = bn5a_branch2b, pre-trained.shape = (512,), variable.shape = (512,)
+2018-07-21 18:54:13,084 INFO     v:0, scope_name = bn5a_branch2b, pre-trained.shape = (512,), variable.shape = (512,)
+2018-07-21 18:54:13,222 INFO     w:0, scope_name = res5a_branch2c, pre-trained.shape = (1, 1, 512, 2048), variable.shape = (1, 1, 512, 2048)
+2018-07-21 18:54:13,371 INFO     b:0, scope_name = res5a_branch2c, pre-trained.shape = (2048,), variable.shape = (2048,)
+2018-07-21 18:54:13,505 INFO     gamma:0, scope_name = bn5a_branch2c, pre-trained.shape = (2048,), variable.shape = (2048,)
+2018-07-21 18:54:13,640 INFO     beta:0, scope_name = bn5a_branch2c, pre-trained.shape = (2048,), variable.shape = (2048,)
+2018-07-21 18:54:13,774 INFO     m:0, scope_name = bn5a_branch2c, pre-trained.shape = (2048,), variable.shape = (2048,)
+2018-07-21 18:54:13,914 INFO     v:0, scope_name = bn5a_branch2c, pre-trained.shape = (2048,), variable.shape = (2048,)
+2018-07-21 18:54:14,046 INFO     w:0, scope_name = res5b_branch2a, pre-trained.shape = (1, 1, 2048, 512), variable.shape = (1, 1, 2048, 512)
+2018-07-21 18:54:14,189 INFO     b:0, scope_name = res5b_branch2a, pre-trained.shape = (512,), variable.shape = (512,)
+2018-07-21 18:54:14,323 INFO     gamma:0, scope_name = bn5b_branch2a, pre-trained.shape = (512,), variable.shape = (512,)
+2018-07-21 18:54:14,450 INFO     beta:0, scope_name = bn5b_branch2a, pre-trained.shape = (512,), variable.shape = (512,)
+2018-07-21 18:54:14,586 INFO     m:0, scope_name = bn5b_branch2a, pre-trained.shape = (512,), variable.shape = (512,)
+2018-07-21 18:54:14,717 INFO     v:0, scope_name = bn5b_branch2a, pre-trained.shape = (512,), variable.shape = (512,)
+2018-07-21 18:54:14,854 INFO     w:0, scope_name = res5b_branch2b, pre-trained.shape = (3, 3, 512, 512), variable.shape = (3, 3, 512, 512)
+2018-07-21 18:54:15,006 INFO     b:0, scope_name = res5b_branch2b, pre-trained.shape = (512,), variable.shape = (512,)
+2018-07-21 18:54:15,143 INFO     gamma:0, scope_name = bn5b_branch2b, pre-trained.shape = (512,), variable.shape = (512,)
+2018-07-21 18:54:15,279 INFO     beta:0, scope_name = bn5b_branch2b, pre-trained.shape = (512,), variable.shape = (512,)
+2018-07-21 18:54:15,409 INFO     m:0, scope_name = bn5b_branch2b, pre-trained.shape = (512,), variable.shape = (512,)
+2018-07-21 18:54:15,545 INFO     v:0, scope_name = bn5b_branch2b, pre-trained.shape = (512,), variable.shape = (512,)
+2018-07-21 18:54:15,680 INFO     w:0, scope_name = res5b_branch2c, pre-trained.shape = (1, 1, 512, 2048), variable.shape = (1, 1, 512, 2048)
+2018-07-21 18:54:15,819 INFO     b:0, scope_name = res5b_branch2c, pre-trained.shape = (2048,), variable.shape = (2048,)
+2018-07-21 18:54:15,958 INFO     gamma:0, scope_name = bn5b_branch2c, pre-trained.shape = (2048,), variable.shape = (2048,)
+2018-07-21 18:54:16,098 INFO     beta:0, scope_name = bn5b_branch2c, pre-trained.shape = (2048,), variable.shape = (2048,)
+2018-07-21 18:54:16,230 INFO     m:0, scope_name = bn5b_branch2c, pre-trained.shape = (2048,), variable.shape = (2048,)
+2018-07-21 18:54:16,363 INFO     v:0, scope_name = bn5b_branch2c, pre-trained.shape = (2048,), variable.shape = (2048,)
+2018-07-21 18:54:16,502 INFO     w:0, scope_name = res5c_branch2a, pre-trained.shape = (1, 1, 2048, 512), variable.shape = (1, 1, 2048, 512)
+2018-07-21 18:54:16,644 INFO     b:0, scope_name = res5c_branch2a, pre-trained.shape = (512,), variable.shape = (512,)
+2018-07-21 18:54:16,789 INFO     gamma:0, scope_name = bn5c_branch2a, pre-trained.shape = (512,), variable.shape = (512,)
+2018-07-21 18:54:16,925 INFO     beta:0, scope_name = bn5c_branch2a, pre-trained.shape = (512,), variable.shape = (512,)
+2018-07-21 18:54:17,061 INFO     m:0, scope_name = bn5c_branch2a, pre-trained.shape = (512,), variable.shape = (512,)
+2018-07-21 18:54:17,198 INFO     v:0, scope_name = bn5c_branch2a, pre-trained.shape = (512,), variable.shape = (512,)
+2018-07-21 18:54:17,340 INFO     w:0, scope_name = res5c_branch2b, pre-trained.shape = (3, 3, 512, 512), variable.shape = (3, 3, 512, 512)
+2018-07-21 18:54:17,489 INFO     b:0, scope_name = res5c_branch2b, pre-trained.shape = (512,), variable.shape = (512,)
+2018-07-21 18:54:17,628 INFO     gamma:0, scope_name = bn5c_branch2b, pre-trained.shape = (512,), variable.shape = (512,)
+2018-07-21 18:54:17,762 INFO     beta:0, scope_name = bn5c_branch2b, pre-trained.shape = (512,), variable.shape = (512,)
+2018-07-21 18:54:17,908 INFO     m:0, scope_name = bn5c_branch2b, pre-trained.shape = (512,), variable.shape = (512,)
+2018-07-21 18:54:18,045 INFO     v:0, scope_name = bn5c_branch2b, pre-trained.shape = (512,), variable.shape = (512,)
+2018-07-21 18:54:18,188 INFO     w:0, scope_name = res5c_branch2c, pre-trained.shape = (1, 1, 512, 2048), variable.shape = (1, 1, 512, 2048)
+2018-07-21 18:54:18,330 INFO     b:0, scope_name = res5c_branch2c, pre-trained.shape = (2048,), variable.shape = (2048,)
+2018-07-21 18:54:18,473 INFO     gamma:0, scope_name = bn5c_branch2c, pre-trained.shape = (2048,), variable.shape = (2048,)
+2018-07-21 18:54:18,612 INFO     beta:0, scope_name = bn5c_branch2c, pre-trained.shape = (2048,), variable.shape = (2048,)
+2018-07-21 18:54:18,749 INFO     m:0, scope_name = bn5c_branch2c, pre-trained.shape = (2048,), variable.shape = (2048,)
+2018-07-21 18:54:18,888 INFO     v:0, scope_name = bn5c_branch2c, pre-trained.shape = (2048,), variable.shape = (2048,)

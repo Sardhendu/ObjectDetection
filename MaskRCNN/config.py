@@ -36,7 +36,7 @@ class config(object):
     BBOX_STD_DEV = np.array([0.1, 0.1, 0.2, 0.2])
 
     # Max number of anchors before NMS
-    PRE_NMS_ROIS_INFERENCE = 6000
+    PRE_NMS_ROIS_COUNT = 6000
     # ROIs kept after non-maximum supression (training and inference)
     POST_NMS_ROIS_TRAINING = 2000
     POST_NMS_ROIS_INFERENCE = 1000

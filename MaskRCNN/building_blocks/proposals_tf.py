@@ -100,7 +100,8 @@ class Proposals():
     The input to this network is:
     rpn_class_probs: [num_batches, anchor, [back_ground_probability, fore_ground_probability]]
     '''
-    def __init__(self, conf, batch_size, rpn_class_probs=None, rpn_bbox=None, inp_anchors=None, DEBUG=False):
+    def __init__(self, conf, batch_size, rpn_class_probs=None, rpn_bbox=None, inp_anchors=None,
+                 training=False, DEBUG=False):
         
         if rpn_class_probs is not None:
             self.rpn_class_probs = rpn_class_probs
@@ -120,8 +121,12 @@ class Proposals():
         self.DEBUG = DEBUG
             
         self.rpn_bbox_stddev = conf.RPN_BBOX_STDDEV
-        self.num_box_before_nms = conf.PRE_NMS_ROIS_INFERENCE     # 5
-        self.num_boxes_after_nms = conf.POST_NMS_ROIS_INFERENCE   # 4
+
+        self.num_box_before_nms = conf.PRE_NMS_ROIS_COUNT
+        if training:
+            self.num_boxes_after_nms = conf.POST_NMS_ROIS_TRAINING # 4
+        else:
+            self.num_boxes_after_nms = conf.POST_NMS_ROIS_INFERENCE   # 4
         self.iou_threshold = conf.RPN_NMS_THRESHOLD               # 0.3
         self.batch_size = batch_size
         

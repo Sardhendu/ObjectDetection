@@ -82,49 +82,68 @@ class Loss():
         return rpn_pred_box_pos, loss
 
     @staticmethod
-    def mrcnn_class_loss(mrcnn_target_class, mrcnn_pred_logits, batch_active_class_ids, sess):
+    def mrcnn_class_loss(mrcnn_target_class_ids, mrcnn_pred_logits, batch_active_class_ids, sess):
         '''
 
-        :param mrcnn_target_class: Zero padded [batch_size, 100,4],
+        :param mrcnn_target_class_ids: Zero padded [batch_size, MRCNN_TRAIN_ROIS_PER_IMAGE],
                                     4    -> number of classes
                                     100  -> maximum number of objects to be detected
-        :param mrcnn_class_logits:      [batch_size, 100, 4]
-                                    100 -> Number of rois
-        :param batch_active_class_ids:  [batch_size, 4]
+        :param mrcnn_pred_logits:      [batch_size, MRCNN_TRAIN_ROIS_PER_IMAGE, num_objects]
+                                    32 -> Number of rois specifically for the shape data set
+        :param batch_active_class_ids:  [batch_size, num_objects]
                             # Has a value of 1 for each object in the image of a batch
         :return:
 
         '''
-        mrcnn_target_class = tf.cast(mrcnn_target_class, dtype=tf.int64)
-        batch_active_class_ids = tf.cast(batch_active_class_ids, dtype=tf.int32)
-        mrcnn_pred_logits = tf.cast(mrcnn_pred_logits, dtype=tf.float32)
-    
-        pred_class_ids = tf.argmax(mrcnn_pred_logits, axis=2)
-    
-        # Perform the cross entropy loss,
-        # Note mrcnn_target_class, mrcnn_pred_logits are not one-hot-coded, they are in labe;
-        
-        # loss = tf.losses.sparse_softmax_cross_entropy(mrcnn_target_class, pred_class_ids)
-    
-        t = sess.run(mrcnn_target_class)
-        l = sess.run(mrcnn_pred_logits)
-        p = sess.run(pred_class_ids)
-        print('mrcnn_target_class ', t)
-        print('')
-        print('mrcnn_class_logits ', l)
-        print('')
-        print('batch_active_class_ids ', sess.run(batch_active_class_ids))
-        print('')
-        print('pred_class_ids ', )
-        # print('')
-        # print('loss ', sess.run(loss))
-        
-        print (t.shape, l.shape, p.shape)
         
         
+        # Inorder to compute loss we need to convert mrcnn_target_class into
+        # [batch_size, MRCNN_TRAIN_ROIS_PER_IMAGE, num_objects] (one hot vectors per class) and use "softmax cross
+        # entropy", OR we could convert mrcnn_pred_logits into [batch_size, MRCNN_TRAIN_ROIS_PER_IMAGE] and do
+        # "sparse_softmax_ross_entropy". Later is easy so let do that
         
-        # TODO: Somehow the mrcnn module return 1000 bbox and labels, this should be only 100 check why?
+        mrcnn_target_class_ids = tf.cast(mrcnn_target_class_ids, dtype='int32')
+        batch_active_class_ids = tf.cast(batch_active_class_ids, dtype='int64')
+        mrcnn_pred_logits = tf.cast(mrcnn_pred_logits, dtype='int32')
 
+        mrcnn_pred_class_ids = tf.argmax(mrcnn_pred_logits, axis=2)
+
+        pred_active = tf.gather(batch_active_class_ids[0], mrcnn_pred_class_ids)
+        
+        
+        # Perform the cross entropy loss,
+        # Note mrcnn_target_class, mrcnn_pred_logits are not one-hot-coded, they are label-coded
+        # There would be no loss for zeros-paded data
+        
+        
+        
+        t = sess.run(mrcnn_target_class_ids)
+        # l = sess.run(mrcnn_pred_logits)
+        p = sess.run(mrcnn_pred_logits)
+        a = sess.run(batch_active_class_ids)
+
+        print(t.shape, t)
+        print('')
+        # print(l.shape, l)
+        # print('')
+        print(p.shape, p)
+        print('')
+        print(a)
+        print(pred_active)
+
+
+        # THe below may seem weird becasue mrcnn_target_class_ids = [batch_size, N] and
+        # mrcnn_pred_logits = [batch_size, N, num_objects] (they are different dimension). But this is way
+        # tf.nn.sparse_softmax_cross_entropy_with_logits expects its inputs
+        loss = tf.nn.sparse_softmax_cross_entropy_with_logits(labels=mrcnn_target_class_ids,
+                                                              logits=mrcnn_pred_logits)
+        loss = loss * pred_active
+        loss = tf.reduce_sum(loss) / tf.reduce_sum(pred_active)
+        return loss
+
+
+    # @staticmethod
+    # def mrcnn_box_loss(mrcnn_target_box, mrcnn_):
 
         
         
