@@ -46,9 +46,9 @@ class Loss():
     @staticmethod
     def rpn_box_loss(rpn_target_bbox, rpn_pred_box, rpn_target_class, batch_size):
         '''
+        :param rpn_target_bbox:    [batch_size, max_gt_boxes(100), (c_dy, c_dx, log(dh), log(dw)]
+        :param rpn_pred_box:      [batch_size, anchors, (c_dy, c_dx, log(dh). log(dw)]
         :param rpn_target_class:  [batch_size, num_anchors, 1] # required becasue we need to capture only +ve classes
-        :param rpn_target_bbox:    [batch_size, max_gt_boxes(100), (c_y, c_x, log(dh), log(dw)]
-        :param rpn_pred_box:      [batch_size, anchors, (c_y, c_x, log(dh). log(dw)]
         :return:
         
         Note: rpn_target_bbox are zero-padded, they were added to fulfil the total number of box and concat for each objects. we assume that given an image we would at most find 100 objects.
@@ -82,7 +82,7 @@ class Loss():
         return rpn_pred_box_pos, loss
 
     @staticmethod
-    def mrcnn_class_loss(mrcnn_target_class_ids, mrcnn_pred_logits, batch_active_class_ids, sess):
+    def mrcnn_class_loss(mrcnn_target_class_ids, mrcnn_pred_logits, batch_active_class_ids):
         '''
 
         :param mrcnn_target_class_ids: Zero padded [batch_size, MRCNN_TRAIN_ROIS_PER_IMAGE],
@@ -102,9 +102,10 @@ class Loss():
         # entropy", OR we could convert mrcnn_pred_logits into [batch_size, MRCNN_TRAIN_ROIS_PER_IMAGE] and do
         # "sparse_softmax_ross_entropy". Later is easy so let do that
         
-        mrcnn_target_class_ids = tf.cast(mrcnn_target_class_ids, dtype='int32')
-        batch_active_class_ids = tf.cast(batch_active_class_ids, dtype='int64')
-        mrcnn_pred_logits = tf.cast(mrcnn_pred_logits, dtype='int32')
+        mrcnn_target_class_ids = tf.cast(mrcnn_target_class_ids, dtype='int64')
+        mrcnn_pred_logits = tf.cast(mrcnn_pred_logits, dtype='float32')
+        batch_active_class_ids = tf.cast(batch_active_class_ids, dtype='float32')
+        
 
         mrcnn_pred_class_ids = tf.argmax(mrcnn_pred_logits, axis=2)
 
@@ -115,36 +116,52 @@ class Loss():
         # Note mrcnn_target_class, mrcnn_pred_logits are not one-hot-coded, they are label-coded
         # There would be no loss for zeros-paded data
         
-        
-        
-        t = sess.run(mrcnn_target_class_ids)
-        # l = sess.run(mrcnn_pred_logits)
-        p = sess.run(mrcnn_pred_logits)
-        a = sess.run(batch_active_class_ids)
+        # t = sess.run(mrcnn_target_class_ids)
+        # # l = sess.run(mrcnn_pred_logits)
+        # p = sess.run(mrcnn_pred_logits)
+        # a = sess.run(batch_active_class_ids)
 
-        print(t.shape, t)
-        print('')
+        # print(t.shape, t)
+        # print('')
         # print(l.shape, l)
         # print('')
-        print(p.shape, p)
-        print('')
-        print(a)
-        print(pred_active)
+        # print(p.shape, p)
+        # print('')
+        # print(a)
+        # print(pred_active)
 
 
         # THe below may seem weird becasue mrcnn_target_class_ids = [batch_size, N] and
         # mrcnn_pred_logits = [batch_size, N, num_objects] (they are different dimension). But this is way
         # tf.nn.sparse_softmax_cross_entropy_with_logits expects its inputs
-        loss = tf.nn.sparse_softmax_cross_entropy_with_logits(labels=mrcnn_target_class_ids,
-                                                              logits=mrcnn_pred_logits)
+        
+        # TODO: Why the Loss turns out to be nan, even when we have o object tin the image. basically pred_active > 0
+        
+        loss = tf.nn.sparse_softmax_cross_entropy_with_logits(
+                labels=mrcnn_target_class_ids,
+                logits=mrcnn_pred_logits
+        )
         loss = loss * pred_active
         loss = tf.reduce_sum(loss) / tf.reduce_sum(pred_active)
         return loss
 
 
-    # @staticmethod
-    # def mrcnn_box_loss(mrcnn_target_box, mrcnn_):
-
+    @staticmethod
+    def mrcnn_box_loss(mrcnn_target_box, mrcnn_pred_box, mrcnn_target_class_ids):
+        '''
+        
+        :param mrcnn_target_box:    zero padded [batch_size, num_rois , (cy, cx, log(h), log(w)]  -> cx, cy normalized
+        :param mrcnn_pred_box:
+        :return:
+        '''
+        print('mrcnn_target_box %s \n'%str(mrcnn_target_box.shape), mrcnn_target_box)
+        print('')
+        print ('mrcnn_pred_box %s \n'%str(mrcnn_pred_box.shape), mrcnn_pred_box)
+        print('')
+        print('mrcnn_target_class_ids %s \n'%str(mrcnn_target_class_ids.shape), mrcnn_target_class_ids)
+        
+        # Only positive ROIs contribute to the Loss
+    
         
         
         

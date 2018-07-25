@@ -225,11 +225,12 @@ obj_ptd = PreprareTrainData(conf, data)
 data_dict = obj_ptd.get_data(image_ids)
 
 ######### TRAINING
-from MaskRCNN.training import Train
+from MaskRCNN.training import Train as Train
+from MaskRCNN.training_debug import Train as TrainDebug
 print(data_dict['batch_image_metas'])
 pretrained_weights_path = '/Users/sam/All-Program/App-DataSet/ObjectDetection/MaskRCNN/mask_rcnn_coco.h5'
 obj_trn = Train(conf, batch_size=batch_size,
-                pretrained_weights_path=pretrained_weights_path)
+                pretrained_weights_path=None)
 # obj_trn.transform_images(data_dict, image_ids)
 # obj_trn.build_train_graph()
 obj_trn.exec_sess(data_dict, image_ids)

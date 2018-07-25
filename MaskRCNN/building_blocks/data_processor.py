@@ -237,7 +237,6 @@ class BuildDetectionTargets():
         # Remove the additional padding from the ground truth boxes
         non_zeros = tf.cast(tf.reduce_sum(tf.abs(gt_bboxes), axis=1), dtype=tf.bool)
         gt_boxes = tf.boolean_mask(gt_bboxes, non_zeros, name='gt_box_non_zeros')
-        
         # Get teh Class ID's for the Ground Truth boxes
         gt_class_ids = tf.boolean_mask(gt_class_ids, non_zeros, name='gt_class_id_non_zeros')
         
@@ -294,7 +293,7 @@ class BuildDetectionTargets():
         if self.DEBUG:
             self.debug_dict = dict(a=prop, b=gt_boxes, c=gt_class_ids, d=iou, e=pos_rois,
                     f=neg_rois, g=pos_iou, h=roi_gt_box_assignment, i=roi_gt_class_ids,
-                    j=self.roi_gt_class_ids, k=self.roi_gt_box_deltas, l=self.rois)
+                    j=self.roi_gt_class_ids, k=self.roi_gt_box_deltas, l=tf.expand_dims(self.rois, axis=0))
     
     def get_target_rois(self):
         return self.rois, self.roi_gt_class_ids, self.roi_gt_box_deltas
