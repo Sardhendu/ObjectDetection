@@ -106,4 +106,10 @@ FPN: https://medium.com/@jonathan_hui/understanding-feature-pyramid-networks-for
     Output:
     1. proposals
               
+              
+              
+## Variables ans Explanation:
+------------
+
+
      

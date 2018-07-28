@@ -97,7 +97,7 @@ class Visualize():
             self.axs[self.num].imshow(np.array(image.reshape(image.shape[0], image.shape[1]), dtype=data_type))
             self.num += 1
     
-    def visualize_boxes(self, boxes, class_ids=None, class_names=None,
+    def visualize_boxes(self, boxes, image=None, class_ids=None, class_names=None,
                           scores=None, title="",
                           show_mask=True, show_bbox=True,
                           colors=None, captions=None):
@@ -126,6 +126,9 @@ class Visualize():
         
         # Generate random colors
         colors = colors or self.gen_random_colors(N)
+        
+        if image is not None:
+            self.image = image
         
         # Show area outside image boundaries.
         height, width = self.image.shape[:2]

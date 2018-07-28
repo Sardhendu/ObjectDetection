@@ -12,6 +12,8 @@ from MaskRCNN.config import config
 
 logging.basicConfig(level=logging.DEBUG, filename="logfile.log", filemode="w",
                     format="%(asctime)-15s %(levelname)-8s %(message)s")
+
+
 class ShapesConfig(config):
     """Configuration for training on the toy shapes dataset.
     Derives from the base Config class and overrides values specific
@@ -214,23 +216,22 @@ batch_size = 1
 data = Dataset(num_images=batch_size, height=128, width=128, num_classes=4)
 print ('Batch Meta: ', data.image_meta)
 image_ids = data.image_meta.keys()
-# print(data.image_meta)
-
-# print (data)
 
 ######### PREPARE TRAINING DATA
 # Get data attributes
 # Get Data for 1 batch
 obj_ptd = PreprareTrainData(conf, data)
 data_dict = obj_ptd.get_data(image_ids)
+print(data_dict)
 
-######### TRAINING
+
+# ######### TRAINING
 from MaskRCNN.training import Train as Train
 from MaskRCNN.training_debug import Train as TrainDebug
 print(data_dict['batch_image_metas'])
 pretrained_weights_path = '/Users/sam/All-Program/App-DataSet/ObjectDetection/MaskRCNN/mask_rcnn_coco.h5'
 obj_trn = Train(conf, batch_size=batch_size,
-                pretrained_weights_path=None)
+                pretrained_weights_path=pretrained_weights_path)
 # obj_trn.transform_images(data_dict, image_ids)
 # obj_trn.build_train_graph()
 obj_trn.exec_sess(data_dict, image_ids)

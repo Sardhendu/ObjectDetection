@@ -57,11 +57,11 @@ class Loss():
         '''
         rpn_target_class = tf.squeeze(rpn_target_class, -1)
         
-        # rpn_pre_box = [batch_size, 100, 4] here only few out of 100 box would be +ve classes rest all are zero padded. Inorder to compare them we find the boxes from rpn_pred_box corresponding to +ve class.
+        # rpn_pre_box = [batch_size, 100, 4] here only few out of 100 box would be +ve classes rest all are zero padded. Inorder to compute loss b/w rpn_target_bbox and rpn_pred_box we find the boxes from rpn_pred_box corresponding to +ve class.
         indices = tf.where(tf.equal(rpn_target_class, 1))
         rpn_pred_box_pos = tf.gather_nd(rpn_pred_box, indices)
         
-        # Gather from rpn_target_bbox where teh values are not zero. Basically the top "n" boxes are non zero. Also Note this has to be done for every batch
+        # Gather from rpn_target_bbox where the values are not zero. Basically the top "n" boxes are non zero. Also Note this has to be done for every batch
         # Get data for count of non-padded (non=zero) records for each batch
         non_pad_count = tf.reduce_sum(tf.cast(tf.equal(rpn_target_class, 1), tf.int32), axis=1)# K.sum(K.cast(K.equal(rpn_target_class, 1), tf.int32), axis=1)#
         rpn_target_bbox_nopad = []
@@ -84,7 +84,6 @@ class Loss():
     @staticmethod
     def mrcnn_class_loss(mrcnn_target_class_ids, mrcnn_pred_logits, batch_active_class_ids):
         '''
-
         :param mrcnn_target_class_ids: Zero padded [batch_size, MRCNN_TRAIN_ROIS_PER_IMAGE],
                                     4    -> number of classes
                                     100  -> maximum number of objects to be detected
@@ -93,7 +92,6 @@ class Loss():
         :param batch_active_class_ids:  [batch_size, num_objects]
                             # Has a value of 1 for each object in the image of a batch
         :return:
-
         '''
         
         
@@ -141,7 +139,11 @@ class Loss():
                 labels=mrcnn_target_class_ids,
                 logits=mrcnn_pred_logits
         )
+
+        # Remove losses of predictions of classes that are not in the active
+        # classes of the image.
         loss = loss * pred_active
+        
         loss = tf.reduce_sum(loss) / tf.reduce_sum(pred_active)
         return loss
 
@@ -161,72 +163,100 @@ class Loss():
         print('')
         print('mrcnn_target_class_ids %s \n'%str(mrcnn_target_class_ids.shape), mrcnn_target_class_ids)
 
-        for i in range(0,2):
+        target_boxes = []
+        pred_boxes = []
+        for i in range(0, batch_size):
             positive_roi_ix = tf.where(mrcnn_target_class_ids[i] > 0)[:, 0]
             positive_roi_class_ids = tf.cast(
                     tf.gather(mrcnn_target_class_ids[i], positive_roi_ix), tf.int64)
             
-            
             # Get mrcnn_target_box for indices
-            target_boxes = tf.gather(mrcnn_target_box[i], positive_roi_ix)
+            target_box = tf.gather(mrcnn_target_box[i], positive_roi_ix)
             
             # Get the mrcnn_pred_box for the indices and especially for the mrcnn_target_class_ids
-            pred_bbox = tf.gather(mrcnn_pred_box[i], positive_roi_ix)
-            indices = tf.stack([tf.cast(tf.range(start=0, limit=tf.shape(positive_roi_class_ids)[0]), dtype=tf.int64),
-                                positive_roi_class_ids],
-                               axis=0)
-            pred_bbox1 = tf.gather_nd(pred_bbox, indices)
+            pred_box = tf.gather(mrcnn_pred_box[i], positive_roi_ix)
+            indices = tf.stack([tf.cast(tf.range(start=0,
+                                                 limit=tf.shape(positive_roi_class_ids)[0]), dtype=tf.int64),
+                                positive_roi_class_ids], axis=1)
+
+            pred_bbox1 = tf.gather_nd(pred_box, indices)
 
             # TODO: Stack target_boxes and pred_bbox1 one upon another
             # Select the prediction boxes
-            break
+            target_boxes.append(target_box)
+            pred_boxes.append(pred_bbox1)
 
-        # TODO: Calculate the loss between stacked target_boxes and stacked pred_boxes1
-        return positive_roi_class_ids, target_boxes, pred_bbox, indices, pred_bbox1
-            
-        
+        target_boxes = tf.concat(target_boxes, axis=0)
+        pred_boxes = tf.concat(pred_boxes, axis=0)
+
         # Only positive ROIs contribute to the Loss
-
-
-import numpy as np
-
-mrcnn_target_box = np.random.random((2,32,4))
-mrcnn_pred_box = np.random.random((2,32,4,4))
-mrcnn_target_class_ids = np.zeros((2, 32))
-mrcnn_target_class_ids[0,[2]] = 1
-mrcnn_target_class_ids[0,[3]] = 2
-mrcnn_target_class_ids[1,[4]] = 1
-
-print ('mrcnn_target_box ', mrcnn_target_box[0])
-print('')
-print('mrcnn_pred_box ', mrcnn_pred_box[0])
-print('')
-print('mrcnn_target_class_ids ', mrcnn_target_class_ids[0])
+        # Compute binary cross entropy. If no positive ROIs, then return 0.
+        # shape: [batch, roi, num_classes]
+        loss = K.switch(tf.size(target_boxes) > 0,
+                        K.binary_crossentropy(target=target_boxes, output=pred_boxes),
+                        tf.constant(0.0))
+        loss = K.mean(loss)
+        
+        # TODO: Calculate the loss between stacked target_boxes and stacked pred_boxes1
+        return loss
 
 
 
-a = tf.placeholder(dtype=tf.float32, shape=(2,32,4), name='a')
-b = tf.placeholder(dtype=tf.float32, shape=(2,32,4, 4), name='b')
-c = tf.placeholder(dtype=tf.int32, shape=(2,32), name='c')
 
 
-with tf.Session() as sess:
-    positive_roi_ix, target_boxes, pred_bbox, indices, pred_bbox1 = Loss.mrcnn_box_loss(a, b, c)
+
+
+def debug():
+    import numpy as np
     
-    sess.run(tf.global_variables_initializer())
-
-    positive_roi_ix_, target_boxes_, pred_bbox_, indices_, pred_bbox1_ = sess.run([
-        positive_roi_ix, target_boxes, pred_bbox, indices, pred_bbox1],
-            feed_dict={a:mrcnn_target_box, b:mrcnn_pred_box, c:mrcnn_target_class_ids})
+    mrcnn_target_box = np.random.random((2,32,4))
+    mrcnn_pred_box = np.random.random((2,32,4,4))
+    mrcnn_target_class_ids = np.zeros((2, 32))
+    mrcnn_target_class_ids[0,[2]] = 1
+    mrcnn_target_class_ids[0,[3]] = 2
+    mrcnn_target_class_ids[1,[4]] = 1
     
-    print(positive_roi_ix_)
+    print ('mrcnn_target_box ', mrcnn_target_box[0])
     print('')
-    print(target_boxes_)
+    print('mrcnn_pred_box ', mrcnn_pred_box[0])
     print('')
-    print(pred_bbox_)
-    print('')
-    print(indices_)
-    print('')
-    print(pred_bbox1_)
+    print('mrcnn_target_class_ids ', mrcnn_target_class_ids[0])
     
+    
+    
+    a = tf.placeholder(dtype=tf.float32, shape=(2,32,4), name='a')
+    b = tf.placeholder(dtype=tf.float32, shape=(2,32,4, 4), name='b')
+    c = tf.placeholder(dtype=tf.int32, shape=(2,32), name='c')
+    
+    
+    with tf.Session() as sess:
+        positive_roi_ix, target_boxes, pred_bbox, indices, pred_bbox1, pred_bbox2, loss = Loss.mrcnn_box_loss(a, b, c)
+        
+        sess.run(tf.global_variables_initializer())
+    
+        positive_roi_ix_, target_boxes_, pred_bbox_, indices_, pred_bbox1_, pred_bbox1__, loss_ = sess.run([
+            positive_roi_ix, target_boxes, pred_bbox, indices, pred_bbox1, pred_bbox2, loss],
+                feed_dict={a:mrcnn_target_box, b:mrcnn_pred_box, c:mrcnn_target_class_ids})
+        print('')
+        print('')
+        print(positive_roi_ix_)
+        print('')
+        print('')
+        print(target_boxes_)
+        print('')
+        print('')
+        print(pred_bbox_)
+        print('')
+        print('')
+        print(indices_)
+        print('')
+        print('')
+        print(pred_bbox1_)
+        print('')
+        print('')
+        print(pred_bbox1__)
+        print('')
+        print('')
+        print(loss_)
+        
         

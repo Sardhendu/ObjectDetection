@@ -325,6 +325,7 @@ class PreprareTrainData():
         # Also compute the area of the anchors, so that we dont have to compute the both the anchors and the
         # area in every batch iteration
         feature_shapes = utils.get_resnet_stage_shapes(self.conf, self.conf.IMAGE_SHAPE)
+        # print ('feature_shapes ', feature_shapes)
         self.anchors = utils.gen_anchors_for_train(self.conf.RPN_ANCHOR_SCALES,
                                               self.conf.RPN_ANCHOR_RATIOS,
                                               feature_shapes,
@@ -333,7 +334,7 @@ class PreprareTrainData():
         
         # print(feature_shapes)
         print('Anchors Max Min length: ', np.max(self.anchors), np.min(self.anchors))
-        print ('Anchor shape: ', self.anchors.shape)
+        print('Anchor shape: ', self.anchors.shape)
         
         self.anchor_area = (self.anchors[:,2] - self.anchors[:,0]) * (self.anchors[:,3] - self.anchors[:,1])
         print ('Achor Area: ', self.anchor_area.shape)
@@ -468,6 +469,7 @@ class PreprareTrainData():
         # REGRESSION PART:
         rpn_target_bbox = np.zeros((self.max_rpn_targets, 4))
         pos_idx = np.where(rpn_target_class == 1)[0]
+        positive_anchors = self.anchors[pos_idx]
         for i, (idx, anchor_box) in enumerate(zip(pos_idx, self.anchors[pos_idx])):
             # Convert bbox to scaled and shifted version
             gt_box = batch_gt_boxes[anchor_iou_max_idx[idx]] # Select class 1 from gt boxes with high iou score
@@ -493,7 +495,7 @@ class PreprareTrainData():
             # Normalize
             rpn_target_bbox[i] /= self.bbox_std_dev
 
-        return rpn_target_class, rpn_target_bbox
+        return positive_anchors, rpn_target_class, rpn_target_bbox
         
     def build_mrcnn_targets(self, batch_gt_boxes, batch_gt_class):
         ''' What actually goes inside it
@@ -516,8 +518,10 @@ class PreprareTrainData():
         for num, img_id in enumerate(image_ids):
             image, gt_mask, gt_class_id, gt_bbox, image_meta = self.get_ground_truth_data(img_id)
             
+            # print (image)
+            
             # GET RPN TARGETS
-            rpn_target_class, rpn_target_bbox = self.build_rpn_targets(gt_bbox)
+            positive_anchors, rpn_target_class, rpn_target_bbox = self.build_rpn_targets(gt_bbox)
             print('+ve class count ', len(np.where(rpn_target_class == 1)[0]))
             print('-ve class count ', len(np.where(rpn_target_class == -1)[0]))
             print('neutral class count ', len(np.where(rpn_target_class == 0)[0]))
@@ -536,8 +540,11 @@ class PreprareTrainData():
                 batch_gt_bboxes = np.zeros((batch_size, self.max_gt_objects_per_image, 4), dtype=gt_bbox.dtype)
                 
                 batch_image_metas = np.zeros((batch_size,) + tuple(image_meta.shape), dtype=image_meta.dtype)
+                
                 batch_rpn_target_class = np.zeros([batch_size, self.anchors.shape[0], 1], dtype=rpn_target_class.dtype)
                 batch_rpn_target_bbox = np.zeros((batch_size,) + tuple(rpn_target_bbox.shape), dtype=rpn_target_bbox.dtype)
+                batch_positive_anchors = np.zeros((batch_size,) + tuple(positive_anchors.shape),
+                                                 dtype=positive_anchors.dtype)
             
             batch_images[num] = image
             batch_gt_masks[num,:,:, :gt_mask.shape[-1]] = gt_mask
@@ -546,6 +553,7 @@ class PreprareTrainData():
             batch_image_metas[num] = image_meta
             batch_rpn_target_class[num] = rpn_target_class[:, np.newaxis]
             batch_rpn_target_bbox[num] = rpn_target_bbox
+            batch_positive_anchors[num] = positive_anchors
             
         print('batch_images ', batch_images.shape)
         print('batch_gt_masks ', batch_gt_masks.shape)
@@ -554,10 +562,17 @@ class PreprareTrainData():
         print('batch_image_metas ', batch_image_metas.shape)
         print('batch_rpn_target_class ', batch_rpn_target_class.shape)
         print('batch_rpn_target_bbox ', batch_rpn_target_bbox.shape)
+        print('batch_positive_anchors ', batch_positive_anchors.shape)
         
-        return (dict(batch_images=batch_images, batch_image_metas=batch_image_metas, batch_gt_masks=batch_gt_masks,
-                     batch_gt_class_ids=batch_gt_class_ids, batch_gt_bboxes=batch_gt_bboxes,
-                     batch_rpn_target_class=batch_rpn_target_class, batch_rpn_target_bbox=batch_rpn_target_bbox))
+        return (dict(batch_images=batch_images,
+                     batch_image_metas=batch_image_metas,
+                     batch_gt_masks=batch_gt_masks,
+                     batch_gt_class_ids=batch_gt_class_ids,
+                     batch_gt_bboxes=batch_gt_bboxes,
+                     batch_rpn_target_class=batch_rpn_target_class,
+                     batch_rpn_target_bbox=batch_rpn_target_bbox,
+                     batch_positive_anchors=batch_positive_anchors)
+                )
 
 
 def debug():
