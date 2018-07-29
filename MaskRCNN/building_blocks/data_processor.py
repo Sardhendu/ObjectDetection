@@ -278,7 +278,6 @@ class BuildDetectionTargets():
         roi_gt_box_deltas = self.box_refinement_tf(pos_rois, roi_gt_boxes)
         roi_gt_box_deltas /= self.box_stddev
         
-        
         # Concat and pad all generated Tensors to ease processing
         rois = tf.concat([pos_rois, neg_rois], axis=0)
         neg_rois_cnt = tf.shape(neg_rois)[0]
@@ -291,9 +290,27 @@ class BuildDetectionTargets():
         self.roi_gt_class_ids = tf.reshape(self.roi_gt_class_ids, shape=[1,tf.shape(self.roi_gt_class_ids)[0]])
         
         if self.DEBUG:
-            self.debug_dict = dict(a=prop, b=gt_boxes, c=gt_class_ids, d=iou, e=pos_rois,
-                    f=neg_rois, g=pos_iou, h=roi_gt_box_assignment, i=roi_gt_class_ids,
-                    j=self.roi_gt_class_ids, k=self.roi_gt_box_deltas, l=tf.expand_dims(self.rois, axis=0))
+            self.debug_dict = dict(
+                    non_zeros=non_zeros,
+                     gt_boxes_non_zero=gt_boxes,
+                     gt_class_ids_non_zero=gt_class_ids,
+                     iou=iou,
+                     roi_iou_max=roi_iou_max,
+                     pos_indices_05more=pos_indices,
+                     neg_indices_05more=neg_indices,
+                     num_pos_inst=num_pos_inst,
+                     pos_indices=pos_indices,
+                     pos_count=pos_count,
+                     neg_cnt=neg_cnt,
+                     neg_indices=neg_indices,
+                     pos_rois=pos_rois,
+                     neg_rois=neg_rois,
+                     pos_iou=pos_iou,
+                     roi_gt_box_assignment=roi_gt_box_assignment,
+                     roi_gt_class_ids=roi_gt_class_ids,
+                     roi_gt_boxes=roi_gt_boxes,
+                     roi_gt_box_deltas=roi_gt_box_deltas
+            )
     
     def get_target_rois(self):
         return self.rois, self.roi_gt_class_ids, self.roi_gt_box_deltas
@@ -420,20 +437,21 @@ class PreprareTrainData():
         # print(overlaps.shape, np.max(overlaps), np.min(overlaps))
         # print(overlaps)
     
+        #if anchor1 iou with object 1 is 0.7 and object2 is 0.9 then we must choose the top score
+        # for the anchor.
+        anchor_iou_max_idx = np.argmax(overlaps, axis=1)  # Choose the highest score per anchor
+        anchor_iou_max_score = overlaps[np.arange(len(overlaps)), anchor_iou_max_idx]
+        # print(len(anchor_iou_max_score), anchor_iou_max_score)
+        # print ('')
+        
         # Apply conditions,
         # When bounding_box iou anchor > 0.7 class 1
         # When bounding_box iou anchor < 0.3 class 0
         # Else doesn't matter
         # One important information to note:
         # one image may have multiple anchors, say anchor 1 iou object 1 is >0.7 and iou with object 2 <0.3
-        # So, if we select positives anchors first then anchor 1 might not be selected because after object 1
-        # object 2 will disqualify anchor1. Therefore we should first select negative anchors.
-        # Moreover, if anchor1 iou with object 1 is 0.7 and object2 is 0.9 then we must choose the top score
-        # for the anchor.
-        anchor_iou_max_idx = np.argmax(overlaps, axis=1)  # Choose the highest score per anchor
-        anchor_iou_max_score = overlaps[np.arange(len(overlaps)), anchor_iou_max_idx]
-        # print(len(anchor_iou_max_score), anchor_iou_max_score)
-        # print ('')
+        # So, if we select positives anchors first then anchor 1 might not be selected because after object 1, object 2 will disqualify anchor1. Therefore we should first select negative anchors.
+        #
         
         # COND 1: Set rpn_target_class to -1 where the iou is < 0.3
         rpn_target_class[(anchor_iou_max_score < 0.3)] = -1

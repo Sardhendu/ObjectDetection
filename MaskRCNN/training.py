@@ -34,24 +34,21 @@ class Train():
         pass
     
     def transform_images(self, data_dict, image_ids):
-        batch_images = data_dict['batch_images']
-        batch_gt_masks = data_dict['batch_gt_masks']
-        batch_gt_class_ids = data_dict['batch_gt_class_ids']
-        batch_gt_bboxes = data_dict['batch_gt_bboxes']
-        batch_image_metas = data_dict['batch_image_metas']
-        batch_rpn_target_class = data_dict['batch_rpn_target_class']
-        batch_rpn_target_bbox = data_dict['batch_rpn_target_bbox']
+        self.batch_images = data_dict['batch_images']
+        self.batch_gt_masks = data_dict['batch_gt_masks']
+        self.batch_gt_class_ids = data_dict['batch_gt_class_ids']
+        self.batch_gt_bboxes = data_dict['batch_gt_bboxes']
+        self.batch_image_metas = data_dict['batch_image_metas']
+        self.batch_rpn_target_class = data_dict['batch_rpn_target_class']
+        self.batch_rpn_target_bbox = data_dict['batch_rpn_target_bbox']
         
-        transformed_images, image_metas, image_windows, anchors = data_processor.process_images(self.conf,
-                                                                                                batch_images,
-                                                                                                image_ids)
+        (self.transformed_images, image_metas, image_windows,
+         self.anchors_) = data_processor.process_images(self.conf,
+                                                  self.batch_images,
+                                                  image_ids)
         
-        print(transformed_images.shape, image_metas.shape, image_windows.shape,
-              anchors.shape)
-        
-        return (batch_images, batch_gt_masks, batch_gt_class_ids, batch_gt_bboxes, batch_image_metas,
-                batch_rpn_target_class,
-                batch_rpn_target_bbox, anchors)
+        print(self.transformed_images.shape, image_metas.shape, image_windows.shape,
+              self.anchors_.shape)
     
     def get_detection_target_graph(self, proposals_, input_gt_class_ids, input_gt_bboxes):
         batch_rois = []
@@ -140,6 +137,7 @@ class Train():
             rpn_pred_bbox.append(rpn_obj.get_rpn_bbox())
     
         self.rpn_pred_logits = tf.concat(rpn_pred_logits, axis=1)
+        self.rpn_pred_logits = tf.concat(rpn_pred_logits, axis=1)
         self.rpn_pred_probs = tf.concat(rpn_pred_probs, axis=1)
         self.rpn_pred_bbox = tf.concat(rpn_pred_bbox, axis=1)
         
@@ -194,7 +192,7 @@ class Train():
                 self.rpn_target_class,
                 batch_size=self.batch_size)
 
-        self.mrcnn_class_loss = Loss.mrcnn_class_loss(
+        self.mrcnn_loss_extra_var, self.mrcnn_class_loss = Loss.mrcnn_class_loss(
                 mrcnn_target_class_ids=self.mrcnn_target_class_ids,
                 mrcnn_pred_logits=self.mrcnn_graph['mrcnn_class_logits'],
                 batch_active_class_ids=batch_active_class_ids
@@ -212,17 +210,15 @@ class Train():
         tf.reset_default_graph()
         
         # GET INPUT DATA
-        (batch_images, batch_gt_masks, batch_gt_class_ids, batch_gt_bboxes,
-         batch_image_metas, batch_rpn_target_class, batch_rpn_target_bbox,
-         anchors_) = self.transform_images(data_dict, image_ids)
+        self.transform_images(data_dict, image_ids)
         
-        batch_active_class_ids = batch_image_metas[:, -4:]  # 1 corresponds to the active level
+        batch_active_class_ids = self.batch_image_metas[:, -4:]  # 1 corresponds to the active level
         
         # BUILD THE GRAPH
         self.build_train_graph(batch_active_class_ids)
         
         print('batch_active_class_ids ', batch_active_class_ids.shape, batch_active_class_ids)
-        print('batch_rpn_target_class ', batch_rpn_target_class.shape)
+        print('batch_rpn_target_class ', self.batch_rpn_target_class.shape)
         
         with tf.Session() as sess:
             sess.run(tf.global_variables_initializer())
@@ -252,15 +248,19 @@ class Train():
                        self.mrcnn_box_loss
                        ]
             
-            feed_dict = {self.xIN: batch_images,
-                         self.anchors: anchors_,
-                         self.input_gt_class_ids: batch_gt_class_ids,
-                         self.input_gt_bboxes: batch_gt_bboxes,
-                         self.rpn_target_class: batch_rpn_target_class,
-                         self.rpn_target_bbox: batch_rpn_target_bbox
+           
+            
+            feed_dict = {self.xIN: self.transformed_images,
+                         self.anchors: self.anchors_,
+                         self.input_gt_class_ids: self.batch_gt_class_ids,
+                         self.input_gt_bboxes: self.batch_gt_bboxes,
+                         self.rpn_target_class: self.batch_rpn_target_class,
+                         self.rpn_target_bbox: self.batch_rpn_target_bbox
                          }
 
             outputs_ = sess.run(outputs, feed_dict=feed_dict)
+
+            self.outputs_ = outputs_
             
             print('Max and Min Proposals, ', np.amax(outputs_[3]), np.amin(outputs_[3]))
             print('Num NaN present in Proposals ', np.sum(np.isnan(outputs_[3])))
@@ -281,10 +281,10 @@ class Train():
             print('(LOSS) mrcnn_box_loss (shape) ', outputs_[13])
             
             
-            print('batch_rpn_target_class: ', batch_rpn_target_class)
+            print('batch_rpn_target_class: ', self.batch_rpn_target_class)
             
             
           
-            print(batch_image_metas)
+            print(self.batch_image_metas)
             
             print(outputs_[9])

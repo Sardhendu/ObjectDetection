@@ -15,17 +15,28 @@ logging.basicConfig(level=logging.DEBUG, filename="logfile.log", filemode="w",
 
         
 
-def intersection_over_union(box, reference_boxes, box_area, reference_box_areas):
-    intersection_y1 = np.maximum(box[0], reference_boxes[:, 0])
-    intersection_x1 = np.maximum(box[1], reference_boxes[:, 1])
-    intersection_y2 = np.minimum(box[2], reference_boxes[:, 2])
-    intersection_x2 = np.minimum(box[3], reference_boxes[:, 3])
-    
-    intersection_area = (np.maximum((intersection_y2 - intersection_y1), 0) *
-                         np.maximum((intersection_x2 - intersection_x1), 0))
-    
-    union_area = box_area + reference_box_areas[:] - intersection_area
-    iou = intersection_area / union_area
+# def intersection_over_union(box, reference_boxes, box_area, reference_box_areas):
+#     intersection_y1 = np.maximum(box[0], reference_boxes[:, 0])
+#     intersection_x1 = np.maximum(box[1], reference_boxes[:, 1])
+#     intersection_y2 = np.minimum(box[2], reference_boxes[:, 2])
+#     intersection_x2 = np.minimum(box[3], reference_boxes[:, 3])
+#
+#     intersection_area = (np.maximum((intersection_y2 - intersection_y1), 0) *
+#                          np.maximum((intersection_x2 - intersection_x1), 0))
+#
+#     union_area = box_area + reference_box_areas[:] - intersection_area
+#     iou = intersection_area / union_area
+#     return iou
+
+
+def intersection_over_union(box, boxes, box_area, boxes_area):
+    y1 = np.maximum(box[0], boxes[:, 0])
+    y2 = np.minimum(box[2], boxes[:, 2])
+    x1 = np.maximum(box[1], boxes[:, 1])
+    x2 = np.minimum(box[3], boxes[:, 3])
+    intersection = np.maximum(x2 - x1, 0) * np.maximum(y2 - y1, 0)
+    union = box_area + boxes_area[:] - intersection[:]
+    iou = intersection / union
     return iou
 
 

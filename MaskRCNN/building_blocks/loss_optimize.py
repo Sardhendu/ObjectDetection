@@ -57,7 +57,7 @@ class Loss():
         '''
         rpn_target_class = tf.squeeze(rpn_target_class, -1)
         
-        # rpn_pre_box = [batch_size, 100, 4] here only few out of 100 box would be +ve classes rest all are zero padded. Inorder to compute loss b/w rpn_target_bbox and rpn_pred_box we find the boxes from rpn_pred_box corresponding to +ve class.
+        # rpn_pred_box = [batch_size, 100, 4] here only few out of 100 box would be +ve classes rest all are zero padded. Inorder to compute loss b/w rpn_target_bbox and rpn_pred_box we find the boxes from rpn_pred_box corresponding to +ve class.
         indices = tf.where(tf.equal(rpn_target_class, 1))
         rpn_pred_box_pos = tf.gather_nd(rpn_pred_box, indices)
         
@@ -68,7 +68,7 @@ class Loss():
         for i in range(0,batch_size):
             rpn_target_bbox_nopad.append(rpn_target_bbox[i,:non_pad_count[i]]) # non_pad_count[i] The count of non-zeros records in batch i
         rpn_target_bbox_nopad = tf.concat(rpn_target_bbox_nopad, axis=0)
-        #
+
         # # Now that we have two boxes of same size, lets get the Regression loss.
         # # L1=smooth norm  =     | 0.5(x_sq)   if |x| < 1
         # #                       | |x| - 0.5   otherwise
@@ -133,7 +133,7 @@ class Loss():
         # mrcnn_pred_logits = [batch_size, N, num_objects] (they are different dimension). But this is way
         # tf.nn.sparse_softmax_cross_entropy_with_logits expects its inputs
         
-        # TODO: Why the Loss turns out to be nan, even when we have o object tin the image. basically pred_active > 0
+        # TODO: Why the Loss turns out to be nan, even when we have o object in the image. basically pred_active > 0
         
         loss = tf.nn.sparse_softmax_cross_entropy_with_logits(
                 labels=mrcnn_target_class_ids,
@@ -145,7 +145,7 @@ class Loss():
         loss = loss * pred_active
         
         loss = tf.reduce_sum(loss) / tf.reduce_sum(pred_active)
-        return loss
+        return pred_active, loss
 
 
     @staticmethod
