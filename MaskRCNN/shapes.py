@@ -52,12 +52,11 @@ class ShapesConfig(config):
 
 
 class Dataset():
-    def __init__(self, num_images, height, width, num_classes):
+    def __init__(self, num_images, height, width):
         self.image_meta = {}
-        self.num_classes = num_classes
-        
         # print('sadasdsads ', self.num_classes)
-        self.class_names = dict(square=1, triangle=2, circle=3)
+        self.source_class_ids = dict(bg=0, square=1, circle=2, triangle=3)
+        self.num_classes = len(self.source_class_ids.keys())
         
         for i in range(0, num_images):
             self.image_meta[i] = self.build_images_meta(height, width)
@@ -106,55 +105,63 @@ class Dataset():
     
     def gen_random_shapes(self, height, width):
         # select a random object (class)
-        object_ = np.random.choice(['square', 'triangle', 'circle'])
+        
+        object_ = random.choice(['square', 'circle', 'triangle'])
+        print ('object_ ', object_)
         
         # Get random color for 3 channels
         color = tuple([random.randint(0, 255) for _ in range(3)])
-        
+        print ('color ........ ', color)
         # Leave a buffer space (pad) of 20 pixels for the object_ to accomodate in the
         # background and collect a random center points (c_x, cy)
         buffer_space = 20
-        c_y = np.random.randint(buffer_space, height - buffer_space - 1)
-        c_x = np.random.randint(buffer_space, width - buffer_space - 1)
+        c_y = random.randint(buffer_space, height - buffer_space - 1)
+        c_x = random.randint(buffer_space, width - buffer_space - 1)
         
         # Get a Random size of the bounding box in which the object_ (tringle, square, cicle) is embedded
-        size = np.random.randint(buffer_space, height // 4)
+        size = random.randint(buffer_space, height // 4)
         # to account for both side towards the left form center to the right
         return object_, color, (c_y, c_x, size)
     
     def gen_random_image(self, height, width):
+        random.seed(345)
+        
         # Pick a random 3 channel for the background color
         bg_color = np.array([random.randint(0, 255) for _ in range(3)])
-        
+        print (bg_color)
         # Pick randomly how many object_ to put in the background image frame
-        num_objects = np.random.randint(1, self.num_classes)
+        num_objects = random.randint(1, 4)
+        print (num_objects)
         
-        object_info = []
+        active_class_info = []
         bounding_boxes = []
         for _ in range(0, num_objects):
+            print ('height width: ', height, width)
             object_, color, (c_y, c_x, size) = self.gen_random_shapes(height, width)
-            object_info.append((object_, (color), (c_y, c_x, size)))
+            active_class_info.append((object_, (color), (c_y, c_x, size)))
             bounding_boxes.append(
                     [c_y - size, c_x - size, c_y + size, c_x + size]
             )  # lower left and upper right coordinates
         bounding_boxes = np.array(bounding_boxes)
-        # print(bounding_boxes)
+        print('bounding_boxes ', bounding_boxes)
         # Sometimes if we select two or more objects to be dispayed in the image we can have those images
         # to overlap completely. In such a case we should ensure that the non-max supression between the
         # objects are atleast 0.3 so that we dont mess out training labels.
         keep_idx = utils.non_max_supression(bounding_boxes, np.arange(num_objects), threshold=0.3)
         # print('object_info pre NMS ', object_info)
-        object_info = [s for i, s in enumerate(object_info) if i in keep_idx]
+        active_class_info = [s for i, s in enumerate(active_class_info) if i in keep_idx]
         # print('keep_idx ', keep_idx)
         # print('objects post NMS ', object_info)
-        return bg_color, object_info
+        return bg_color, active_class_info
     
     def build_images_meta(self, height, width):
+        
         image_info = {}
         image_info['height'] = height
         image_info['width'] = width
-        bg_color, object_info = self.gen_random_image(height, width)
-        image_info['object_info'] = object_info
+        bg_color, active_class_info = self.gen_random_image(height, width)
+        print('active_class_info ................... ', active_class_info)
+        image_info['active_class_info'] = active_class_info
         image_info['bg_color'] = bg_color
         return image_info
     
@@ -166,10 +173,10 @@ class Dataset():
 
         """
         image_info = self.image_meta[image_id]
-        object_info = image_info['object_info']
-        object_cnt = len(object_info)
+        active_class_info = image_info['active_class_info']
+        object_cnt = len(active_class_info)
         mask = np.zeros([image_info['height'], image_info['width'], object_cnt], dtype=np.uint8)
-        for i, (object_, _, dims) in enumerate(object_info):
+        for i, (object_, _, dims) in enumerate(active_class_info):
             mask[:, :, i:i + 1] = self.draw_object_shape(mask[:, :, i:i + 1].copy(), object_, 1, dims)
         
         # Handle occlusions, when two objects intersect, we should ensure that the intersection mask is
@@ -183,24 +190,26 @@ class Dataset():
         # Map class names to class IDs.
         return mask.astype(np.bool)
     
-    def get_class_labels(self, image_id):
-        object_info = self.image_meta[image_id]["object_info"]
+    def get_active_class_ids(self, image_id):
+    
+        active_class_info = self.image_meta[image_id]["active_class_info"]
+        print('active_class_info .................... ', active_class_info)
         # Map class names to class IDs.
-        class_ids = np.array([self.class_names[s[0]] for s in object_info])
+        class_ids = np.array([self.source_class_ids[s[0]] for s in active_class_info])
         return class_ids.astype(np.int32)
     
     def get_image(self, image_id):
         image_info = self.image_meta[image_id]
-        object_info = image_info['object_info']
+        active_class_info = image_info['active_class_info']
         bg_color = image_info['bg_color']
         height = image_info['height']
         width = image_info['width']
         image = self.draw_bg_image(height, width, bg_color)
         # print(object_info)
-        num_objects = len(object_info)
+        num_objects = len(active_class_info)
         
         for i in np.arange(num_objects):
-            object_, color, dims = object_info[i]
+            object_, color, dims = active_class_info[i]
             image = self.draw_object_shape(image, object_, color, dims)
         return image
     

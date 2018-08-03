@@ -131,6 +131,27 @@ def resize_mask(mask, scale, padding):
     mask = np.pad(mask, padding, mode='constant', constant_values=0)
     return mask
 
+
+def minimize_mask(bbox, mask, mini_shape):
+    """Resize masks to a smaller version to reduce memory load.
+    Mini-masks can be resized back to image scale using expand_masks()
+
+    See inspect_data.ipynb notebook for more details.
+    """
+    mini_mask = np.zeros(mini_shape + (mask.shape[-1],), dtype=bool)
+    for i in range(mask.shape[-1]):
+        # Pick slice and cast to bool in case load_mask() returned wrong dtype
+        m = mask[:, :, i].astype(bool)
+        y1, x1, y2, x2 = bbox[i][:4]
+        m = m[y1:y2, x1:x2]
+        if m.size == 0:
+            raise Exception("Invalid bounding box with area of zero")
+        # Resize with bilinear interpolation
+        m = transform.resize(m, mini_shape, order=1, mode="constant")
+        mini_mask[:, :, i] = np.around(m).astype(np.bool)
+    return mini_mask
+
+
 def get_resnet_stage_shapes(conf, image_shape):
     '''
     Getting RESNET Pyramid Stage Shapes
@@ -157,7 +178,7 @@ def get_resnet_stage_shapes(conf, image_shape):
              for stride in conf.RESNET_STRIDES])
 
 
-def norm_boxes(box, shape):
+def norm_boxes(box, img_shape):
     """Converts boxes from pixel coordinates to normalized coordinates.
     
     boxes: [N, (y1, x1, y2, x2)] in pixel coordinates
@@ -169,10 +190,24 @@ def norm_boxes(box, shape):
     Returns:
         [N, (y1, x1, y2, x2)] in normalized coordinates
     """
-    h, w = shape
+    h, w = img_shape
     scale = np.array([h - 1, w - 1, h - 1, w - 1])
     shift = np.array([0, 0, 1, 1])  # [y1, x1, y2, x2]
     return np.divide((box - shift), scale).astype(np.float32)
+
+def norm_boxes_tf(boxes, img_shape):
+    """Converts boxes from pixel coordinates to normalized coordinates.
+    boxes: [..., (y1, x1, y2, x2)] in pixel coordinates
+    shape: [..., (height, width)] in pixels
+    Note: In pixel coordinates (y2, x2) is outside the box. But in normalized
+    coordinates it's inside the box.
+    Returns:
+        [..., (y1, x1, y2, x2)] in normalized coordinates
+    """
+    h, w = tf.split(tf.cast(img_shape, tf.float32), 2)
+    scale = tf.concat([h, w, h, w], axis=-1) - tf.constant(1.0)
+    shift = tf.constant([0., 0., 1., 1.])
+    return tf.divide(boxes - shift, scale)
 
 def denorm_boxes(boxes, shape):
     """Converts boxes from normalized coordinates to pixel coordinates.
@@ -314,12 +349,12 @@ def gen_anchors(image_shape, batch_size, scales, ratios, feature_map_shapes, fea
     logging.info('Anchors: Broadcast to num_batches: shape = %s', str(anchors.shape))
 
     # Normalize Anchors
-    anchors = norm_boxes(anchors, shape=image_shape[:2])
+    anchors = norm_boxes(anchors, img_shape=image_shape[:2])
     return anchors
 
 
 
-def gen_anchors_for_train(scales, ratios, feature_map_shapes, feature_map_strides, anchor_strides):
+def gen_anchors_pixel_coord(scales, ratios, feature_map_shapes, feature_map_strides, anchor_strides):
     """
     Create anchor boxes for each feature_map of pyramid stage and concat them
     """
@@ -332,7 +367,7 @@ def gen_anchors_for_train(scales, ratios, feature_map_shapes, feature_map_stride
     anchors = np.concatenate(anchors, axis=0)
     logging.info('Anchors: concatenated for each stage: shape = %s', str(anchors.shape))
     return anchors
-    
+
 
 
 def gen_random_mrcnn_boxes():

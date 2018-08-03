@@ -61,7 +61,7 @@ def apply_box_deltas(pre_nms_anchors, bbox_delta):
     x2 = x1 + width
 
     out = tf.stack([y1, x1, y2, x2], axis=1, name="apply_box_deltas_out")
-    out = tf.transpose(out, [0, 2, 1])
+    out = tf.transpose(out, [0, 2, 1]) #
     return out
 
 def clip_boxes_to_01(anchor_delta, window):
@@ -174,7 +174,8 @@ class Proposals():
         # scores = tf.gather_nd(scores, ix)
         scores, bbox_delta, anchors = self.gather_data_for_idx(ix, scores, bbox_delta, anchors)
 
-        # return ixs, mesh, scores, boxes, anchors
+        # Convert Anchors [batch_size, num_anchors, (y1, x1, y2, x2)] from normalized coordinate to
+        # [batch_size, num_anchors, (c_dy, c_dx, log(dh), log(dy)]
         anchor_delta = apply_box_deltas(anchors, bbox_delta)
     
         # The boxes can have values at the interval of 0,1

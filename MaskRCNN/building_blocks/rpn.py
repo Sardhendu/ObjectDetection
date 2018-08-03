@@ -86,7 +86,7 @@ class RPN():
 
         Outputs:
         This module generates 4 values
-        self.rpn_bbox = [batch_size, h, w, (dy, dx, log(dh), log(dw))]
+        self.rpn_bbox = [batch_size, num_anchors, (dy, dx, log(dh), log(dw))]
             1. dy = center y pixel
             2. dx = center x pixel
             3. log(dh) = height of bounding box

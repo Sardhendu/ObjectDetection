@@ -7,7 +7,8 @@ import h5py
 from scipy import ndimage
 from scipy import misc
 import tensorflow as tf
-
+import keras.backend as K
+import keras.layers as KL
 # from MaskRCNN.config import config as conf
 from MaskRCNN.building_blocks import data_processor
 from MaskRCNN.building_blocks import load_params
@@ -33,7 +34,12 @@ class Train():
     def build(self):
         pass
     
-    def transform_images(self, data_dict, image_ids):
+    def get_anchors(self, image_shape):
+        logging.info('MaskRCNN get_anchors.....')
+        """Returns anchor pyramid for the given image size."""
+        
+    
+    def fetch_data(self, data_dict):
         self.batch_images = data_dict['batch_images']
         self.batch_gt_masks = data_dict['batch_gt_masks']
         self.batch_gt_class_ids = data_dict['batch_gt_class_ids']
@@ -41,22 +47,29 @@ class Train():
         self.batch_image_metas = data_dict['batch_image_metas']
         self.batch_rpn_target_class = data_dict['batch_rpn_target_class']
         self.batch_rpn_target_bbox = data_dict['batch_rpn_target_bbox']
-        
-        (self.transformed_images, image_metas, image_windows,
-         self.anchors_) = data_processor.process_images(self.conf,
-                                                  self.batch_images,
-                                                  image_ids)
-        
-        print(self.transformed_images.shape, image_metas.shape, image_windows.shape,
-              self.anchors_.shape)
-    
-    def get_detection_target_graph(self, proposals_, input_gt_class_ids, input_gt_bboxes):
+
+        image_shape = self.batch_images.shape[1:]
+        resnet_stage_shapes = utils.get_resnet_stage_shapes(self.conf, image_shape)
+
+
+        self.anchors_normed = utils.gen_anchors(image_shape=image_shape,
+                                    batch_size=self.batch_images.shape[0],
+                                    scales=self.conf.RPN_ANCHOR_SCALES,
+                                    ratios=self.conf.RPN_ANCHOR_RATIOS,
+                                    feature_map_shapes=resnet_stage_shapes,
+                                    feature_map_strides=self.conf.RESNET_STRIDES,
+                                    anchor_strides=self.conf.RPN_ANCHOR_STRIDE)
+            
+
+
+
+    def get_detection_target_graph(self, proposals_, input_gt_class_ids, input_gt_boxes_norm):
         batch_rois = []
         batch_rois_gt_class_ids = []
         batch_rois_gt_class_boxes = []
         for i in range(0, self.batch_size):
             rois, roi_gt_class_ids, roi_gt_box_deltas = data_processor.BuildDetectionTargets(
-                    self.conf, proposals_[i], input_gt_class_ids[i], input_gt_bboxes[i],
+                    self.conf, proposals_[i], input_gt_class_ids[i], input_gt_boxes_norm[i],
                     DEBUG=False).get_target_rois()
             
             batch_rois.append(rois)
@@ -84,18 +97,19 @@ class Train():
                                   shape=[None] + self.conf.IMAGE_SHAPE,
                                   name='input_image')
         
-        self.gt_masks = tf.placeholder(dtype=tf.float32,
-                                       shape=[None] + self.conf.IMAGE_SHAPE[:2] + [
-                                           self.conf.MAX_GT_OBJECTS],
-                                       name='batch_gt_masks')
-        self.gt_class_ids = tf.placeholder(dtype=tf.int32,
-                                           shape=[None, self.conf.MAX_GT_OBJECTS],
-                                           name='gt_class_ids')
+        # self.gt_masks = tf.placeholder(dtype=tf.float32,
+        #                                shape=[None] + self.conf.IMAGE_SHAPE[:2] + [
+        #                                    self.conf.MAX_GT_OBJECTS],
+        #                                name='batch_gt_masks')
+        # self.gt_class_ids = tf.placeholder(dtype=tf.int32,
+        #                                    shape=[None, self.conf.MAX_GT_OBJECTS],
+        #                                    name='gt_class_ids')
         
-        self.gt_bboxes = tf.placeholder(dtype=tf.float32,
-                                        shape=[None, self.conf.MAX_GT_OBJECTS, 4],
-                                        name='gt_bboxes')
+        # self.gt_bboxes = tf.placeholder(dtype=tf.float32,
+        #                                 shape=[None, self.conf.MAX_GT_OBJECTS, 4],
+        #                                 name='gt_bboxes')
         
+        # Build Tensors for RPN Targets:
         self.rpn_target_class = tf.placeholder(dtype=tf.float32,
                                                shape=[None, None, 1],
                                                name='rpn_target_class')
@@ -108,17 +122,26 @@ class Train():
                                       shape=[None, None, 4],
                                       name="input_anchors")
         
-        # CREATE BATCH DATA: Needed to create the graph for Detection Targets
+        # Build Tensors for Detection(MRCNN) target:
         self.input_gt_class_ids = tf.placeholder(dtype=tf.int32,
-                                                 shape=[self.batch_size,
-                                                        self.conf.DETECTION_POST_NMS_INSTANCES],
+                                                 shape=[None, None],
                                                  name='input_gt_class_ids')
         
-        self.input_gt_bboxes = tf.placeholder(dtype=tf.float32,
-                                              shape=[self.batch_size,
-                                                     self.conf.DETECTION_POST_NMS_INSTANCES,
-                                                     4],
+        self.input_gt_boxes_pxl = tf.placeholder(dtype=tf.float32,
+                                              shape=[None, None, 4],
                                               name='input_gt_boxes')
+        
+        ##### Normalize the boxes to make proper comparison with Proposals
+        self.input_gt_boxes_norm = [tf.expand_dims(utils.norm_boxes_tf(self.input_gt_boxes_pxl[i],
+                                                        img_shape=self.conf.IMAGE_SHAPE[:2]), axis=0)
+                                    for i in range(0, self.batch_size)]
+
+        self.input_gt_boxes_norm = tf.concat(self.input_gt_boxes_norm, axis=0)
+
+        # self.input_gt_boxes_norm = KL.Lambda(lambda x: utils.norm_boxes_tf(
+        #         x, self.conf.IMAGE_SHAPE[:2]))(self.input_gt_boxes_pxl)
+
+        
     
     def fpn_rpn_module(self):
         self.fpn_graph = FPN(self.conf, self.xIN, 'resnet101').get_fpn_graph()
@@ -128,7 +151,8 @@ class Train():
         rpn_pred_probs = []
         rpn_pred_bbox = []
         for fmap in [self.fpn_graph['fpn_p2'],
-                     self.fpn_graph['fpn_p3'], self.fpn_graph['fpn_p4'],
+                     self.fpn_graph['fpn_p3'],
+                     self.fpn_graph['fpn_p4'],
                      self.fpn_graph['fpn_p5'],
                      self.fpn_graph['fpn_p6']]:
             rpn_obj = RPN(self.conf, depth=256, feature_map=fmap)
@@ -155,7 +179,7 @@ class Train():
         self.rois, self.mrcnn_target_class_ids, self.mrcnn_target_box = self.get_detection_target_graph(
                 self.proposals,
                 self.input_gt_class_ids,
-                self.input_gt_bboxes)
+                self.input_gt_boxes_norm)
         
     def mrcnn_module(self):
         self.mrcnn_graph = MaskRCNN(self.conf.IMAGE_SHAPE,
@@ -179,10 +203,10 @@ class Train():
         
         # Fetching Detection Targets
         self.detection_target()
-        
+
         # Module MRCNN
         self.mrcnn_module()
-        
+
         # TODO: Create RPN LOSS
         # RPN has two losses 1) Classification loss and 2) Regularization
         self.rpn_class_loss = Loss.rpn_class_loss(self.rpn_target_class, self.rpn_pred_logits)
@@ -210,7 +234,7 @@ class Train():
         tf.reset_default_graph()
         
         # GET INPUT DATA
-        self.transform_images(data_dict, image_ids)
+        self.fetch_data(data_dict)
         
         batch_active_class_ids = self.batch_image_metas[:, -4:]  # 1 corresponds to the active level
         
@@ -231,7 +255,18 @@ class Train():
                 load_params.set_pretrained_weights(sess, self.pretrained_weights_path,
                                                    train_nets='heads')
 
-
+            # a = sess.run(self.input_gt_boxes_norm, feed_dict = {
+            #          self.xIN: self.transformed_images,
+            #          self.anchors: self.anchors_normed,
+            #          self.input_gt_class_ids: self.batch_gt_class_ids,
+            #          self.input_gt_boxes_pxl: self.batch_gt_bboxes,
+            #          self.rpn_target_class: self.batch_rpn_target_class,
+            #          self.rpn_target_bbox: self.batch_rpn_target_bbox
+            #          })
+            # print ('batch_gt_bboxes ', self.batch_gt_bboxes.shape, self.batch_gt_bboxes)
+            # print ('sdsdsd ', a.shape, a)
+            
+            
             outputs = [self.rpn_pred_logits,
                        self.rpn_pred_probs,
                        self.rpn_pred_bbox,
@@ -247,13 +282,13 @@ class Train():
                        self.mrcnn_class_loss,
                        self.mrcnn_box_loss
                        ]
-            
-           
-            
-            feed_dict = {self.xIN: self.transformed_images,
-                         self.anchors: self.anchors_,
+
+
+
+            feed_dict = {self.xIN: self.batch_images,
+                         self.anchors: self.anchors_normed,
                          self.input_gt_class_ids: self.batch_gt_class_ids,
-                         self.input_gt_bboxes: self.batch_gt_bboxes,
+                         self.input_gt_boxes_pxl: self.batch_gt_bboxes,
                          self.rpn_target_class: self.batch_rpn_target_class,
                          self.rpn_target_bbox: self.batch_rpn_target_bbox
                          }
@@ -261,10 +296,10 @@ class Train():
             outputs_ = sess.run(outputs, feed_dict=feed_dict)
 
             self.outputs_ = outputs_
-            
+
             print('Max and Min Proposals, ', np.amax(outputs_[3]), np.amin(outputs_[3]))
             print('Num NaN present in Proposals ', np.sum(np.isnan(outputs_[3])))
-            
+
             print('(RPN) rpn_pred_logits: ', outputs_[0].shape)
             print('(RPN) rpn_pred_probs: ', outputs_[1].shape)
             print('(RPN) rpn_pred_bbox: ', outputs_[2].shape)
@@ -279,12 +314,12 @@ class Train():
             print('(LOSS) rpn_box_loss (shape) ', outputs_[11])
             print('(LOSS) mrcnn_class_loss (shape) ', outputs_[12])
             print('(LOSS) mrcnn_box_loss (shape) ', outputs_[13])
-            
-            
+
+
             print('batch_rpn_target_class: ', self.batch_rpn_target_class)
-            
-            
-          
+
+
+
             print(self.batch_image_metas)
-            
+
             print(outputs_[9])
