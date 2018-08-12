@@ -270,17 +270,17 @@ class Train():
             outputs = [self.rpn_pred_logits,
                        self.rpn_pred_probs,
                        self.rpn_pred_bbox,
-                       self.proposals,
-                       self.mrcnn_target_class_ids,
-                       self.mrcnn_target_box,
-                       self.mrcnn_graph['mrcnn_class_logits'],
-                       self.mrcnn_graph['mrcnn_class_probs'],
-                       self.mrcnn_graph['mrcnn_bbox'],
-                       self.rpn_loss_extra_var,
-                       self.rpn_class_loss,
-                       self.rpn_box_loss,
-                       self.mrcnn_class_loss,
-                       self.mrcnn_box_loss
+                       # self.proposals,
+                       # self.mrcnn_target_class_ids,
+                       # self.mrcnn_target_box,
+                       # self.mrcnn_graph['mrcnn_class_logits'],
+                       # self.mrcnn_graph['mrcnn_class_probs'],
+                       # self.mrcnn_graph['mrcnn_bbox'],
+                       # self.rpn_loss_extra_var,
+                       # self.rpn_class_loss,
+                       # self.rpn_box_loss,
+                       # self.mrcnn_class_loss,
+                       # self.mrcnn_box_loss
                        ]
 
 
@@ -297,29 +297,29 @@ class Train():
 
             self.outputs_ = outputs_
 
-            print('Max and Min Proposals, ', np.amax(outputs_[3]), np.amin(outputs_[3]))
-            print('Num NaN present in Proposals ', np.sum(np.isnan(outputs_[3])))
+            # print('Max and Min Proposals, ', np.amax(outputs_[3]), np.amin(outputs_[3]))
+            # print('Num NaN present in Proposals ', np.sum(np.isnan(outputs_[3])))
 
             print('(RPN) rpn_pred_logits: ', outputs_[0].shape)
             print('(RPN) rpn_pred_probs: ', outputs_[1].shape)
             print('(RPN) rpn_pred_bbox: ', outputs_[2].shape)
-            print('(PROPOSAL) proposals ', outputs_[3].shape)
-            print('(MRCNN) mrcnn_target_class_ids', outputs_[4].shape)
-            print('(MRCNN) mrcnn_target_box (shape) ', outputs_[5].shape)
-            print('(MRCNN) mrcnn_class_logits', outputs_[6].shape)
-            print('(MRCNN) mrcnn_class_probs (shape) ', outputs_[7].shape)
-            print('(MRCNN) mrcnn_bbox (shape) ', outputs_[8].shape)
-            print('(LOSS) rpn_loss_extra_var (shape) ', outputs_[9].shape)
-            print('(LOSS) rpn_class_loss (shape) ', outputs_[10])
-            print('(LOSS) rpn_box_loss (shape) ', outputs_[11])
-            print('(LOSS) mrcnn_class_loss (shape) ', outputs_[12])
-            print('(LOSS) mrcnn_box_loss (shape) ', outputs_[13])
+            # print('(PROPOSAL) proposals ', outputs_[3].shape)
+            # print('(MRCNN) mrcnn_target_class_ids', outputs_[4].shape)
+            # print('(MRCNN) mrcnn_target_box (shape) ', outputs_[5].shape)
+            # print('(MRCNN) mrcnn_class_logits', outputs_[6].shape)
+            # print('(MRCNN) mrcnn_class_probs (shape) ', outputs_[7].shape)
+            # print('(MRCNN) mrcnn_bbox (shape) ', outputs_[8].shape)
+            # print('(LOSS) rpn_loss_extra_var (shape) ', outputs_[9].shape)
+            # print('(LOSS) rpn_class_loss (shape) ', outputs_[10])
+            # print('(LOSS) rpn_box_loss (shape) ', outputs_[11])
+            # print('(LOSS) mrcnn_class_loss (shape) ', outputs_[12])
+            # print('(LOSS) mrcnn_box_loss (shape) ', outputs_[13])
+            #
+            #
+            # print('batch_rpn_target_class: ', self.batch_rpn_target_class)
 
 
-            print('batch_rpn_target_class: ', self.batch_rpn_target_class)
 
+            # print(self.batch_image_metas)
 
-
-            print(self.batch_image_metas)
-
-            print(outputs_[9])
+            # print(outputs_[9])
